@@ -9,6 +9,7 @@ int main() {
     meow.setNonBlockingInput();
 
     cout << "Press any button to stop the timer\n";
+    sleep(5);
     char c = 0;
 
     while (true) {
@@ -16,12 +17,12 @@ int main() {
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
         // if any byte gets read from the terminal input then its gonna stop the program.
         if (bytesRead > 0) {
-            cout << "Quit detected!\n";
+            cout << "FINAL TIME!\n";
             break;
         }
 
         // if the program didnt need to break it will print running every 10 miliseconds.
-        cout << "Running...\n";
+        cout << "mm:ss:ms\n";
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 

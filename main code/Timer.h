@@ -11,6 +11,8 @@
 
 using namespace std;
 
+int originalFlags; // grabs the original flags 
+
 // I want there to be timer objects for all of the different features
 // eg: main timer for timing, individual timers for training exercises 
 // perhaps they could store all of their information 
