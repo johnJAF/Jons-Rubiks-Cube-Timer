@@ -1,9 +1,16 @@
 #include "Timer.h"
 
+
 int originalFlags = fcntl(STDIN_FILENO, F_GETFL);
 
+// starts the timer
+void Timer::start() {
 
+}
 
+int Timer::endTime() {
+
+}
 
 // Set terminal to ignore rules mode
 void Timer::setNonBlockingInput() {
@@ -38,3 +45,4 @@ void Timer::restoreTerminal() {
     // restore original file flags
     fcntl(STDIN_FILENO, F_SETFL, originalFlags);
 }
+

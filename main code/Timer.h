@@ -1,6 +1,8 @@
 #ifndef TIMER_H
 #define TIMER_H
 
+#include "TimeScaler.h"
+
 #include <iostream>
 #include <ctime>
 #include <unistd.h>
@@ -10,8 +12,6 @@
 #include <chrono>     // for milliseconds
 
 using namespace std;
-
-int originalFlags; // grabs the original flags 
 
 // I want there to be timer objects for all of the different features
 // eg: main timer for timing, individual timers for training exercises 
@@ -26,7 +26,7 @@ public:
     // basic timer manipulation functions
     void start();
 
-    void stop();
+    int endTime();
 
     void setNonBlockingInput();
 
@@ -34,6 +34,5 @@ public:
 
 
 };
-
 
 #endif // TIMER_H
