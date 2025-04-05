@@ -93,11 +93,18 @@ void Scramble::setScramble() {
             size_t copySize = std::min(moves.size(), newListOfPositions.size());
             copy(moves.begin(), moves.begin() + copySize, newListOfPositions.begin());
 
+            if (checkScrambleIssues(newListOfPositions)) {
+                continue;
+            }
+
         } else if (trimmed == "new") {
             string temp = "";
             for(int x = 0; x < 20; x++) {
                 cin >> temp;
                 newListOfPositions[x] = temp;
+            }
+            if (checkScrambleIssues(newListOfPositions)) {
+                continue;
             }
         } else {
             cout << "Please choose one of the options.";
@@ -106,6 +113,23 @@ void Scramble::setScramble() {
     }
 
     scrambled = newListOfPositions;
+}
+
+bool Scramble::checkScrambleIssues(array<string, 20> scramblington) {
+    for(int x = 0; x < scramblington.size(); x++) {
+        if(scramblington[x] == "X" || scramblington[x] == "x") {
+            continue;
+        }
+
+        string moveLetter = scramblington[x].substr(0, 1);
+        if (moveLetter != "F" && moveLetter != "R" && moveLetter != "L" &&
+        moveLetter != "U" && moveLetter != "D" && moveLetter != "B") {
+            cout << "You did not input the scramble correctly" << endl << "Make sure you are not including unnecessary spaces or fake letters" << endl;
+            return false;
+        }
+    }
+
+    return true;
 }
 
 // this is to set the orientation for the sake of the scramble, just show how you held it.

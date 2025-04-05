@@ -31,6 +31,7 @@ public:
     array<string, 20> getScramble();
 
     void setScramble(); // set to a specific scramble
+    bool checkScrambleIssues(array<string, 20> scramblington);
 
     // this is to set the orientation for the sake of the scramble, just show how you held it.
     void setOrientation(); // sets both front and top orientation

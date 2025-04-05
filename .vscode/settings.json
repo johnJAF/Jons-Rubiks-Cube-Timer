@@ -42,6 +42,7 @@
         "algorithm": "cpp",
         "chrono": "cpp",
         "array": "cpp",
-        "vector": "cpp"
+        "vector": "cpp",
+        "random": "cpp"
     }
 }
