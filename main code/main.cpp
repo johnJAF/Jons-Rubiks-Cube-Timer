@@ -1,9 +1,11 @@
 #include "Timer.h"
+#include "Scramble.h"
 
 
 int main() {
     string stopProgram = "";
     Timer meow;
+    Scramble algorithm; 
 
     // run the program until stop
     while (true) {
@@ -17,6 +19,17 @@ int main() {
 
         meow.runTimer();
     }
-    
+
+    algorithm.newScramble();
+    algorithm.print();
+    algorithm.newScramble();
+    algorithm.print();
+    algorithm.newScramble();
+    algorithm.print();
+    algorithm.newScramble();
+    algorithm.print();
+    algorithm.newScramble();
+    algorithm.print();
+
     return 0;
 }

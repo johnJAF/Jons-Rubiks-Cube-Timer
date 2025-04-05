@@ -185,3 +185,9 @@ string Scramble::getOrientation() {
     return front + top;
 }
 
+void Scramble::print() {
+    for(int x = 0; x < scrambled.size(); x++) {
+        cout << scrambled[x] << ", ";
+    }
+    cout << endl;
+}

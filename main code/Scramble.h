@@ -10,14 +10,6 @@
 
 using namespace std;
 
-array<array<string, 3>, 6> twoDeeList;
-array<string, 3> rightSide;
-array<string, 3> leftSide;
-array<string, 3> up;
-array<string, 3> down;
-array<string, 3> back;
-array<string, 3> face;
-
 class Scramble {
     array<string, 20> scrambled; // 20 moves long - R2 or U2 type of moves counted as one move
     // b = blue, g = green, y = yellow, w = white, r = red, o = orange.
@@ -38,4 +30,6 @@ public:
     void setOrientation(string presetOrientation);
 
     string getOrientation(); // returns string for front, then top
+
+    void print();
 };
