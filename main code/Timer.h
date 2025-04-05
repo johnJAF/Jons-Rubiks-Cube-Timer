@@ -48,5 +48,6 @@ public:
     // clears the screen depending on system archetecture
     void clearScreen();
 
+    void runTimer();
 
 };
