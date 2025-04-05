@@ -41,6 +41,7 @@
         "variant": "cpp",
         "algorithm": "cpp",
         "chrono": "cpp",
-        "array": "cpp"
+        "array": "cpp",
+        "vector": "cpp"
     }
 }

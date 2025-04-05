@@ -5,8 +5,18 @@
 #include <array>
 #include <random>
 #include <chrono>
+#include <sstream>
+#include <vector>
 
 using namespace std;
+
+array<array<string, 3>, 6> twoDeeList;
+array<string, 3> rightSide;
+array<string, 3> leftSide;
+array<string, 3> up;
+array<string, 3> down;
+array<string, 3> back;
+array<string, 3> face;
 
 class Scramble {
     array<string, 20> scrambled; // 20 moves long - R2 or U2 type of moves counted as one move
@@ -18,7 +28,7 @@ class Scramble {
 
 public:
     void newScramble(); // random scramble using current time
-    string getScramble();
+    array<string, 20> getScramble();
 
     void setScramble(); // set to a specific scramble
 

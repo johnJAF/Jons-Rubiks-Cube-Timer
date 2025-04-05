@@ -1,18 +1,18 @@
 #include "Scramble.h"
 
+// arrays of submoves
+array<string, 3> rightSide = {"R", "R'", "R2"};
+array<string, 3> leftSide =  {"L", "L'", "L2"};
+array<string, 3> face =  {"F", "F'", "F2"};
+array<string, 3> up =    {"U", "U'", "U2"};
+array<string, 3> down =  {"D", "D'", "D2"};
+array<string, 3> back =  {"B", "B'", "B2"};
+
+// dictionary of all of the main moves
+array<array<string, 3>, 6> twoDeeList = {rightSide, leftSide, face, up, down, back};
+
 // random scramble using random at current time (20 positions)
 void Scramble::newScramble() {
-    // arrays of submoves
-    array<string, 3> right = {"R", "R'", "R2"};
-    array<string, 3> left =  {"L", "L'", "L2"};
-    array<string, 3> face =  {"F", "F'", "F2"};
-    array<string, 3> up =    {"U", "U'", "U2"};
-    array<string, 3> down =  {"D", "D'", "D2"};
-    array<string, 3> back =  {"B", "B'", "B2"};
-
-    // dictionary of all of the main moves
-    array<array<string, 3>, 6> twoDeeList = {right, left, face, up, down, back};
-
     // random number processing
     seed = std::chrono::system_clock::now().time_since_epoch().count();
     mt19937 generator(seed); // seed based on time
@@ -39,13 +39,73 @@ void Scramble::newScramble() {
     }
 }
 
-string Scramble::getScramble() {
+array<string, 20> Scramble::getScramble() {
+    return scrambled;
+}
 
+// to trim strings
+string trim(const std::string& str) {
+    size_t first = str.find_first_not_of(' ');
+    if (first == std::string::npos) return ""; // all spaces!
+
+    size_t last = str.find_last_not_of(' ');
+    return str.substr(first, last - first + 1);
 }
 
 // set to a specific scramble
 void Scramble::setScramble() {
+    bool spaceDelimiter = false;
+    string choice = "";
+    string trimmed = "";
+    array<string, 20> newListOfPositions;
+    
+    while (true) {
+        cout << "THIS FUNCTION ONLY WORKS IF YOUR SCRAMBLE IS LESS THAN 20 MOVES" << endl;
+        cout << "IF YOUR SCRAMBLE WAS SHORTER THAN 20 USE X's TO SHOW BLANK" << endl;
+        cout << "Would you like to type in the whole algorithm (spaces) or use new lines (new)? '-1' to leave ";
+        cin >> choice;
 
+        trimmed = trim(choice);
+
+        if(trimmed == "-1") {
+            cout << endl;
+            cout << "You exited Set Scramble Mode";
+            cout << endl;
+            break;
+        } else if (trimmed == "spaces") {
+            string temp = "";
+            vector<std::string> moves;
+            string move;
+
+            cout << endl << "Make sure you separate all of the scramble positions with spaces eg. F2 R L' R' D" << endl;
+
+            cin.ignore(); // Clear leftover newline from previous cin
+            getline(cin, temp);
+            temp = trim(temp);
+
+            istringstream iss(temp);
+
+            while (iss >> move) {
+            moves.push_back(move);
+            }
+            
+            // this just makes sure that only 20 inputs from the console go into the scramble
+            size_t copySize = std::min(moves.size(), newListOfPositions.size());
+            copy(moves.begin(), moves.begin() + copySize, newListOfPositions.begin());
+
+        } else if (trimmed == "new") {
+            string temp = "";
+            for(int x = 0; x < 20; x++) {
+                cin >> temp;
+                newListOfPositions[x] = temp;
+            }
+        } else {
+            cout << "Please choose one of the options.";
+            continue;
+        }
+    }
+
+    scrambled = newListOfPositions;
 }
 
 // this is to set the orientation for the sake of the scramble, just show how you held it.
