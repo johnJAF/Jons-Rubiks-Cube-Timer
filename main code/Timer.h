@@ -1,5 +1,4 @@
-#ifndef TIMER_H
-#define TIMER_H
+#pragma once
 
 #include "TimeScaler.h"
 
@@ -51,5 +50,3 @@ public:
 
 
 };
-
-#endif // TIMER_H
