@@ -78,7 +78,6 @@ void Timer::printCurrent() {
     meow.print();
 }
 
-
 void Timer::runTimer() {
     // this will block all of the terminals searches for terminal inputs and will stop the need to hit enter to stop the program
     setNonBlockingInput();

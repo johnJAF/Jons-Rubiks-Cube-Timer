@@ -10,7 +10,7 @@ int main() {
     // run the program until stop
     while (true) {
         cout << "Enter q to quit, anything else to continue: ";
-        
+
         getline(cin, stopProgram);
 
         if (stopProgram == "q") {
@@ -22,6 +22,11 @@ int main() {
 
     algorithm.newScramble();
     algorithm.print();
+    algorithm.newScramble();
+    algorithm.print();
+    algorithm.newScramble();
+    algorithm.print();
+    
     algorithm.setScramble();
 
     algorithm.setOrientation("rr");

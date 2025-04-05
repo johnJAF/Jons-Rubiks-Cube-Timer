@@ -43,6 +43,9 @@
         "chrono": "cpp",
         "array": "cpp",
         "vector": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "__hash_table": "cpp",
+        "__split_buffer": "cpp",
+        "unordered_map": "cpp"
     }
 }

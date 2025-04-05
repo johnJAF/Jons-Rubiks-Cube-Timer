@@ -22,10 +22,8 @@ void Scramble::newScramble() {
     int moveIndex = distribution(generator);
     int subMoveIndex = distribution2(generator);
 
-    scrambled[0] = twoDeeList[moveIndex][subMoveIndex];
-
     // runs 20 times for scramble
-    for (int x = 1; x < 20; x++) {
+    for (int x = 0; x < 20; x++) {
     redo_choice:
         int moveIndex = distribution(generator);
         int subMoveIndex = distribution2(generator);
@@ -62,12 +60,12 @@ void Scramble::setScramble() {
     while (true) {
         cout << endl << "THIS FUNCTION ONLY WORKS IF YOUR SCRAMBLE IS LESS THAN 20 MOVES" << endl;
         cout << "IF YOUR SCRAMBLE WAS SHORTER THAN 20 USE X's TO SHOW BLANK" << endl;
-        cout << endl << "Would you like to type in the whole algorithm (spaces) or use new lines (new)? '-1' to leave ";
+        cout << endl << "Would you like to type in the whole algorithm (spaces) or use new lines (new)? q to leave ";
         cin >> choice;
 
         trimmed = trim(choice);
 
-        if(trimmed == "-1") {
+        if(trimmed == "q") {
             cout << endl;
             cout << "You exited Set Scramble Mode" << endl;
             cout << endl;
@@ -85,6 +83,8 @@ void Scramble::setScramble() {
             getline(cin, temp);
             temp = trim(temp);
 
+            transform(temp.begin(), temp.end(), temp.begin(), ::toupper);
+
             istringstream iss(temp);
 
             while (iss >> move) {
@@ -101,8 +101,12 @@ void Scramble::setScramble() {
             // if they chose newlines it will throw the newlines into an array and if the arr is good it will set the scramble
         } else if (trimmed == "new") {
             string temp = "";
+
+            cout << endl << "Make sure that you are entering real scramble positions" << endl;
             for(int x = 0; x < 20; x++) {
                 cin >> temp;
+                temp = trim(temp);
+                transform(temp.begin(), temp.end(), temp.begin(), ::toupper);
                 newListOfPositions[x] = temp;
             }
             if (!checkScrambleIssues(newListOfPositions) == true) {
@@ -124,7 +128,7 @@ bool Scramble::checkScrambleIssues(array<string, 20> scramblington) {
     // for every item in the array
     for(int x = 0; x < scramblington.size(); x++) {
         // X's are okay for blanks
-        if(scramblington[x] == "X" || scramblington[x] == "x") {
+        if(scramblington[x] == "X") {
             continue;
         }
 
@@ -188,7 +192,7 @@ string Scramble::getOrientation() {
 }
 
 void Scramble::print() {
-    cout << endl << scrambled[1];
+    cout << endl << scrambled[0];
     for(int x = 1; x < scrambled.size(); x++) {
         cout << ", " << scrambled[x];
     }
