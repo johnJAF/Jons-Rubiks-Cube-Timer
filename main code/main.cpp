@@ -3,20 +3,19 @@
 
 int main() {
     string stopProgram = "";
+    Timer meow;
 
     // run the program until stop
     while (true) {
-        cout << "Enter q to quit, anything else to continute: ";
-        cin >> stopProgram;
+        cout << "Enter q to quit, anything else to continue: ";
+        
+        getline(cin, stopProgram);
 
         if (stopProgram == "q") {
             break;
         }
 
-        Timer meow;
-
         meow.runTimer();
-
     }
     
     return 0;
