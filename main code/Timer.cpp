@@ -48,8 +48,32 @@ void Timer::restoreTerminal() {
     fcntl(STDIN_FILENO, F_SETFL, originalFlags);
 }
 
+// clears screen depending on system archetecture
+void Timer::clearScreen() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
+// while timer is running - used to grab the time now - start time.
+void Timer::elapsedCurrent() {
+    elapsedTimeForCurrent = duration_cast<milliseconds>(Clock::now() - startTime).count();
+}
+
+// prints final elapsed time
 void Timer::printTime() {
     TimeSpan meow(elapsedTime);
+
+    meow.print();
+}
+
+// used while timer is running - checks what time it is right now and then prints that
+void Timer::printCurrent() {
+    elapsedCurrent();
+
+    TimeSpan meow(elapsedTimeForCurrent);
 
     meow.print();
 }

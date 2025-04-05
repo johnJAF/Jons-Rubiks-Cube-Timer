@@ -21,7 +21,8 @@ class Timer {
     // variables for start, stop, elapsed
     Clock::time_point startTime;
     Clock::time_point stopTime;
-    long long elapsedTime;
+    long long elapsedTime; // for printing at end of timer
+    long long elapsedTimeForCurrent; // for printing on screen as timer runs
 
 public:
     // basic timer manipulation functions
@@ -30,11 +31,23 @@ public:
     // returns elapsed time
     void stop();
 
+    // used while timer is running - will grab curren time - starting time
+    void elapsedCurrent();
+
+    // will make the terminal throw typing settings out the window
     void setNonBlockingInput();
 
+    // returns all terminal settings
     void restoreTerminal();
 
+    // prints elapsed time
     void printTime();
+
+    // uses elapsedCurrent to print constantly during main while loop
+    void printCurrent();
+
+    // clears the screen depending on system archetecture
+    void clearScreen();
 
 
 };
