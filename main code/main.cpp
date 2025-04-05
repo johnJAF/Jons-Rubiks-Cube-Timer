@@ -25,7 +25,6 @@ int main() {
         // if the program didnt need to break it will print running every 10 miliseconds.
         meow.clearScreen();
         meow.printCurrent();
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
     meow.stop();
