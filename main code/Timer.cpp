@@ -9,10 +9,9 @@ void Timer::start() {
 }
 
 // returns elapsed time
-int Timer::stop() {
+void Timer::stop() {
     stopTime = Clock::now();
-    return duration_cast<milliseconds>(stopTime - startTime).count();
-
+    elapsedTime = duration_cast<milliseconds>(stopTime - startTime).count();
 }
 
 // Set terminal to ignore rules mode
@@ -49,3 +48,8 @@ void Timer::restoreTerminal() {
     fcntl(STDIN_FILENO, F_SETFL, originalFlags);
 }
 
+void Timer::printTime() {
+    TimeSpan meow(elapsedTime);
+
+    meow.print();
+}

@@ -11,6 +11,7 @@ int main() {
     sleep(5);
     char c = 0;
 
+    meow.start();
     // timer terminal printer 
     while (true) {
         // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
@@ -26,6 +27,10 @@ int main() {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 
+    meow.stop();
+    
+    meow.printTime();
+    
     // this will restore all of the changes prevented when setNonBlockingInput was called
     meow.restoreTerminal();
     return 0;

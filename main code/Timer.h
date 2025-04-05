@@ -21,18 +21,20 @@ class Timer {
     // variables for start, stop, elapsed
     Clock::time_point startTime;
     Clock::time_point stopTime;
-    Clock::time_point elapsedTime;
+    long long elapsedTime;
 
 public:
     // basic timer manipulation functions
     void start();
 
     // returns elapsed time
-    int stop();
+    void stop();
 
     void setNonBlockingInput();
 
     void restoreTerminal();
+
+    void printTime();
 
 
 };
