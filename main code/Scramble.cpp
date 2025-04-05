@@ -72,6 +72,8 @@ void Scramble::setScramble() {
             cout << "You exited Set Scramble Mode";
             cout << endl;
             break;
+            // if they chose spaces it will throw the string into a istringstream where the space delimiter is used to throw the string into an arr
+            // it will verify the arr after setting the scramble
         } else if (trimmed == "spaces") {
             string temp = "";
             vector<std::string> moves;
@@ -96,7 +98,7 @@ void Scramble::setScramble() {
             if (checkScrambleIssues(newListOfPositions)) {
                 continue;
             }
-
+            // if they chose newlines it will throw the newlines into an array and if the arr is good it will set the scramble
         } else if (trimmed == "new") {
             string temp = "";
             for(int x = 0; x < 20; x++) {
@@ -106,8 +108,9 @@ void Scramble::setScramble() {
             if (checkScrambleIssues(newListOfPositions)) {
                 continue;
             }
+            // if neither of the options were chosen its just gonna restart
         } else {
-            cout << "Please choose one of the options.";
+            cout << "Please choose one of the options." << endl;
             continue;
         }
     }
@@ -116,11 +119,14 @@ void Scramble::setScramble() {
 }
 
 bool Scramble::checkScrambleIssues(array<string, 20> scramblington) {
+    // for every item in the array
     for(int x = 0; x < scramblington.size(); x++) {
+        // X's are okay for blanks
         if(scramblington[x] == "X" || scramblington[x] == "x") {
             continue;
         }
 
+        // if the first letter at any given position in the scramble is not real it will stop.
         string moveLetter = scramblington[x].substr(0, 1);
         if (moveLetter != "F" && moveLetter != "R" && moveLetter != "L" &&
         moveLetter != "U" && moveLetter != "D" && moveLetter != "B") {
@@ -134,11 +140,48 @@ bool Scramble::checkScrambleIssues(array<string, 20> scramblington) {
 
 // this is to set the orientation for the sake of the scramble, just show how you held it.
 void Scramble::setOrientation() { // for top and front in that order
+    string temp = "";
+    string fronty = "";
+    string topy = "";
 
+    // setting orientation by user choice
+    while (true) {
+        cout << "What is the color orientation of the front side? " << endl << "b = blue, g = green, y = yellow, w = white, r = red, o = orange" << endl;
+        cin >> fronty;
+        cout << endl << "What is the color orientation of the top side? " << endl << "b = blue, g = green, y = yellow, w = white, r = red, o = orange" << endl;
+        cin >> topy;
+        
+        // if the user choices were not real chars that relate to orientations
+        bool frontInvalid = (fronty != "g" && fronty != "b" && fronty != "y" &&
+                     fronty != "w" && fronty != "r" && fronty != "o");
+
+        bool topInvalid = (topy != "g" && topy != "b" && topy != "y" &&
+                        topy != "w" && topy != "r" && topy != "o");
+
+        // throw those chars in the trash.
+        if (frontInvalid || topInvalid) {
+            cout << endl << "You did not input the scramble correctly" << endl << "Make sure you are not including unnecessary spaces or fake letters" << endl;
+            continue;
+        }
+
+        // set chars that actually work
+        frontOrientation = fronty[0];
+        topOrientation = topy[0];
+
+        break;
+    }
 }
 
-// returns top the front as string
-string Scramble::getOrientation() {
+// overwritten method for the just in case scenario where we have the orientation string already and we want to preload it
+void Scramble::setOrientation(string presetOrientation) {
+    char front = presetOrientation[0];
+    char top = presetOrientation[1];
+}
 
+// returns front + top as string
+string Scramble::getOrientation() {
+    string front = string() + frontOrientation;
+    string top = string() + topOrientation;
+    return front + top;
 }
 

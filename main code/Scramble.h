@@ -35,5 +35,7 @@ public:
 
     // this is to set the orientation for the sake of the scramble, just show how you held it.
     void setOrientation(); // sets both front and top orientation
+    void setOrientation(string presetOrientation);
+
     string getOrientation(); // returns string for front, then top
 };
