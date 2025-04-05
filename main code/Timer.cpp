@@ -48,7 +48,7 @@ void Timer::restoreTerminal() {
     fcntl(STDIN_FILENO, F_SETFL, originalFlags);
 }
 
-// clears screen depending on system archetecture
+// clears screen depending on system archetecture (UNIX/MAC ONLY RN)
 void Timer::clearScreen() {
     #ifdef _WIN32
         system("cls");
