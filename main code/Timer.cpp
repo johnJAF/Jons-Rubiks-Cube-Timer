@@ -95,7 +95,6 @@ void Timer::runTimer() {
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
         // if any byte gets read from the terminal input then its gonna stop the program.
         if (bytesRead > 0) {
-            cout << "FINAL TIME!\n";
             break;
         }
 
@@ -108,6 +107,7 @@ void Timer::runTimer() {
     stop();
     clearScreen();
     
+    cout << "Final Time: ";
     printTime();
     
     // this will restore all of the changes prevented when setNonBlockingInput was called

@@ -3,14 +3,18 @@
 #include <iostream>
 #include <string>
 #include <array>
+#include <random>
+#include <chrono>
 
 using namespace std;
 
 class Scramble {
-    string scrambled; // 20 moves long - R2 or U2 type of moves counted as one move
+    array<string, 20> scrambled; // 20 moves long - R2 or U2 type of moves counted as one move
     // b = blue, g = green, y = yellow, w = white, r = red, o = orange.
     char frontOrientation;
     char topOrientation;
+    using Clock = std::chrono::steady_clock; // just to grab time right now for random
+    unsigned seed;
 
 public:
     void newScramble(); // random scramble using current time
