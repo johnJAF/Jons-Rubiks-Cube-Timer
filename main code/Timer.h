@@ -17,16 +17,18 @@ using namespace std;
 // eg: main timer for timing, individual timers for training exercises 
 // perhaps they could store all of their information 
 class Timer {
+    using Clock = std::chrono::steady_clock;
     // variables for start, stop, elapsed
-    int startTime;
-    int endTime;
-    int elapsedTime;
+    Clock::time_point startTime;
+    Clock::time_point stopTime;
+    Clock::time_point elapsedTime;
 
 public:
     // basic timer manipulation functions
     void start();
 
-    int endTime();
+    // returns elapsed time
+    int stop();
 
     void setNonBlockingInput();
 

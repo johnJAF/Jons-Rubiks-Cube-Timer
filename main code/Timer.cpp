@@ -1,14 +1,17 @@
 #include "Timer.h"
 
-
+// original flags for turning the console settings back to normal.
 int originalFlags = fcntl(STDIN_FILENO, F_GETFL);
 
 // starts the timer
 void Timer::start() {
-
+    startTime = Clock::now();
 }
 
-int Timer::endTime() {
+// returns elapsed time
+int Timer::stop() {
+    stopTime = Clock::now();
+    return duration_cast<milliseconds>(stopTime - startTime).count();
 
 }
 
