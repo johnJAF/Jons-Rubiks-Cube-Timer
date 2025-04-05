@@ -60,16 +60,16 @@ void Scramble::setScramble() {
     array<string, 20> newListOfPositions;
     
     while (true) {
-        cout << "THIS FUNCTION ONLY WORKS IF YOUR SCRAMBLE IS LESS THAN 20 MOVES" << endl;
+        cout << endl << "THIS FUNCTION ONLY WORKS IF YOUR SCRAMBLE IS LESS THAN 20 MOVES" << endl;
         cout << "IF YOUR SCRAMBLE WAS SHORTER THAN 20 USE X's TO SHOW BLANK" << endl;
-        cout << "Would you like to type in the whole algorithm (spaces) or use new lines (new)? '-1' to leave ";
+        cout << endl << "Would you like to type in the whole algorithm (spaces) or use new lines (new)? '-1' to leave ";
         cin >> choice;
 
         trimmed = trim(choice);
 
         if(trimmed == "-1") {
             cout << endl;
-            cout << "You exited Set Scramble Mode";
+            cout << "You exited Set Scramble Mode" << endl;
             cout << endl;
             break;
             // if they chose spaces it will throw the string into a istringstream where the space delimiter is used to throw the string into an arr
@@ -95,7 +95,7 @@ void Scramble::setScramble() {
             size_t copySize = std::min(moves.size(), newListOfPositions.size());
             copy(moves.begin(), moves.begin() + copySize, newListOfPositions.begin());
 
-            if (checkScrambleIssues(newListOfPositions)) {
+            if (!checkScrambleIssues(newListOfPositions) == true) {
                 continue;
             }
             // if they chose newlines it will throw the newlines into an array and if the arr is good it will set the scramble
@@ -105,14 +105,16 @@ void Scramble::setScramble() {
                 cin >> temp;
                 newListOfPositions[x] = temp;
             }
-            if (checkScrambleIssues(newListOfPositions)) {
+            if (!checkScrambleIssues(newListOfPositions) == true) {
                 continue;
             }
             // if neither of the options were chosen its just gonna restart
         } else {
-            cout << "Please choose one of the options." << endl;
+            cout << endl << "Please choose one of the options." << endl;
             continue;
         }
+
+        break;
     }
 
     scrambled = newListOfPositions;
@@ -130,7 +132,7 @@ bool Scramble::checkScrambleIssues(array<string, 20> scramblington) {
         string moveLetter = scramblington[x].substr(0, 1);
         if (moveLetter != "F" && moveLetter != "R" && moveLetter != "L" &&
         moveLetter != "U" && moveLetter != "D" && moveLetter != "B") {
-            cout << "You did not input the scramble correctly" << endl << "Make sure you are not including unnecessary spaces or fake letters" << endl;
+            cout << endl << "You did not input the scramble correctly" << endl << "Make sure you are not including unnecessary spaces or fake letters" << endl;
             return false;
         }
     }
@@ -160,7 +162,7 @@ void Scramble::setOrientation() { // for top and front in that order
 
         // throw those chars in the trash.
         if (frontInvalid || topInvalid) {
-            cout << endl << "You did not input the scramble correctly" << endl << "Make sure you are not including unnecessary spaces or fake letters" << endl;
+            cout << endl << "You did not input the Orientation correctly" << endl << "Make sure you are not including unnecessary spaces or fake letters" << endl;
             continue;
         }
 
@@ -174,8 +176,8 @@ void Scramble::setOrientation() { // for top and front in that order
 
 // overwritten method for the just in case scenario where we have the orientation string already and we want to preload it
 void Scramble::setOrientation(string presetOrientation) {
-    char front = presetOrientation[0];
-    char top = presetOrientation[1];
+    frontOrientation = presetOrientation[0];
+    topOrientation = presetOrientation[1];
 }
 
 // returns front + top as string
@@ -186,8 +188,9 @@ string Scramble::getOrientation() {
 }
 
 void Scramble::print() {
-    for(int x = 0; x < scrambled.size(); x++) {
-        cout << scrambled[x] << ", ";
+    cout << endl << scrambled[1];
+    for(int x = 1; x < scrambled.size(); x++) {
+        cout << ", " << scrambled[x];
     }
     cout << endl;
 }

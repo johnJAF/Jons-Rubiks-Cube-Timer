@@ -22,14 +22,11 @@ int main() {
 
     algorithm.newScramble();
     algorithm.print();
-    algorithm.newScramble();
+    algorithm.setScramble();
+
+    algorithm.setOrientation("rr");
     algorithm.print();
-    algorithm.newScramble();
-    algorithm.print();
-    algorithm.newScramble();
-    algorithm.print();
-    algorithm.newScramble();
-    algorithm.print();
+    cout << algorithm.getOrientation();
 
     return 0;
 }
