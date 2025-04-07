@@ -3,10 +3,10 @@
 // arrays of submoves
 array<string, 3> rightSide = {"R", "R'", "R2"};
 array<string, 3> leftSide =  {"L", "L'", "L2"};
-array<string, 3> face =  {"F", "F'", "F2"};
-array<string, 3> up =    {"U", "U'", "U2"};
-array<string, 3> down =  {"D", "D'", "D2"};
-array<string, 3> back =  {"B", "B'", "B2"};
+array<string, 3> face =      {"F", "F'", "F2"};
+array<string, 3> up =        {"U", "U'", "U2"};
+array<string, 3> down =      {"D", "D'", "D2"};
+array<string, 3> back =      {"B", "B'", "B2"};
 
 // dictionary of all of the main moves
 array<array<string, 3>, 6> twoDeeList = {rightSide, leftSide, face, up, down, back};

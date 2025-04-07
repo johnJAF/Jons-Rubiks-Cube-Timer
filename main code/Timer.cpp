@@ -112,3 +112,4 @@ void Timer::runTimer() {
     // this will restore all of the changes prevented when setNonBlockingInput was called
     restoreTerminal();
 }
+

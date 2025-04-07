@@ -50,4 +50,6 @@ public:
 
     void runTimer();
 
+    void inspectionTime();
+
 };

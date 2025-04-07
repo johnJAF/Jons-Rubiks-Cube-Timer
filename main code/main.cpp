@@ -9,7 +9,7 @@ int main() {
 
     // run the program until stop
     while (true) {
-        cout << "Enter q to quit, anything else to continue: ";
+        cout << "Enter q to quit, to enter the timer, press anything on the keyboard: ";
 
         getline(cin, stopProgram);
 
@@ -29,7 +29,7 @@ int main() {
     
     algorithm.setScramble();
 
-    algorithm.setOrientation("rr");
+    algorithm.setOrientation();
     algorithm.print();
     cout << algorithm.getOrientation();
 
