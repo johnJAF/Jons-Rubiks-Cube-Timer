@@ -1,5 +1,4 @@
-#include "Timer.h"
-#include "Scramble.h"
+#include "UserFlow.h"
 
 
 int main() {
@@ -9,7 +8,7 @@ int main() {
 
     // run the program until stop
     while (true) {
-        cout << "Enter q to quit, to enter the timer, press anything on the keyboard: ";
+        cout << "Enter q to quit, to enter the timer, enter anything on the keyboard: ";
 
         getline(cin, stopProgram);
 
