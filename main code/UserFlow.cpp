@@ -14,7 +14,7 @@ void introScreens::startScreen() {
     terminalModifier.printCentered("Press any button to continue!");
     cout << endl << endl;
 
-}
+} // branch test
 
 // second screen user sees, shows all four options between scrambler, timer, datavisualizer, alogirthmpractice
 void introScreens::mainScreen(char moo) {
