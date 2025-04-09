@@ -24,13 +24,51 @@ void introScreens::mainScreen(char moo) {
     algorithmPracticeScreens algoPracticeSwitch;
     dataVisualizerScreen dataVisSwitch;
     timerScreen timeSwitch;
+    char c = 0;
 
     char optionChosen = moo;
+    char microOptionChosen = 0;
 
+    // every screen except scramble will have a repeating loop because they all have their own individual internal screens i think
     if (optionChosen == 's') {
         scrambleSwitch.mainScreen();
     } else if (optionChosen == 'a'){
-        algoPracticeSwitch.mainScreen();
+        terminalModifier.clearScreen();
+        terminalModifier.printCentered("Algorithm Practice");
+        terminalModifier.printCentered("(esc to return to main screen)");
+
+        cout << endl;
+        cout << endl;
+
+        terminalModifier.printTwoColumns("OLL (o)", "PLL (p)");
+        terminalModifier.printTwoColumns("Create Algorithm (c)", "Edit Algorithms (e)");
+
+        terminalModifier.setNonBlockingInput();
+
+        // while loop to decide what feature to choose from
+        while (true) {
+            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+            // choices choices
+            if (c == 's') {
+                microOptionChosen = c;
+                break;
+            } else if (c == 'a'){
+                microOptionChosen = c;
+                break;
+            } else if (c == 'd') {
+                microOptionChosen = c;
+                break;
+            } else if (c == 't') {
+                microOptionChosen = c;
+                break;
+            } else if (c == 27) {
+                return;
+            }
+        }
+        terminalModifier.restoreTerminal();
+
+        algoPracticeSwitch.mainScreen(microOptionChosen);
     } else if (optionChosen == 'd') {
         dataVisSwitch.mainScreen();
     } else if (optionChosen == 't') {
@@ -91,13 +129,21 @@ void scrambleScreen::mainScreen() {
 //////////////  MEOW algoPractice MEOW  ////////////////
 ////////////////////////////////////////////////////////
 
-void algorithmPracticeScreens::mainScreen() {
-    cout << "this is the algorithm practice screen";
+void algorithmPracticeScreens::mainScreen(char optionChosen) {
+    Timer terminalModifier;
+    algorithmPracticeScreens algoPracticeSwitch;
+
+    if(optionChosen == 'o') {
+        algoPracticeSwitch.oll();
+    } else if (optionChosen == 'p') {
+        algoPracticeSwitch.pll();
+    } else if (optionChosen == 'c') {
+        algoPracticeSwitch.own();
+    } else if (optionChosen == 'e') {
+        algoPracticeSwitch.editAlgs();
+    }
 }
 
-void algorithmPracticeScreens::chooseOption() {
-
-}
 
 void algorithmPracticeScreens::oll() {
 
@@ -112,7 +158,7 @@ void algorithmPracticeScreens::own() {
 }
 
 void algorithmPracticeScreens::editAlgs() {
-
+    cout << "This feature doesnt work homie";
 }
 
 // this navigator screen will be used 4 times in choosing what name of algorithm/photo of algorithm for OLL/PLL
