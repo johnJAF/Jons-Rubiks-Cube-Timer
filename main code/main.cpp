@@ -14,16 +14,17 @@ int main() {
 
     introSwitch.startScreen();
     while (true) {
+        // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
-        // if any byte gets read from the terminal input then its gonna stop the program.
+        // if any byte gets read from keyboard, it will move into the actual program loop
         if (bytesRead > 0) {
             break;
         }
     }
     meow.restoreTerminal();
 
-    // this loop is going to take care of the main 
+    // this loop is going to take care of the feature choice. only stops when escape is pressed
     while (true) {
         meow.clearScreen();
         char optionChosen = 0;
@@ -32,21 +33,19 @@ int main() {
         meow.printCentered("Type in one of the letters to pick between the options:");
         meow.printCentered("(esc to quit the app)");
 
-
         cout << endl;
         cout << endl;
-
 
         meow.printTwoColumns("Scrambler (s)", "Data visualizer (d)");
         meow.printTwoColumns("Algorithm Practice (a)", "Timer (t)");
 
         meow.setNonBlockingInput();
 
+        // while loop to decide what feature to choose from
         while (true) {
-            // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
             ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
-            // if any byte gets read from the terminal input then its gonna stop the program.
+            // choices choices
             if (c == 's') {
                 optionChosen = c;
                 break;
@@ -64,8 +63,8 @@ int main() {
             }
         }
         meow.restoreTerminal();
+        
         introSwitch.mainScreen(optionChosen);
-
     }
  
     
