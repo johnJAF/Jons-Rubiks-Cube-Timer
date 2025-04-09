@@ -8,10 +8,10 @@
 class introScreens {
 public:
     // first screen user sees "Press any button to continue"
-    char startScreen();
+    void startScreen();
 
     // second screen user sees, shows all four options between scrambler, timer, datavisualizer, alogirthmpractice
-    char mainScreen();
+    void mainScreen(char moo);
 };
 
 class scrambleScreen {

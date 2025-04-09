@@ -6,28 +6,71 @@ int main() {
     string stopProgram = "";
     Timer meow;
     Scramble algorithm; 
+    char c = 0;
 
-    // all screen objects
+    // this block of code takes care of the intro loop, just for the splash screen. 
     introScreens introSwitch;
-    scrambleScreen scrambleSwitch;
-    algorithmPracticeScreens algoPracticeSwitch;
-    dataVisualizerScreen dataVisSwitch;
-    timerScreen timeSwitch;
+    meow.setNonBlockingInput();
 
-    // this runs the intro screen screens and returns the character of the app feature chosen
-    char optionChosen = introSwitch.startScreen();
+    introSwitch.startScreen();
+    while (true) {
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        // if any byte gets read from the terminal input then its gonna stop the program.
+        if (bytesRead > 0) {
+            break;
+        }
+    }
+    meow.restoreTerminal();
+
+    // this loop is going to take care of the main 
+    while (true) {
+        meow.clearScreen();
+        char optionChosen = 0;
+        char c = 0;
+
+        meow.printCentered("Type in one of the letters to pick between the options:");
+        meow.printCentered("(esc to quit the app)");
+
+
+        cout << endl;
+        cout << endl;
+
+
+        meow.printTwoColumns("Scrambler (s)", "Data visualizer (d)");
+        meow.printTwoColumns("Algorithm Practice (a)", "Timer (t)");
+
+        meow.setNonBlockingInput();
+
+        while (true) {
+            // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+            // if any byte gets read from the terminal input then its gonna stop the program.
+            if (c == 's') {
+                optionChosen = c;
+                break;
+            } else if (c == 'a'){
+                optionChosen = c;
+                break;
+            } else if (c == 'd') {
+                optionChosen = c;
+                break;
+            } else if (c == 't') {
+                optionChosen = c;
+                break;
+            } else if (c == 27) {
+                return 0;
+            }
+        }
+        meow.restoreTerminal();
+        introSwitch.mainScreen(optionChosen);
+
+    }
+ 
+    
     
     // depending on the feature chosen, we're gonna run that feature.
-    if (optionChosen == 's') {
-        scrambleSwitch.mainScreen();
-    } else if (optionChosen == 'a'){
-        algoPracticeSwitch.mainScreen();
-    } else if (optionChosen == 'd') {
-        dataVisSwitch.mainScreen();
-    } else if (optionChosen == 't') {
-        timeSwitch.mainScreen();
-    }
-
 
     // while (true) {
     //     cout << "Enter q to quit, to enter the timer, enter anything on the keyboard: ";

@@ -5,77 +5,37 @@
 ////////////////////////////////////////////////////////
 
 // first screen user sees "Press any button to continue"
-char introScreens::startScreen() {
+void introScreens::startScreen() {
 
     Timer terminalModifier;
 
-    terminalModifier.setNonBlockingInput();
-    char c = 0;
-    
     terminalModifier.clearScreen();
     terminalModifier.printCentered("Welcome to Jon's Timer App.");
     terminalModifier.printCentered("Press any button to continue!");
+    cout << endl << endl;
 
-    while (true) {
-        // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-        // if any byte gets read from the terminal input then its gonna stop the program.
-        if (bytesRead > 0) {
-            break;
-        }
-        
-    }
-    terminalModifier.restoreTerminal();
-
-    // opens up the main screen after user hits a random button to continue.
-    char meow = mainScreen();
-
-    return meow;
 }
 
 // second screen user sees, shows all four options between scrambler, timer, datavisualizer, alogirthmpractice
-char introScreens::mainScreen() {
+void introScreens::mainScreen(char moo) {
+    // all objects to take care of screen switching when an option is chosen.
     Timer terminalModifier;
-    terminalModifier.clearScreen();
-    char optionChosen = 0;
-    char c = 0;
+    scrambleScreen scrambleSwitch;
+    algorithmPracticeScreens algoPracticeSwitch;
+    dataVisualizerScreen dataVisSwitch;
+    timerScreen timeSwitch;
 
-    terminalModifier.printCentered("Type in one of the letters to pick between the options:");
+    char optionChosen = moo;
 
-
-        cout << endl;
-        cout << endl;
-
-
-    terminalModifier.printTwoColumns("Scrambler (s)", "Data visualizer (d)");
-    terminalModifier.printTwoColumns("Algorithm Practice (a)", "Timer (t)");
-
-    terminalModifier.setNonBlockingInput();
-
-    while (true) {
-        // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-        // if any byte gets read from the terminal input then its gonna stop the program.
-        if (c == 's') {
-            optionChosen = c;
-            break;
-        } else if (c == 'a'){
-            optionChosen = c;
-            break;
-        } else if (c == 'd') {
-            optionChosen = c;
-            break;
-        } else if (c == 't') {
-            optionChosen = c;
-            break;
-        }
+    if (optionChosen == 's') {
+        scrambleSwitch.mainScreen();
+    } else if (optionChosen == 'a'){
+        algoPracticeSwitch.mainScreen();
+    } else if (optionChosen == 'd') {
+        dataVisSwitch.mainScreen();
+    } else if (optionChosen == 't') {
+        timeSwitch.mainScreen();
     }
-    terminalModifier.restoreTerminal();
-
-    return optionChosen;
-
 }
 
 ////////////////////////////////////////////////////////
@@ -91,6 +51,7 @@ void scrambleScreen::mainScreen() {
 
     terminalModifier.clearScreen();
     terminalModifier.printCentered("Press any button to generate a scramble:");
+    terminalModifier.printCentered("(esc to go to main menu)");
 
         cout << endl;
         cout << endl;
@@ -112,6 +73,7 @@ void scrambleScreen::mainScreen() {
             }
             terminalModifier.clearScreen();
             terminalModifier.printCentered("Press any button to generate a scramble:");
+            terminalModifier.printCentered("(esc to go to main menu)");
 
             cout << endl;
             cout << endl;
