@@ -6,6 +6,7 @@
 #include <ctime>
 #include <unistd.h>
 #include <termios.h>
+#include <sys/ioctl.h>
 #include <fcntl.h>
 #include <thread>     // for sleep
 #include <chrono>     // for milliseconds
@@ -38,6 +39,13 @@ public:
 
     // returns all terminal settings
     void restoreTerminal();
+
+    // get width of terminal to print centered text
+    int getTerminalWidth();
+
+    void printCentered(const string& text);
+
+    void printTwoColumns(const string& left, const string& right);
 
     // prints elapsed time
     void printTime();

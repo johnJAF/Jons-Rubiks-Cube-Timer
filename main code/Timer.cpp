@@ -48,6 +48,39 @@ void Timer::restoreTerminal() {
     fcntl(STDIN_FILENO, F_SETFL, originalFlags);
 }
 
+// get the width of the terminal in order to print centered text
+int Timer::getTerminalWidth() {
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    return w.ws_col;
+}
+
+// prints centered text in terminal
+void Timer::printCentered(const string& text) {
+    int width = getTerminalWidth();
+    int padding = (width - text.length()) / 2;
+    if (padding > 0)
+        cout << setw(padding) << " " << text << endl;
+    else
+        cout << text << endl; // fallback if terminal too narrow
+}
+
+// prints two columns taking in two string references
+void Timer::printTwoColumns(const string& left, const string& right) {
+    int width = getTerminalWidth();
+    int half = width / 2;
+
+    // Calculate padding for left and right columns
+    int leftPadding = (half - left.length()) / 2;
+    int rightPadding = half + (half - right.length()) / 2;
+
+    // Print left string
+    cout << setw(leftPadding) << " " << left;
+
+    // Move to right column position
+    cout << setw(rightPadding - leftPadding - left.length()) << " " << right << endl;
+}
+
 // clears screen depending on system archetecture (UNIX/MAC ONLY RN)
 void Timer::clearScreen() {
     #ifdef _WIN32

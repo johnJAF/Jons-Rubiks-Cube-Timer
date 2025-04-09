@@ -2,17 +2,16 @@
 
 #include "Timer.h"
 #include "Scramble.h"
+#include <string>
+#include <iomanip>
 
 class introScreens {
 public:
     // first screen user sees "Press any button to continue"
-    void startScreen();
+    char startScreen();
 
     // second screen user sees, shows all four options between scrambler, timer, datavisualizer, alogirthmpractice
-    void mainScreen();
-
-    // logic to choose between the four options
-    void chooseOption();
+    char mainScreen();
 };
 
 class scrambleScreen {
@@ -72,6 +71,7 @@ public:
 
 
 class timerScreen {
+public:
     void mainScreen();
 
     void newSession(); // dynamically creates a session if the file isnt there

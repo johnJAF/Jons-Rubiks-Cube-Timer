@@ -5,17 +5,77 @@
 ////////////////////////////////////////////////////////
 
 // first screen user sees "Press any button to continue"
-void introScreens::startScreen() {
+char introScreens::startScreen() {
 
+    Timer terminalModifier;
+
+    terminalModifier.setNonBlockingInput();
+    char c = 0;
+    
+    terminalModifier.clearScreen();
+    terminalModifier.printCentered("Welcome to Jon's Timer App.");
+    terminalModifier.printCentered("Press any button to continue!");
+
+    while (true) {
+        // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        // if any byte gets read from the terminal input then its gonna stop the program.
+        if (bytesRead > 0) {
+            break;
+        }
+        
+    }
+    terminalModifier.restoreTerminal();
+
+    // opens up the main screen after user hits a random button to continue.
+    char meow = mainScreen();
+
+    return meow;
 }
 
 // second screen user sees, shows all four options between scrambler, timer, datavisualizer, alogirthmpractice
-void introScreens::mainScreen() {
+char introScreens::mainScreen() {
+    Timer terminalModifier;
+    terminalModifier.clearScreen();
+    char optionChosen = 0;
+    char c = 0;
 
-}
+    terminalModifier.printCentered("Type in one of the letters to pick between the options:");
 
-// logic to choose between the four options
-void introScreens::chooseOption() {
+
+
+        cout << endl;
+        cout << endl;
+
+
+    terminalModifier.printTwoColumns("Scrambler (s)", "Data visualizer (d)");
+    terminalModifier.printTwoColumns("Algorithm Practice (a)", "Timer (t)");
+
+    terminalModifier.setNonBlockingInput();
+
+    while (true) {
+        // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        // if any byte gets read from the terminal input then its gonna stop the program.
+        if (c == 's') {
+            optionChosen = c;
+            break;
+        } else if (c == 'a'){
+            optionChosen = c;
+            break;
+        } else if (c == 'd') {
+            optionChosen = c;
+            break;
+        } else if (c == 't') {
+            optionChosen = c;
+            break;
+        }
+    }
+    terminalModifier.restoreTerminal();
+
+    return optionChosen;
 
 }
 
@@ -25,7 +85,7 @@ void introScreens::chooseOption() {
 
 // scramble screen main scren
 void scrambleScreen::mainScreen() {
-
+    cout << "this is the scramble screen";
 }
 
 ////////////////////////////////////////////////////////
@@ -33,7 +93,7 @@ void scrambleScreen::mainScreen() {
 ////////////////////////////////////////////////////////
 
 void algorithmPracticeScreens::mainScreen() {
-
+    cout << "this is the algorithm practice screen";
 }
 
 void algorithmPracticeScreens::chooseOption() {
@@ -98,7 +158,7 @@ void algorithmPracticeScreens::mainTimer() {
 
 
 void dataVisualizerScreen::mainScreen() {
-
+    cout << "this is the data visualizer screen";
 }
 
 void dataVisualizerScreen::fileDisplay() {
@@ -123,7 +183,7 @@ void dataVisualizerScreen::displayData() {
 ////////////////////////////////////////////////////////
 
 void timerScreen::mainScreen() {
-
+    cout << "this is the timer screen";
 }
 
 // dynamically creates a session if the file isnt there
