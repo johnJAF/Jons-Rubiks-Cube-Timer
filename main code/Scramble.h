@@ -20,7 +20,7 @@ class Scramble {
 
 public:
     void newScramble(); // random scramble using current time
-    array<string, 20> getScramble();
+    string getScramble();
 
     void setScramble(); // set to a specific scramble
     bool checkScrambleIssues(array<string, 20> scramblington);

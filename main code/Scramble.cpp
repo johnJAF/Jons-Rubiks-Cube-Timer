@@ -37,8 +37,17 @@ void Scramble::newScramble() {
     }
 }
 
-array<string, 20> Scramble::getScramble() {
-    return scrambled;
+string Scramble::getScramble() {
+    string temp = "";
+
+    for (int x = 0; x < scrambled.size(); ++x) {
+        temp += scrambled[x];
+        if (x != scrambled.size() - 1) {
+            temp += " ";
+        }
+    }
+
+    return temp;
 }
 
 // to trim strings

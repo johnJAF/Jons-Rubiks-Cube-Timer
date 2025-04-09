@@ -44,7 +44,6 @@ char introScreens::mainScreen() {
     terminalModifier.printCentered("Type in one of the letters to pick between the options:");
 
 
-
         cout << endl;
         cout << endl;
 
@@ -85,7 +84,45 @@ char introScreens::mainScreen() {
 
 // scramble screen main scren
 void scrambleScreen::mainScreen() {
-    cout << "this is the scramble screen";
+    Timer terminalModifier;
+    Scramble pookie;
+    char c = 0;
+    string str = "";
+
+    terminalModifier.clearScreen();
+    terminalModifier.printCentered("Press any button to generate a scramble:");
+
+        cout << endl;
+        cout << endl;
+
+    pookie.newScramble();
+    str = pookie.getScramble();
+    terminalModifier.printCentered(str);
+
+    terminalModifier.setNonBlockingInput();
+
+    while (true) {
+        // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        string holder;
+
+        if (c > 0) {
+            if (c == 27) {
+                return;
+            }
+            terminalModifier.clearScreen();
+            terminalModifier.printCentered("Press any button to generate a scramble:");
+
+            cout << endl;
+            cout << endl;
+
+            pookie.newScramble();
+            holder = pookie.getScramble();
+            terminalModifier.printCentered(holder);
+            c = 0;
+        }
+    }
+    terminalModifier.restoreTerminal();
 }
 
 ////////////////////////////////////////////////////////
