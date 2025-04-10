@@ -25,9 +25,10 @@ int main() {
     meow.restoreTerminal();
 
     // this loop is going to take care of the feature choice. only stops when escape is pressed
-    while (true) {
+    char optionChosen = 0;
+    while (c != 27) {
         meow.clearScreen();
-        char optionChosen = 0;
+        
         char c = 0;
 
         meow.printCentered("Type in one of the letters to pick between the options:");
@@ -63,9 +64,9 @@ int main() {
             }
         }
         meow.restoreTerminal();
-        
         introSwitch.mainScreen(optionChosen);
     }
+    
  
     
     

@@ -26,49 +26,13 @@ void introScreens::mainScreen(char moo) {
     timerScreen timeSwitch;
     char c = 0;
 
-    char optionChosen = moo;
-    char microOptionChosen = 0;
+    char optionChosen = moo;  
 
     // every screen except scramble will have a repeating loop because they all have their own individual internal screens i think
     if (optionChosen == 's') {
         scrambleSwitch.mainScreen();
     } else if (optionChosen == 'a'){
-        terminalModifier.clearScreen();
-        terminalModifier.printCentered("Algorithm Practice");
-        terminalModifier.printCentered("(esc to return to main screen)");
-
-        cout << endl;
-        cout << endl;
-
-        terminalModifier.printTwoColumns("OLL (o)", "PLL (p)");
-        terminalModifier.printTwoColumns("Create Algorithm (c)", "Edit Algorithms (e)");
-
-        terminalModifier.setNonBlockingInput();
-
-        // while loop to decide what feature to choose from
-        while (true) {
-            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-            // choices choices
-            if (c == 's') {
-                microOptionChosen = c;
-                break;
-            } else if (c == 'a'){
-                microOptionChosen = c;
-                break;
-            } else if (c == 'd') {
-                microOptionChosen = c;
-                break;
-            } else if (c == 't') {
-                microOptionChosen = c;
-                break;
-            } else if (c == 27) {
-                return;
-            }
-        }
-        terminalModifier.restoreTerminal();
-
-        algoPracticeSwitch.mainScreen(microOptionChosen);
+        algoPracticeSwitch.mainScreen();
     } else if (optionChosen == 'd') {
         dataVisSwitch.mainScreen();
     } else if (optionChosen == 't') {
@@ -129,32 +93,76 @@ void scrambleScreen::mainScreen() {
 //////////////  MEOW algoPractice MEOW  ////////////////
 ////////////////////////////////////////////////////////
 
-void algorithmPracticeScreens::mainScreen(char optionChosen) {
+void algorithmPracticeScreens::mainScreen() {
     Timer terminalModifier;
     algorithmPracticeScreens algoPracticeSwitch;
+    char c = 0;
+    char optionChosen = 0;
 
-    if(optionChosen == 'o') {
-        algoPracticeSwitch.oll();
-    } else if (optionChosen == 'p') {
-        algoPracticeSwitch.pll();
-    } else if (optionChosen == 'c') {
-        algoPracticeSwitch.own();
-    } else if (optionChosen == 'e') {
-        algoPracticeSwitch.editAlgs();
+    terminalModifier.clearScreen();
+    
+    terminalModifier.printCentered("Algorithm Practice");
+    terminalModifier.printCentered("(esc to return to main screen)");
+
+    cout << endl;
+    cout << endl;
+
+    terminalModifier.printTwoColumns("OLL (o)", "PLL (p)");
+    terminalModifier.printTwoColumns("Create Algorithm (c)", "Edit Algorithms (e)");
+
+    terminalModifier.setNonBlockingInput();
+
+    // while loop to decide what feature to choose from
+
+    while (true) {
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        if (c == 'o') {
+            optionChosen = c;
+            isOll = true;
+            oll();
+            break;
+        } else if (c == 'p') {
+            optionChosen = c;
+            isOll = false;
+            pll();
+            break;
+        } else if (c == 'c') {
+            optionChosen = c;
+            own();
+            break;
+        } else if (c == 'e') {
+            optionChosen = c;
+            editAlgs();
+            break;
+        } else if (c == 27) { // escape to exit
+            return;
+        }
     }
+    terminalModifier.restoreTerminal();
 }
 
 
 void algorithmPracticeScreens::oll() {
-
+    if(isOll == true) { // assertion for the code to run
+        cout << endl << "OLL MEOW" << endl;
+    } else {
+        cout << "Something is wrong with the isOll truth value";
+        exit;
+    }
 }
 
 void algorithmPracticeScreens::pll() {
-
+    if(isOll == false) { // assertion for the code to run
+        cout << endl << "PLL MEOW" << endl;
+    } else {
+        cout << "Something is wrong with the isOll truth value";
+        exit;
+    }
 }
 
 void algorithmPracticeScreens::own() {
-
+    cout << endl << "OWN MEOW" << endl;
 }
 
 void algorithmPracticeScreens::editAlgs() {
@@ -166,13 +174,19 @@ void algorithmPracticeScreens::editAlgs() {
 // this navigator screen will be used 4 times in choosing what name of algorithm/photo of algorithm for OLL/PLL
 // uses isOLL
 void algorithmPracticeScreens::navigator() {
+    cout << endl << "I am the navigator" << endl;
 
+    if (isOll == true) {
+        cout << endl << "This is the OLL version" << endl;
+    } else {
+        cout << endl << "This is the PLL version" << endl;
+    }
 }
 
 // pulls from dataset that checks what algorithm you're doing
 // uses isOll
 void algorithmPracticeScreens::fromSolved() {
-
+    cout << endl << "This is how you get to the algorithm from a solved state" << endl;
 }
 
 // just in case while you were solving you made some mistake and you want to remove the very last solve instance.
@@ -207,7 +221,7 @@ void algorithmPracticeScreens::mainTimer() {
 void dataVisualizerScreen::mainScreen() {
     Timer terminalModifier;
     terminalModifier.clearScreen();
-    cout << "this is the data visualizer screen";
+    cout << endl << "this is the data visualizer screen";
 }
 
 void dataVisualizerScreen::fileDisplay() {
@@ -234,7 +248,7 @@ void dataVisualizerScreen::displayData() {
 void timerScreen::mainScreen() {
     Timer terminalModifier;
     terminalModifier.clearScreen();
-    cout << "this is the timer screen";
+    cout << endl << "this is the timer screen";
 }
 
 // dynamically creates a session if the file isnt there

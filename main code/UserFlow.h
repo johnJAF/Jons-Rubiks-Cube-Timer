@@ -25,7 +25,7 @@ class algorithmPracticeScreens {
 
 
 public:
-    void mainScreen(char meow);
+    void mainScreen();
         void oll();
         void pll();
         void own();
