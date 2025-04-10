@@ -33,7 +33,8 @@ public:
 
     // this navigator screen will be used 4 times in choosing what name of algorithm/photo of algorithm for OLL/PLL
     // uses isOLL
-     void navigator();
+    string navigator(); // navigates through list of alg names
+    string algNavigator(); // navigates thorugh list of alg photos
 
     // pulls from dataset that checks what algorithm you're doing
     // uses isOll

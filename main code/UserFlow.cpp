@@ -144,20 +144,32 @@ void algorithmPracticeScreens::mainScreen() {
 
 
 void algorithmPracticeScreens::oll() {
+    Timer terminalModifier;
+    algorithmPracticeScreens algoPracticeSwitch;
+    char c = 0;
+    char optionChosen = 0;
+
     if(isOll == true) { // assertion for the code to run
-        cout << endl << "OLL MEOW" << endl;
+        navigator(); // navigates through alg names
+        algNavigator(); // navigates through alg photos
+
+        fromSolved();
+        
     } else {
         cout << "Something is wrong with the isOll truth value";
-        exit;
     }
 }
 
 void algorithmPracticeScreens::pll() {
     if(isOll == false) { // assertion for the code to run
         cout << endl << "PLL MEOW" << endl;
+        navigator(); // navigates through alg names
+        algNavigator(); // navigates through alg photos
+
+        fromSolved();
+        mainTimer();
     } else {
         cout << "Something is wrong with the isOll truth value";
-        exit;
     }
 }
 
@@ -173,7 +185,7 @@ void algorithmPracticeScreens::editAlgs() {
 
 // this navigator screen will be used 4 times in choosing what name of algorithm/photo of algorithm for OLL/PLL
 // uses isOLL
-void algorithmPracticeScreens::navigator() {
+string algorithmPracticeScreens::navigator() {
     cout << endl << "I am the navigator" << endl;
 
     if (isOll == true) {
@@ -181,6 +193,20 @@ void algorithmPracticeScreens::navigator() {
     } else {
         cout << endl << "This is the PLL version" << endl;
     }
+
+    return "";
+}
+
+string algorithmPracticeScreens::algNavigator() {
+    cout << endl << "I am the alg photo navigator" << endl;
+
+    if (isOll == true) {
+        cout << endl << "This is the OLL version" << endl;
+    } else {
+        cout << endl << "This is the PLL version" << endl;
+    }
+
+    return "";
 }
 
 // pulls from dataset that checks what algorithm you're doing
