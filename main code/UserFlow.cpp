@@ -158,6 +158,8 @@ void algorithmPracticeScreens::own() {
 }
 
 void algorithmPracticeScreens::editAlgs() {
+    Timer terminalModifier;
+    terminalModifier.clearScreen();
     cout << "This feature doesnt work homie";
 }
 
@@ -203,6 +205,8 @@ void algorithmPracticeScreens::mainTimer() {
 
 
 void dataVisualizerScreen::mainScreen() {
+    Timer terminalModifier;
+    terminalModifier.clearScreen();
     cout << "this is the data visualizer screen";
 }
 
@@ -228,6 +232,8 @@ void dataVisualizerScreen::displayData() {
 ////////////////////////////////////////////////////////
 
 void timerScreen::mainScreen() {
+    Timer terminalModifier;
+    terminalModifier.clearScreen();
     cout << "this is the timer screen";
 }
 
