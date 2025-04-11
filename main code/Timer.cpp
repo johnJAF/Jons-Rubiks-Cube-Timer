@@ -60,7 +60,7 @@ void Timer::printCentered(const string& text) {
     int width = getTerminalWidth();
     int padding = (width - text.length()) / 2;
     if (padding > 0)
-        cout << setw(padding) << " " << text << endl;
+        cout << setfill(' ') << setw(padding) << " " << text << endl;
     else
         cout << text << endl; // fallback if terminal too narrow
 }
@@ -75,10 +75,10 @@ void Timer::printTwoColumns(const string& left, const string& right) {
     int rightPadding = half + (half - right.length()) / 2;
 
     // Print left string
-    cout << setw(leftPadding) << " " << left;
+    cout << setfill(' ') << setw(leftPadding) << " " << left;
 
     // Move to right column position
-    cout << setw(rightPadding - leftPadding - left.length()) << " " << right << endl;
+    cout << setfill(' ') << setw(rightPadding - leftPadding - left.length()) << " " << right << endl;
 }
 
 // clears screen depending on system archetecture (UNIX/MAC ONLY RN)
@@ -116,7 +116,7 @@ void Timer::runTimer() {
     setNonBlockingInput();
 
     cout << "Press any button to stop the timer\n";
-    //sleep(5);
+
     char c = 0;
 
     start();
@@ -130,7 +130,7 @@ void Timer::runTimer() {
             break;
         }
 
-        // if the program didnt need to break it will print running every 10 miliseconds.
+        // if the program didnt need to break will constantly print the running timer.
         clearScreen();
         cout << "Press any button to stop the timer\n";
         printCurrent();
@@ -146,3 +146,64 @@ void Timer::runTimer() {
     restoreTerminal();
 }
 
+
+// 15 second timer countdown
+void Timer::inspectionTime() {
+    Clock::time_point inspectionStart;
+    Clock::time_point inspectionStop;
+    long long timeRightNow;
+    long long inspectionLimit;
+
+    if(!inspectionOn) {
+        return;
+    }
+
+    setNonBlockingInput();
+
+    cout << "Press any button to stop the timer\n";
+
+    char c = 0;
+
+    inspectionStart = Clock::now();
+
+    // timer terminal printer 
+    while (true) {
+        // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        // if any byte gets read from the terminal input then its gonna stop the program.
+        if (bytesRead > 0) {
+            break;
+        }
+
+        // if the program didnt need to break it will print the current time
+        clearScreen();
+        cout << "Press any button to start the timer\n";
+
+        long long timeRightNow = duration_cast<milliseconds>((Clock::now() - inspectionStart)).count();
+        
+        long long inspectionLimit = 15000;
+
+        if (timeRightNow >= inspectionLimit) {
+            break;
+        } else {
+            inspectionLimitReached = false;
+        }
+
+        TimeSpan meow(15000-duration_cast<milliseconds>((Clock::now() - inspectionStart)).count());
+
+        meow.print();
+
+    }
+
+    clearScreen();
+
+    if (timeRightNow >= inspectionLimit) {
+            cout << endl << "Coutdown is over";
+            inspectionLimitReached = true;
+        }
+    
+    
+    
+    // this will restore all of the changes prevented when setNonBlockingInput was called
+    restoreTerminal();
+}

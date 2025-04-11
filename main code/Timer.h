@@ -24,6 +24,9 @@ class Timer {
     long long elapsedTime; // for printing at end of timer
     long long elapsedTimeForCurrent; // for printing on screen as timer runs
 
+    bool inspectionOn = true;
+    bool inspectionLimitReached;
+
 public:
     // basic timer manipulation functions
     void start();
@@ -59,5 +62,7 @@ public:
     void runTimer();
 
     void inspectionTime();
+
+    void printCurrentInspection();
 
 };

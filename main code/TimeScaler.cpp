@@ -3,7 +3,7 @@
 TimeSpan::TimeSpan(long long totalMilliseconds) {
         minutes = totalMilliseconds / 60000;
         seconds = (totalMilliseconds % 60000) / 1000;
-        milliseconds = totalMilliseconds % 100;
+        milliseconds = totalMilliseconds % 1000;
     }
 
 

@@ -153,7 +153,8 @@ void algorithmPracticeScreens::oll() {
         navigator(); // navigates through alg names
         algNavigator(); // navigates through alg photos
 
-        fromSolved();
+        fromSolved(); 
+        mainTimer();
         
     } else {
         cout << "Something is wrong with the isOll truth value";
@@ -236,7 +237,9 @@ void algorithmPracticeScreens::drawMap() {
 // creates a timer instance based on algorithm chosen, saves it to that respective file
 // different baesd on isOll. Uses data vizualizer object code to show PB, Ao5, Ao12.
 void algorithmPracticeScreens::mainTimer() {
+    Timer meow;
 
+    meow.runTimer();
 }
 
 ////////////////////////////////////////////////////////
