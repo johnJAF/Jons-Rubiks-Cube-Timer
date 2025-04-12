@@ -71,6 +71,9 @@ public:
 
 
 class timerScreen {
+    bool toggleOrientation;
+    bool toggleInspectionTime;
+
 public:
     void mainScreen();
 
@@ -81,6 +84,9 @@ public:
         void del();
     
     void mainTimer();
-        //void inspectionToggle();
+        void inspectionToggle();
+        bool getInspectionToggle();
+        void orientationToggle();
+        bool getOrientationToggle();
         void undo();
 };
