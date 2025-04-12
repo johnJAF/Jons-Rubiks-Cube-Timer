@@ -304,6 +304,12 @@ void timerScreen::del() {
 void timerScreen::mainTimer() {
 
 }
+
+// void timerScreen::inspectionToggle() {
+
+// }
+
+
 void timerScreen::undo() {
 
 }

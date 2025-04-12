@@ -81,5 +81,6 @@ public:
         void del();
     
     void mainTimer();
+        //void inspectionToggle();
         void undo();
 };

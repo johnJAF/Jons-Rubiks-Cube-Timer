@@ -177,7 +177,7 @@ void Timer::inspectionTime() {
 
         // if the program didnt need to break it will print the current time
         clearScreen();
-        cout << "Press any button to start the timer\n";
+        cout << "Press any button to stop the timer\n";
 
         long long timeRightNow = duration_cast<milliseconds>((Clock::now() - inspectionStart)).count();
         
