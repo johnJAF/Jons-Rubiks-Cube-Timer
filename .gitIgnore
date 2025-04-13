@@ -4,3 +4,8 @@ Jons-Rubiks-Cube-Timer/Data/**
 # But keep all .gitkeep files (folder placeholders)
 !Jons-Rubiks-Cube-Timer/Data/.gitkeep
 !Jons-Rubiks-Cube-Timer/Data/**/*.gitkeep
+
+# Ignore executables
+main
+main.exe
+*.exe
