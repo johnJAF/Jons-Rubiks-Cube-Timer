@@ -1,0 +1,6 @@
+# Ignore everything inside Data folder
+Jons-Rubiks-Cube-Timer/Data/**
+
+# But keep all .gitkeep files (folder placeholders)
+!Jons-Rubiks-Cube-Timer/Data/.gitkeep
+!Jons-Rubiks-Cube-Timer/Data/**/*.gitkeep
