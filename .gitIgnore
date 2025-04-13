@@ -1,11 +1,23 @@
 # Ignore everything inside Data folder
-Jons-Rubiks-Cube-Timer/Data/**
-
-# But keep all .gitkeep files (folder placeholders)
-!Jons-Rubiks-Cube-Timer/Data/.gitkeep
-!Jons-Rubiks-Cube-Timer/Data/**/*.gitkeep
+Data/**
+!Data/.gitkeep
+!Data/**/*.gitkeep
 
 # Ignore executables
 main
 main.exe
 *.exe
+
+# Ignore build outputs
+/bin/
+
+# Ignore object files
+*.o
+*.obj
+
+# Ignore system junk files
+.DS_Store
+Thumbs.db
+
+.vscode/*
+!.vscode/tasks.json

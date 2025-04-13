@@ -5,9 +5,6 @@
 #include <string>
 #include <ctime>
 #include <vector>
-#include <filesystem>
-
-namespace fs = std::filesystem;
 
 using namespace std;
 
@@ -18,7 +15,6 @@ class DataManager {
     vector<string> fileInfoHolder;
 
 public:
-    void createDataDirectories();
     // file navigation
     void createFile(string whatFolder, string fileName); // creates a session or an algorithm
     void deleteFile(string whatFolder, string whatFile); // deletes a file or session

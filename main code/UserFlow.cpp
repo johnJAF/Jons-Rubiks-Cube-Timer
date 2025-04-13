@@ -306,7 +306,7 @@ void timerScreen::mainTimer() {
 }
 
 void timerScreen::inspectionToggle() {
-    if (toggleInspectionTime = true) {
+    if (toggleInspectionTime == true) {
         toggleInspectionTime = false;
     } else {
         toggleInspectionTime = true;
@@ -319,7 +319,7 @@ bool timerScreen::getInspectionToggle() {
 }
 
 void timerScreen::orientationToggle() {
-    if (toggleOrientation = true) {
+    if (toggleOrientation == true) {
         toggleOrientation = false;
     } else {
         toggleOrientation = true;

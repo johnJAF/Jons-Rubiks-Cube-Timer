@@ -8,13 +8,10 @@
 
 int main() {
     // dont worry about this
-    DataManager bro;
     string stopProgram = "";
     Timer meow;
     Scramble algorithm; 
     char c = 0;
-
-    bro.createDataDirectories();
 
     // this block of code takes care of the intro loop, just for the splash screen. 
     introScreens introSwitch;
