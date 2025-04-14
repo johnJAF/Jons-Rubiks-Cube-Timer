@@ -193,6 +193,7 @@ string algorithmPracticeScreens::navigator() {
         cout << endl << "This is the OLL version" << endl;
     } else {
         cout << endl << "This is the PLL version" << endl;
+        
     }
 
     return "";

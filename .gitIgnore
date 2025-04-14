@@ -22,3 +22,5 @@ Thumbs.db
 .vscode/*
 !.vscode/tasks.json
 !Data/Algorithms/*.txt
+
+.code-workspace
