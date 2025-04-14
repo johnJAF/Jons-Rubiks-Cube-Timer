@@ -31,8 +31,10 @@ public:
     // getters 
     string getSessionName(); // returns current session file name
     string getSolveName(); // returns current algorithm file name
-    string grabSolve(int index); // returns all solve information
-    string getAlgorithm();
+    string getSolve(int index); // returns all solve information
+    string getAlgCategory(string ollOrPll, int index);
+    string displayAlgPhoto(string ollOrPll, string algorithm);
+
 
     // for the algorithmPractice class
     void writeAlgorithm();
