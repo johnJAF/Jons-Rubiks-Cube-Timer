@@ -1,4 +1,15 @@
-Category : descriptive name : ascii
-Category : descriptive name : ascii
-Category : descriptive name : ascii
-Category : descriptive name : ascii
+W Shape:4:descriptiveName:Algorithm:ascii
+T Shape:4
+Square Shape:2
+Z Shape:4
+Right Angle Shape:6
+P Shape:4
+L Shape:4
+Bar:4
+Right Angle + Dot Shape:4
+Dot:8
+Cross:7
+Four Corners:2
+C Shape:2
+Extended Z Shape:2
+Z + Dot Shape:4
