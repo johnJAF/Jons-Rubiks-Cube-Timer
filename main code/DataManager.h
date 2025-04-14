@@ -38,7 +38,6 @@ public:
     void writeAlgorithm();
     void drawAlgorithm(); 
 
-
     // for averaging
     long long grabAO5(); // returns miliseconds
     long long grabAO12();
