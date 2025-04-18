@@ -1,8 +1,63 @@
 #include "DataManager.h"
+namespace fs = std::filesystem;
+
 // file navigation 
 // creates a session or an algorithm
-void DataManager::createFile(string whatFolder, string fileName) {
+// whatFolder can be Algorithms or TimerSessions 
+// returns true if created, false if already exists. Implemented by programmer
+bool DataManager::createFile(string whatFolder, string fileName) {
+    // path connection without concatonation because this is safer
+    fs::path basePath = fs::absolute("Data/" + whatFolder);
+    fs::path extension = ".txt";
+    fs::path fullPath = basePath / fileName += extension;
 
+    // makes sure that they are no /, \, goofy symbols, using the isValidFileNameFunction
+    if (!isValidFilename(fileName)) {
+        cerr << "\n[Error] Invalid file name. Use only letters, numbers, -, _.\n";
+        return false; // program escape to say name wasnt good
+    }
+
+    // uses weakly_canonical to follow symb links and and ../, in case it was somehow snuck in still.
+    fs::path normalized = fs::weakly_canonical(fullPath);
+    if (normalized.string().rfind(basePath.string(), 0) != 0) {
+        cerr << "\n[Error] Unauthorized path access attempt.\n";
+        return false;
+    }
+
+    // if the path already exists, its gonna print an error and send you back
+    if (fs::exists(fullPath)) {
+        cout << "\n[Notice] File already exists. Choose another name.\n";
+        return false;
+    }
+
+    // creates the file at the given path, if something was wrong with the file creation itll throw an error.
+    ofstream meow(fullPath);
+    if (!meow) {
+        cerr << "\n[Error] Failed to create file: " << fullPath << endl;
+        return false;
+    }
+
+    cout << "\n[Success] File created: " << fullPath << endl;
+    return true;
+}
+
+// ran to check if the sesion name that is inputted is not trying to go through the file directory
+bool DataManager::isValidFilename(const string& name) {
+    // Only letters, numbers, underscores, and dashes
+    return regex_match(name, regex("^[A-Za-z0-9_-]+$"));
+}
+
+// only for the timerScren, user input for session name
+void DataManager::createSessionLoop() {
+    string file = "";
+    bool didItWork = false;
+
+    while (!didItWork) {
+        cout << "\nWhat do you want to name this session? ";
+        getline(cin, file);  // safer than `cin >> file` because it captures full line input
+
+        didItWork = createFile("Sessions", file);
+    }
 }
 
 // deletes a file or session

@@ -5,6 +5,8 @@
 #include <string>
 #include <ctime>
 #include <vector>
+#include <filesystem>
+#include <regex>
 
 using namespace std;
 
@@ -16,7 +18,9 @@ class DataManager {
 
 public:
     // file navigation
-    void createFile(string whatFolder, string fileName); // creates a session or an algorithm
+    bool createFile(string whatFolder, string fileName); // creates a session or an algorithm
+    void createSessionLoop();
+    bool isValidFilename(const string& name);
     void deleteFile(string whatFolder, string whatFile); // deletes a file or session
     void displayFolder(string whatFolder); // prints the feature folder
     void returnFileInfo(string whatFile); // grabs all file info as a dynamic vector and stores it
