@@ -9,6 +9,7 @@
 int main() {
     // dont worry about this
     string stopProgram = "";
+    DataManager moo;
     Timer meow;
     Scramble algorithm; 
     char c = 0;
@@ -32,6 +33,15 @@ int main() {
     // this loop is going to take care of the feature choice. only stops when escape is pressed
     char optionChosen = 0;
     while (c != 27) {
+        moo.createSessionLoop();
+        moo.createSessionLoop();
+        moo.createSessionLoop();
+        moo.createSessionLoop();
+        moo.createSessionLoop();
+        moo.createSessionLoop();
+
+        moo.displayFolder("Sessions");
+
         meow.clearScreen();
         
         char c = 0;

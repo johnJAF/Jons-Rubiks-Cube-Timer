@@ -15,13 +15,15 @@ class DataManager {
     string sessionName;
     string algName;
     vector<string> fileInfoHolder;
+    // if not editing mode we are in deleting mode
+    bool editingMode; 
 
 public:
     // file navigation
     bool createFile(string whatFolder, string fileName); // creates a session or an algorithm
     void createSessionLoop();
     bool isValidFilename(const string& name);
-    void deleteFile(string whatFolder, string whatFile); // deletes a file or session
+    bool deleteFile(string whatFolder, string whatFile); // deletes a file or session
     void displayFolder(string whatFolder); // prints the feature folder
     void returnFileInfo(string whatFile); // grabs all file info as a dynamic vector and stores it
 

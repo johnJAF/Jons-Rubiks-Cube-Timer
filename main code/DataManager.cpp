@@ -61,13 +61,45 @@ void DataManager::createSessionLoop() {
 }
 
 // deletes a file or session
-void DataManager::deleteFile(string whatFolder, string whatFile) {
+bool DataManager::deleteFile(string whatFolder, string whatFile) {
+    fs::path basePath = fs::absolute("Data/" + whatFolder);
+    fs::path extension = ".txt";
+    fs::path fullPath = basePath / whatFile += extension;
+
+    if (!isValidFilename(whatFile)) {
+        cerr << endl << "[Error] Invalid file name. Use only letters, numbers, -, _." << endl;
+        return false; // program escape to say name wasnt good
+    }
+
+    if (fs::exists(fullPath)) { // if the file path exists
+        if (fs::remove(fullPath)) { // delete that exact file
+            cout << "Deleted: " << fullPath << endl;
+            return true;
+        } else {
+            cerr << "Failed to delete: " << fullPath << endl;
+            return false;
+        }
+    } else { // only if file doesnt exist
+        cerr << "File does not exist: " << fullPath << endl;
+        return false;
+    }
 
 }
 
-// prints the feature folder
-void DataManager::displayFolder(string whatFolder) {
 
+// prints the feature folder
+// folder can only be algorithms -> OLL, PLL -> (alg names depending on o/pll)
+// or the folder can be sessions -> (all session names)
+void DataManager::displayFolder(string whatFolder) {
+    fs::path basePath = fs::absolute("Data/" + whatFolder);
+
+    for (auto const& dir_entry : fs::directory_iterator{basePath}) {
+        if (dir_entry.path().filename() == ".gitkeep") {
+            continue; // skip it
+        }
+
+        std::cout << dir_entry.path().filename() << endl;
+    }
 }
 
 // grabs all file info as a dynamic vector and stores it
