@@ -37,7 +37,7 @@ bool DataManager::createFile(string whatFolder, string fileName) {
         return false;
     }
 
-    cout << "\n[Success] File created: " << fullPath << endl;
+    cout << endl << "[Success] File created: " << fullPath << endl;
     return true;
 }
 
@@ -53,7 +53,7 @@ void DataManager::createSessionLoop() {
     bool didItWork = false;
 
     while (!didItWork) {
-        cout << "\nWhat do you want to name this session? ";
+        cout << endl << "What do you want to name this session? ";
         getline(cin, file);  // safer than `cin >> file` because it captures full line input
 
         didItWork = createFile("Sessions", file);
