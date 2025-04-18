@@ -13,27 +13,27 @@ bool DataManager::createFile(string whatFolder, string fileName) {
 
     // makes sure that they are no /, \, goofy symbols, using the isValidFileNameFunction
     if (!isValidFilename(fileName)) {
-        cerr << "\n[Error] Invalid file name. Use only letters, numbers, -, _.\n";
+        cerr << endl << "[Error] Invalid file name. Use only letters, numbers, -, _." << endl;
         return false; // program escape to say name wasnt good
     }
 
     // uses weakly_canonical to follow symb links and and ../, in case it was somehow snuck in still.
     fs::path normalized = fs::weakly_canonical(fullPath);
     if (normalized.string().rfind(basePath.string(), 0) != 0) {
-        cerr << "\n[Error] Unauthorized path access attempt.\n";
+        cerr << endl << "[Error] Unauthorized path access attempt." << endl;
         return false;
     }
 
     // if the path already exists, its gonna print an error and send you back
     if (fs::exists(fullPath)) {
-        cout << "\n[Notice] File already exists. Choose another name.\n";
+        cout << endl << "[Notice] File already exists. Choose another name." << endl;
         return false;
     }
 
     // creates the file at the given path, if something was wrong with the file creation itll throw an error.
     ofstream meow(fullPath);
     if (!meow) {
-        cerr << "\n[Error] Failed to create file: " << fullPath << endl;
+        cerr << endl << "[Error] Failed to create file: " << fullPath << endl;
         return false;
     }
 
