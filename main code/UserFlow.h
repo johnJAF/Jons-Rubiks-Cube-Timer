@@ -3,6 +3,7 @@
 #include "Timer.h"
 #include "Scramble.h"
 #include <string>
+#include <sstream>
 #include <iomanip>
 
 class introScreens {
@@ -34,11 +35,11 @@ public:
     // this navigator screen will be used 4 times in choosing what name of algorithm/photo of algorithm for OLL/PLL
     // uses isOLL
     string navigator(); // navigates through list of alg names
-    string algNavigator(); // navigates thorugh list of alg photos
+    string algNavigator(string file); // navigates thorugh list of alg photos
 
     // pulls from dataset that checks what algorithm you're doing
     // uses isOll
-    void fromSolved();
+    void fromSolved(string file);
 
     // just in case while you were solving you made some mistake and you want to remove the very last solve instance.
     void undoSolve();
@@ -50,7 +51,7 @@ public:
 
     // creates a timer instance based on algorithm chosen, saves it to that respective file
     // different baesd on isOll. Uses data vizualizer object code to show PB, Ao5, Ao12.
-    void mainTimer(); 
+    void mainTimer(string file); 
 
 };
 

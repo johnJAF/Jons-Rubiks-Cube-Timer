@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../../tester"
+		},
+		{
+			"path": "../../../VScodePrograms/Class practice/File Project"
 		}
 	],
 	"settings": {

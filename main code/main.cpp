@@ -33,16 +33,10 @@ int main() {
     // this loop is going to take care of the feature choice. only stops when escape is pressed
     char optionChosen = 0;
     while (c != 27) {
-        moo.createSessionLoop();
-        moo.createSessionLoop();
-        moo.createSessionLoop();
-        moo.createSessionLoop();
-        moo.createSessionLoop();
-        moo.createSessionLoop();
+        // moo.vectorFileInfo("Algorithms", "pllAlgs");
+        // moo.vectorFileInfo("Algorithms", "pllFromSolved");
 
-        moo.displayFolder("Sessions");
-
-        meow.clearScreen();
+        //meow.clearScreen();
         
         char c = 0;
 

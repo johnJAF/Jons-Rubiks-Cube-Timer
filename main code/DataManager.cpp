@@ -4,7 +4,8 @@ namespace fs = std::filesystem;
 // file navigation 
 // creates a session or an algorithm
 // whatFolder can be Algorithms or TimerSessions 
-// returns true if created, false if already exists. Implemented by programmer
+// returns true if created, false if typed in improperly. Implemented by programmer
+// REMINDER: IMPLIMENT EXISTS LOGIC WHEN USED SO WHEN THE FILE EXISTS I KNOW TO JUST OPEN THAT FILE
 bool DataManager::createFile(string whatFolder, string fileName) {
     // path connection without concatonation because this is safer
     fs::path basePath = fs::absolute("Data/" + whatFolder);
@@ -24,17 +25,21 @@ bool DataManager::createFile(string whatFolder, string fileName) {
         return false;
     }
 
-    // if the path already exists, its gonna print an error and send you back
-    if (fs::exists(fullPath)) {
-        cout << endl << "[Notice] File already exists. Choose another name." << endl;
-        return false;
-    }
+    // // if the path already exists, its gonna print an error and send you back
+    // if (fs::exists(fullPath)) {
+    //     cout << endl << "[Notice] File already exists. Choose another name." << endl;
+    //     return false;
+    // }
 
     // creates the file at the given path, if something was wrong with the file creation itll throw an error.
     ofstream meow(fullPath);
     if (!meow) {
         cerr << endl << "[Error] Failed to create file: " << fullPath << endl;
         return false;
+    }
+
+    if (whatFolder == "OLL" || whatFolder == "PLL") {
+        algName = fileName;
     }
 
     cout << endl << "[Success] File created: " << fullPath << endl;
@@ -57,6 +62,7 @@ void DataManager::createSessionLoop() {
         getline(cin, file);  // safer than `cin >> file` because it captures full line input
 
         didItWork = createFile("Sessions", file);
+        sessionName = file;
     }
 }
 
@@ -86,7 +92,6 @@ bool DataManager::deleteFile(string whatFolder, string whatFile) {
 
 }
 
-
 // prints the feature folder
 // folder can only be algorithms -> OLL, PLL -> (alg names depending on o/pll)
 // or the folder can be sessions -> (all session names)
@@ -98,76 +103,94 @@ void DataManager::displayFolder(string whatFolder) {
             continue; // skip it
         }
 
-        std::cout << dir_entry.path().filename() << endl;
+        cout << dir_entry.path().filename() << endl;
     }
 }
 
-// grabs all file info as a dynamic vector and stores it
-void DataManager::returnFileInfo(string whatFile) {
+// grabs all file info as a dynamic vector and stores it to fileInfoHolder
+// make whatFolder "" in order to grab the oll/pll algs/algphoto txt files
+void DataManager::vectorFileInfo(string whatFolder, string whatFile) {
+    fs::path basePath = fs::absolute("Data/" + whatFolder);
+    fs::path extension = ".txt";
+    fs::path fullPath = basePath / whatFile += extension;
+    string line;
+
+    // just making sure everything works 
+    if (!isValidFilename(whatFile)) {
+        cerr << endl << "[Error] Invalid file name. Use only letters, numbers, -, _." << endl;
+        return; // program escape to say name wasnt good
+    }
+
+    ifstream meow(fullPath);
+
+    while(getline(meow, line)) {
+        fileInfoHolder.push_back(line);
+    }
+}
+
+// // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
+// void DataManager::saveSolveNoOrientation(string session, long long milliseconds, string date) {
+//     fs::path basePath = fs::absolute("Data/Sessions");
+//     fs::path extension = ".txt";
+//     fs::path fullPath = basePath / session += extension;
+
+//     if (fs::exists(fullPath)) {
+//         cout << endl << "[Notice] File already exists. Choose another name." << endl;
+//         return;
+//     }
+// }
+
+// void DataManager::saveSolveOrientation(string session, long long milliseconds, string orientation, string date) {
+
+// }
+
+
+// // getters 
+// // returns current session file name
+// string DataManager::getSessionName() {
+
+// }
+
+// // returns current algorithm file name
+// string DataManager::getSolveName() {
+
+// }
+
+// // returns all solve information
+// string DataManager::getSolve(int index) {
+
+// }
+
+// string DataManager::getAlgCategory(string ollOrPll, int index) {
+
+// }
+
+// string DataManager::displayAlgPhoto(string ollOrPll, string algorithm) {
+
+// }
+
+
+// // for the algorithmPractice class
+// void DataManager::writeAlgorithm() {
+
+// }
+
+// void DataManager::drawAlgorithm() {
+
+// }
+
+
+// // for averaging
+// // returns miliseconds
+// long long DataManager::grabAO5() {
+
+// }
+
+// long long DataManager::grabAO12() {
+
+// }
+
+// // returns lowest time
+// long long DataManager::grabPB() {
     
-}
-
-// verification for file existance when you type it in
-bool DataManager::fileIsThere(string whatFolder, string whatFile) {
-
-}
-
-// going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
-void DataManager::saveSolveNoOrientation(string session, long long milliseconds, string date) {
-
-}
-
-void DataManager::saveSolveOrientation(string session, long long milliseconds, string orientation, string date) {
-
-}
-
-
-// getters 
-// returns current session file name
-string DataManager::getSessionName() {
-
-}
-
-// returns current algorithm file name
-string DataManager::getSolveName() {
-
-}
-
-// returns all solve information
-string DataManager::getSolve(int index) {
-
-}
-
-string DataManager::getAlgCategory(string ollOrPll, int index) {
-
-}
-
-string DataManager::displayAlgPhoto(string ollOrPll, string algorithm) {
-
-}
-
-
-// for the algorithmPractice class
-void DataManager::writeAlgorithm() {
-
-}
-
-void DataManager::drawAlgorithm() {
-
-}
-
-
-// for averaging
-// returns miliseconds
-long long DataManager::grabAO5() {
-
-}
-
-long long DataManager::grabAO12() {
-
-}
-
-// returns lowest time
-long long DataManager::grabPB() {
-    
-}
+// }

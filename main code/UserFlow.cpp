@@ -1,4 +1,5 @@
 #include "UserFlow.h"
+#include "DataManager.h"
 
 ////////////////////////////////////////////////////////
 //////////////  MEOW intro screens MEOW  ///////////////
@@ -144,17 +145,16 @@ void algorithmPracticeScreens::mainScreen() {
 
 
 void algorithmPracticeScreens::oll() {
-    Timer terminalModifier;
-    algorithmPracticeScreens algoPracticeSwitch;
-    char c = 0;
-    char optionChosen = 0;
-
     if(isOll == true) { // assertion for the code to run
-        navigator(); // navigates through alg names
-        algNavigator(); // navigates through alg photos
+        string file;
+        string finalFile;
 
-        fromSolved(); 
-        mainTimer();
+
+        file = navigator(); // navigates through alg names
+        finalFile = algNavigator(file); // navigates through alg photos
+
+        fromSolved(finalFile); 
+        mainTimer(finalFile);
         
     } else {
         cout << "Something is wrong with the isOll truth value";
@@ -163,12 +163,15 @@ void algorithmPracticeScreens::oll() {
 
 void algorithmPracticeScreens::pll() {
     if(isOll == false) { // assertion for the code to run
-        cout << endl << "PLL MEOW" << endl;
-        navigator(); // navigates through alg names
-        algNavigator(); // navigates through alg photos
+        string file;
+        string finalFile;
 
-        fromSolved();
-        mainTimer();
+        cout << endl << "PLL MEOW" << endl;
+        file = navigator(); // navigates through alg names
+        finalFile = algNavigator(file); // navigates through alg photos
+
+        fromSolved(finalFile);
+        mainTimer(finalFile);
     } else {
         cout << "Something is wrong with the isOll truth value";
     }
@@ -187,25 +190,102 @@ void algorithmPracticeScreens::editAlgs() {
 // this navigator screen will be used 4 times in choosing what name of algorithm/photo of algorithm for OLL/PLL
 // uses isOLL
 string algorithmPracticeScreens::navigator() {
+    DataManager moo;
+    Timer terminalModifer;
+    char c = 0;
+
     cout << endl << "I am the navigator" << endl;
 
     if (isOll == true) {
         cout << endl << "This is the OLL version" << endl;
     } else {
-        cout << endl << "This is the PLL version" << endl;
-        
+        string algName;
+
+
+        terminalModifer.setNonBlockingInput();
+
+
+        int counter = 0;
+        while (true) {
+            // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+            terminalModifer.clearScreen();
+
+            terminalModifer.printCentered("Algorithm Navigator");
+            cout << endl;
+            terminalModifer.printCentered("Choose what Algorithm category you want");
+            terminalModifer.printCentered("Space for next, Enter to choose");
+
+            moo.vectorFileInfo("Algorithms", "pllAlgs");
+                
+            cout << endl << endl << endl;
+
+            terminalModifer.printCentered(moo.fileInfoHolder[counter]);
+
+            if(counter > moo.fileInfoHolder.size()-1) {
+                counter = 0;
+            }
+
+            if(counter > moo.fileInfoHolder.size()-1) {
+                counter = 0;
+            }
+
+            // if you hit a button its gonna grab next alg
+            if (c == 32) {
+                counter++;
+                c = 0;
+                continue;
+            }
+
+            // if any byte gets read from the terminal input then its gonna stop the program.
+            if (c == 10) {
+                return algName;
+                break;
+            }
+        }
+        terminalModifer.restoreTerminal();
     }
 
     return "";
 }
 
-string algorithmPracticeScreens::algNavigator() {
+string algorithmPracticeScreens::algNavigator(string file) {
     cout << endl << "I am the alg photo navigator" << endl;
+    string algName, alg, algAscii;
 
     if (isOll == true) {
         cout << endl << "This is the OLL version" << endl;
     } else {
         cout << endl << "This is the PLL version" << endl;
+
+
+        // this can be used to parse the photos
+        // while (true) {
+        //     // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+        //     ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        //     for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
+        //         stringstream ss(moo.fileInfoHolder[x]);
+
+        //         getline(ss, algName, ':');
+
+        //         if(x > moo.fileInfoHolder.size()-1) {
+        //             x = 0;
+        //         }
+        //     }
+
+        //     // if you hit a button its gonna grab next alg
+        //     if (c == 32) {
+        //         continue;
+        //     }
+
+        //     // if any byte gets read from the terminal input then its gonna stop the program.
+        //     if (c == 10) {
+        //         return algName;
+        //         break;
+        //     }
+        // }
     }
 
     return "";
@@ -213,7 +293,7 @@ string algorithmPracticeScreens::algNavigator() {
 
 // pulls from dataset that checks what algorithm you're doing
 // uses isOll
-void algorithmPracticeScreens::fromSolved() {
+void algorithmPracticeScreens::fromSolved(string file) {
     cout << endl << "This is how you get to the algorithm from a solved state" << endl;
 }
 
@@ -237,7 +317,7 @@ void algorithmPracticeScreens::drawMap() {
 
 // creates a timer instance based on algorithm chosen, saves it to that respective file
 // different baesd on isOll. Uses data vizualizer object code to show PB, Ao5, Ao12.
-void algorithmPracticeScreens::mainTimer() {
+void algorithmPracticeScreens::mainTimer(string file) {
     Timer meow;
 
     meow.runTimer();
