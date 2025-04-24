@@ -102,20 +102,25 @@ void Timer::printTime() {
     meow.print();
 }
 
+long long Timer::returnFinalTime() {
+    return elapsedTime;
+}
+
 // used while timer is running - checks what time it is right now and then prints that
 void Timer::printCurrent() {
     elapsedCurrent();
+    string moo = "";
 
     TimeSpan meow(elapsedTimeForCurrent);
 
-    meow.print();
+    moo = meow.grabTime();
+
+    printCentered(moo);
 }
 
 void Timer::runTimer() {
     // this will block all of the terminals searches for terminal inputs and will stop the need to hit enter to stop the program
     setNonBlockingInput();
-
-    cout << "Press any button to stop the timer\n";
 
     char c = 0;
 
@@ -132,20 +137,18 @@ void Timer::runTimer() {
 
         // if the program didnt need to break will constantly print the running timer.
         clearScreen();
-        cout << "Press any button to stop the timer\n";
+        cout << endl << endl << endl;
+        printCentered("Press any button to stop the timer");
+        cout << endl;
         printCurrent();
     }
 
     stop();
     clearScreen();
     
-    cout << "Final Time: ";
-    printTime();
-    
     // this will restore all of the changes prevented when setNonBlockingInput was called
     restoreTerminal();
 }
-
 
 // 15 second timer countdown
 void Timer::inspectionTime() {
@@ -163,6 +166,7 @@ void Timer::inspectionTime() {
     cout << "Press any button to stop the timer\n";
 
     char c = 0;
+    string mooski = "";
 
     inspectionStart = Clock::now();
 
@@ -177,7 +181,10 @@ void Timer::inspectionTime() {
 
         // if the program didnt need to break it will print the current time
         clearScreen();
-        cout << "Press any button to stop the timer\n";
+        
+        cout << endl << endl << endl;
+        printCentered("Press any button to stop the timer");
+        cout << endl;
 
         long long timeRightNow = duration_cast<milliseconds>((Clock::now() - inspectionStart)).count();
         
@@ -191,7 +198,9 @@ void Timer::inspectionTime() {
 
         TimeSpan meow(15000-duration_cast<milliseconds>((Clock::now() - inspectionStart)).count());
 
-        meow.print();
+        mooski = meow.grabTime();
+
+        printCentered(mooski);
 
     }
 
@@ -206,4 +215,8 @@ void Timer::inspectionTime() {
     
     // this will restore all of the changes prevented when setNonBlockingInput was called
     restoreTerminal();
+}
+
+void Timer::timerScreen() {
+
 }

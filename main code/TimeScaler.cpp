@@ -12,3 +12,11 @@ void TimeSpan::print() const {
                 << setfill('0') << setw(2) << seconds << "."
                 << setfill('0') << setw(2) << milliseconds << "\n";
 }
+
+string TimeSpan::grabTime() const {
+    std::ostringstream oss;
+    oss << std::setfill('0') << std::setw(2) << minutes << ":"
+        << std::setfill('0') << std::setw(2) << seconds << "."
+        << std::setfill('0') << std::setw(2) << milliseconds;
+    return oss.str();
+}

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <chrono>
 #include <iomanip>
+#include <sstream>
 
 using namespace std;
 using namespace chrono;
@@ -17,4 +18,6 @@ struct TimeSpan {
     TimeSpan(long long totalMilliseconds);
 
     void print() const;
+
+    string grabTime() const;
 };

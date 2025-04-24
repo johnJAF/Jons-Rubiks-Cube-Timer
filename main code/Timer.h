@@ -1,6 +1,8 @@
 #pragma once
 
 #include "TimeScaler.h"
+#include "DataManager.h"
+#include "Scramble.h"
 
 #include <iostream>
 #include <ctime>
@@ -53,6 +55,8 @@ public:
     // prints elapsed time
     void printTime();
 
+    long long returnFinalTime();
+
     // uses elapsedCurrent to print constantly during main while loop
     void printCurrent();
 
@@ -63,6 +67,6 @@ public:
 
     void inspectionTime();
 
-    void printCurrentInspection();
+    void timerScreen();
 
 };

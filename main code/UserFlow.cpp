@@ -163,15 +163,15 @@ void algorithmPracticeScreens::oll() {
 
 void algorithmPracticeScreens::pll() {
     if(isOll == false) { // assertion for the code to run
-        string file;
-        string finalFile;
+        string algName;
+        string specificAlgName;
 
         cout << endl << "PLL MEOW" << endl;
-        file = navigator(); // navigates through alg names
-        finalFile = algNavigator(file); // navigates through alg photos
+        algName = navigator(); // navigates through alg names
+        specificAlgName = algNavigator(algName); // navigates through alg photos
 
-        fromSolved(finalFile);
-        mainTimer(finalFile);
+        fromSolved(specificAlgName);
+        mainTimer(specificAlgName);
     } else {
         cout << "Something is wrong with the isOll truth value";
     }
@@ -193,41 +193,134 @@ string algorithmPracticeScreens::navigator() {
     DataManager moo;
     Timer terminalModifer;
     char c = 0;
+    string algName;
 
     cout << endl << "I am the navigator" << endl;
 
     if (isOll == true) {
         cout << endl << "This is the OLL version" << endl;
-    } else {
-        string algName;
-
-
+    } else { //pll
         terminalModifer.setNonBlockingInput();
-
-
         int counter = 0;
+        
+        if(!moo.fileInfoHolder.empty()){ // if the vector has something
+            moo.fileInfoHolder.clear();
+        }
+
+        moo.vectorFileInfo("Algorithms", "pllAlgs"); // send all of the information form the pllAlgs file to the moo vector
+
         while (true) {
             // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
             ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
             terminalModifer.clearScreen();
 
+            // casual prints
             terminalModifer.printCentered("Algorithm Navigator");
             cout << endl;
             terminalModifer.printCentered("Choose what Algorithm category you want");
             terminalModifer.printCentered("Space for next, Enter to choose");
-
-            moo.vectorFileInfo("Algorithms", "pllAlgs");
                 
             cout << endl << endl << endl;
 
             terminalModifer.printCentered(moo.fileInfoHolder[counter]);
+            algName = moo.fileInfoHolder[counter];
+
+            // conditional control for loops/ending
 
             if(counter > moo.fileInfoHolder.size()-1) {
                 counter = 0;
             }
 
-            if(counter > moo.fileInfoHolder.size()-1) {
+            if (c == 32) {
+                counter++;
+                c = 0;
+                continue;
+            }
+
+            if (c == 10) {
+                return algName;
+                c = 0;
+                break;
+            }
+        }
+        terminalModifer.restoreTerminal();
+        return algName;
+    }
+}
+
+string algorithmPracticeScreens::algNavigator(string algName) {
+    DataManager moo;
+    Timer terminalModifer;
+    string specificAlgName, alg, algAscii;
+    char c = 0;
+
+    vector<string> tempVec;
+
+    cout << endl << "I am the alg photo navigator" << endl;
+
+    if (isOll == true) {
+        cout << endl << "This is the OLL version" << endl;
+    } else { //pll
+        terminalModifer.setNonBlockingInput();
+        int counter = 0;
+
+        if(!moo.fileInfoHolder.empty()){ // if the vector has something
+            moo.fileInfoHolder.clear();
+        }
+
+        moo.vectorFileInfo("Algorithms", "pllAlgPhotos"); // send the fille algPhoto data into the 
+
+        // processing for isolating the only related algorithms
+
+        for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
+            if (algName.substr(0, 1) == moo.fileInfoHolder[x].substr(0,1)) {
+                tempVec.push_back(moo.fileInfoHolder[x]);
+            }
+        }
+
+        // this can be used to parse the photos
+        while (true) {
+            terminalModifer.clearScreen();
+
+            if(tempVec.size() == 1) {
+                terminalModifer.printCentered("Algorithm Navigator");
+                cout << endl;
+                terminalModifer.printCentered("Press enter to see how to get to this");
+                terminalModifer.printCentered("from a solved position");
+            } else {
+                terminalModifer.printCentered("Algorithm Navigator");
+                cout << endl;
+                terminalModifer.printCentered("What Algorithm do you want to practice?");
+                terminalModifer.printCentered("Space for next, Enter to choose");
+            }
+            
+            // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+            
+            // create a string stream out of every data string thats pulled in, this will get split into specific name, algorithm, and ascii
+            stringstream ss(tempVec[counter]);
+
+            getline(ss, specificAlgName, ':');
+            getline(ss, alg, ':');
+            getline(ss, algAscii);
+
+            // supid string when printed doesnt count /n so had to turn it into //n
+            size_t pos = 0;
+            while ((pos = algAscii.find("\\n", pos)) != string::npos) {
+                algAscii.replace(pos, 2, "\n");
+            }
+
+            // casual print
+            cout << endl << endl << endl;
+            terminalModifer.printCentered(specificAlgName);
+            terminalModifer.printCentered(alg);
+
+            cout << endl << algAscii;
+
+            // conditional control for loops/ending
+
+            if(counter > tempVec.size()-1) {
                 counter = 0;
             }
 
@@ -240,52 +333,10 @@ string algorithmPracticeScreens::navigator() {
 
             // if any byte gets read from the terminal input then its gonna stop the program.
             if (c == 10) {
-                return algName;
-                break;
+                tempVec.clear();
+                return specificAlgName;
             }
         }
-        terminalModifer.restoreTerminal();
-    }
-
-    return "";
-}
-
-string algorithmPracticeScreens::algNavigator(string file) {
-    cout << endl << "I am the alg photo navigator" << endl;
-    string algName, alg, algAscii;
-
-    if (isOll == true) {
-        cout << endl << "This is the OLL version" << endl;
-    } else {
-        cout << endl << "This is the PLL version" << endl;
-
-
-        // this can be used to parse the photos
-        // while (true) {
-        //     // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-        //     ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-        //     for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
-        //         stringstream ss(moo.fileInfoHolder[x]);
-
-        //         getline(ss, algName, ':');
-
-        //         if(x > moo.fileInfoHolder.size()-1) {
-        //             x = 0;
-        //         }
-        //     }
-
-        //     // if you hit a button its gonna grab next alg
-        //     if (c == 32) {
-        //         continue;
-        //     }
-
-        //     // if any byte gets read from the terminal input then its gonna stop the program.
-        //     if (c == 10) {
-        //         return algName;
-        //         break;
-        //     }
-        // }
     }
 
     return "";
@@ -293,8 +344,65 @@ string algorithmPracticeScreens::algNavigator(string file) {
 
 // pulls from dataset that checks what algorithm you're doing
 // uses isOll
-void algorithmPracticeScreens::fromSolved(string file) {
+void algorithmPracticeScreens::fromSolved(string algName) {
+    DataManager moo;
+    Timer terminalModifer;
+    char c = 0;
+
+    string temp; // holds alg from file
+    string specName; // holds alg name
+    string fromAlg; // holds algorithm
+
     cout << endl << "This is how you get to the algorithm from a solved state" << endl;
+
+    if (isOll == true) {
+
+    } else { //pll
+        terminalModifer.setNonBlockingInput();
+
+        if(!moo.fileInfoHolder.empty()){ // if the vector has something
+            moo.fileInfoHolder.clear();
+        }
+
+        moo.vectorFileInfo("Algorithms", "pllFromSolved"); // send the fille algPhoto data into the 
+
+        // just to grab the single algorithm that has that name
+        for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
+            if (algName.substr(0, 2) == moo.fileInfoHolder[x].substr(0,2)) {
+                temp = moo.fileInfoHolder[x];
+            }
+        }
+
+        while (true) {
+            terminalModifer.clearScreen();
+
+            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+            terminalModifer.printCentered("From Solved");
+            cout << endl;
+            terminalModifer.printCentered("This is how you get to the algorithm");
+            terminalModifer.printCentered("from a solved position");
+            terminalModifer.printCentered("Enter to proceed to the timer");
+
+            stringstream ss(temp);
+
+            getline(ss, specName, ':');
+            getline(ss, fromAlg);
+
+            cout << endl << endl << endl;
+            terminalModifer.printCentered(specName);
+            terminalModifer.printCentered(fromAlg);
+
+            if (c == 10) {
+                terminalModifer.restoreTerminal();
+                return;
+            }
+
+        }
+
+    }
+    terminalModifer.restoreTerminal();
+    return;
 }
 
 // just in case while you were solving you made some mistake and you want to remove the very last solve instance.
@@ -318,6 +426,7 @@ void algorithmPracticeScreens::drawMap() {
 // creates a timer instance based on algorithm chosen, saves it to that respective file
 // different baesd on isOll. Uses data vizualizer object code to show PB, Ao5, Ao12.
 void algorithmPracticeScreens::mainTimer(string file) {
+    // TimeSpan meow(elapsedTime); this turns long long ms into a timespan .grabTime will return the time as a string
     Timer meow;
 
     meow.runTimer();
@@ -382,7 +491,7 @@ void timerScreen::del() {
 
 }
 
-void timerScreen::mainTimer() {
+void timerScreen::mainTimer(string session) {
 
 }
 

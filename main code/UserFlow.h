@@ -2,6 +2,7 @@
 
 #include "Timer.h"
 #include "Scramble.h"
+
 #include <string>
 #include <sstream>
 #include <iomanip>
@@ -84,7 +85,7 @@ public:
         void edit();
         void del();
     
-    void mainTimer();
+    void mainTimer(string session);
         void inspectionToggle();
         bool getInspectionToggle();
         void orientationToggle();
