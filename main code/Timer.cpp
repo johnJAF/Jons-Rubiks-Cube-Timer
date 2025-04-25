@@ -1,7 +1,6 @@
 #include "Timer.h"
 
 // original flags for turning the console settings back to normal.
-int originalFlags = fcntl(STDIN_FILENO, F_GETFL);
 
 // starts the timer
 void Timer::start() {
@@ -90,6 +89,13 @@ void Timer::clearScreen() {
     #endif
 }
 
+void Timer::flushInputBuffer() {
+    char junk;
+    while (read(STDIN_FILENO, &junk, 1) > 0) {
+        // discard all buffered input
+    }
+}
+
 // while timer is running - used to grab the time now - start time.
 void Timer::elapsedCurrent() {
     elapsedTimeForCurrent = duration_cast<milliseconds>(Clock::now() - startTime).count();
@@ -128,6 +134,8 @@ void Timer::runTimer() {
 
     // timer terminal printer 
     while (true) {
+        c = 0;
+
         // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
         // if any byte gets read from the terminal input then its gonna stop the program.
@@ -172,6 +180,8 @@ void Timer::inspectionTime() {
 
     // timer terminal printer 
     while (true) {
+        c = 0;
+
         // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
         // if any byte gets read from the terminal input then its gonna stop the program.
@@ -181,7 +191,7 @@ void Timer::inspectionTime() {
 
         // if the program didnt need to break it will print the current time
         clearScreen();
-        
+
         cout << endl << endl << endl;
         printCentered("Press any button to stop the timer");
         cout << endl;

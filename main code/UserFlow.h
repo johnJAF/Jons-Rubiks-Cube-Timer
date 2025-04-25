@@ -24,7 +24,7 @@ public:
 class algorithmPracticeScreens {
     bool isOll;
     string algorithmBeingUsed;
-
+    bool areDonePracticing;
 
 public:
     void mainScreen();

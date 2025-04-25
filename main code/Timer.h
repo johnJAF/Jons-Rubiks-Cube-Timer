@@ -30,6 +30,9 @@ class Timer {
     bool inspectionLimitReached;
 
 public:
+    int originalFlags = fcntl(STDIN_FILENO, F_GETFL);
+
+
     // basic timer manipulation functions
     void start();
 
@@ -62,6 +65,8 @@ public:
 
     // clears the screen depending on system archetecture
     void clearScreen();
+
+    void flushInputBuffer();
 
     void runTimer();
 

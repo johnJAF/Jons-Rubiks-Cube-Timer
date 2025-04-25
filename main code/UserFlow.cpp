@@ -98,45 +98,41 @@ void algorithmPracticeScreens::mainScreen() {
     Timer terminalModifier;
     algorithmPracticeScreens algoPracticeSwitch;
     char c = 0;
-    char optionChosen = 0;
-
-    terminalModifier.clearScreen();
-    
-    terminalModifier.printCentered("Algorithm Practice");
-    terminalModifier.printCentered("(esc to return to main screen)");
-
-    cout << endl;
-    cout << endl;
-
-    terminalModifier.printTwoColumns("OLL (o)", "PLL (p)");
-    terminalModifier.printTwoColumns("Create Algorithm (c)", "Edit Algorithms (e)");
-
-    terminalModifier.setNonBlockingInput();
 
     // while loop to decide what feature to choose from
 
     while (true) {
+        terminalModifier.clearScreen();
+    
+        terminalModifier.printCentered("Algorithm Practice");
+        terminalModifier.printCentered("(esc to return to main screen)");
+
+        cout << endl;
+        cout << endl;
+
+        terminalModifier.printTwoColumns("OLL (o)", "PLL (p)");
+        terminalModifier.printTwoColumns("Create Algorithm (c)", "Edit Algorithms (e)");
+
+        terminalModifier.setNonBlockingInput();
+
+        c = 0;
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
         if (c == 'o') {
-            optionChosen = c;
             isOll = true;
             oll();
-            break;
+            terminalModifier.restoreTerminal();
         } else if (c == 'p') {
-            optionChosen = c;
             isOll = false;
             pll();
-            break;
         } else if (c == 'c') {
-            optionChosen = c;
             own();
-            break;
+            terminalModifier.restoreTerminal();
         } else if (c == 'e') {
-            optionChosen = c;
             editAlgs();
-            break;
+            terminalModifier.restoreTerminal();
         } else if (c == 27) { // escape to exit
+            c = 0;
             return;
         }
     }
@@ -162,16 +158,36 @@ void algorithmPracticeScreens::oll() {
 }
 
 void algorithmPracticeScreens::pll() {
-    if(isOll == false) { // assertion for the code to run
+    Timer terminalModifier;
+    if(isOll == false) {
         string algName;
         string specificAlgName;
+        char c = 0;
 
         cout << endl << "PLL MEOW" << endl;
-        algName = navigator(); // navigates through alg names
-        specificAlgName = algNavigator(algName); // navigates through alg photos
+        algName = navigator();
+        specificAlgName = algNavigator(algName);
 
         fromSolved(specificAlgName);
         mainTimer(specificAlgName);
+
+        while (true) {
+            terminalModifier.setNonBlockingInput(); // sets raw mode
+
+            c = 0;
+            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+            terminalModifier.clearScreen();
+            terminalModifier.printCentered("Would you like to continue practicing this algorithm? y/n");
+
+            if (c == 'n') {
+                terminalModifier.restoreTerminal();
+                return;
+            } else if (c == 'y') {
+                fromSolved(specificAlgName);
+                mainTimer(specificAlgName);
+            }
+        }
     } else {
         cout << "Something is wrong with the isOll truth value";
     }
@@ -210,6 +226,8 @@ string algorithmPracticeScreens::navigator() {
         moo.vectorFileInfo("Algorithms", "pllAlgs"); // send all of the information form the pllAlgs file to the moo vector
 
         while (true) {
+            c = 0;
+
             // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
             ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
@@ -239,9 +257,9 @@ string algorithmPracticeScreens::navigator() {
             }
 
             if (c == 10) {
-                return algName;
+                terminalModifer.restoreTerminal();
                 c = 0;
-                break;
+                return algName;
             }
         }
         terminalModifer.restoreTerminal();
@@ -281,6 +299,8 @@ string algorithmPracticeScreens::algNavigator(string algName) {
 
         // this can be used to parse the photos
         while (true) {
+            c = 0;
+
             terminalModifer.clearScreen();
 
             if(tempVec.size() == 1) {
@@ -334,12 +354,13 @@ string algorithmPracticeScreens::algNavigator(string algName) {
             // if any byte gets read from the terminal input then its gonna stop the program.
             if (c == 10) {
                 tempVec.clear();
-                return specificAlgName;
+                terminalModifer.restoreTerminal();
+                break;
             }
         }
     }
-
-    return "";
+    terminalModifer.restoreTerminal();
+    return specificAlgName;
 }
 
 // pulls from dataset that checks what algorithm you're doing
@@ -358,7 +379,7 @@ void algorithmPracticeScreens::fromSolved(string algName) {
     if (isOll == true) {
 
     } else { //pll
-        terminalModifer.setNonBlockingInput();
+        //terminalModifer.setNonBlockingInput();
 
         if(!moo.fileInfoHolder.empty()){ // if the vector has something
             moo.fileInfoHolder.clear();
@@ -374,6 +395,8 @@ void algorithmPracticeScreens::fromSolved(string algName) {
         }
 
         while (true) {
+            c = 0;
+            
             terminalModifer.clearScreen();
 
             ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
@@ -394,14 +417,12 @@ void algorithmPracticeScreens::fromSolved(string algName) {
             terminalModifer.printCentered(fromAlg);
 
             if (c == 10) {
-                terminalModifer.restoreTerminal();
-                return;
+                break;
             }
 
         }
 
     }
-    terminalModifer.restoreTerminal();
     return;
 }
 
@@ -427,9 +448,9 @@ void algorithmPracticeScreens::drawMap() {
 // different baesd on isOll. Uses data vizualizer object code to show PB, Ao5, Ao12.
 void algorithmPracticeScreens::mainTimer(string file) {
     // TimeSpan meow(elapsedTime); this turns long long ms into a timespan .grabTime will return the time as a string
-    Timer meow;
+    Timer timer;
 
-    meow.runTimer();
+    timer.runTimer();
 }
 
 ////////////////////////////////////////////////////////
