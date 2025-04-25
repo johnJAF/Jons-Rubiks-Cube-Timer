@@ -158,6 +158,42 @@ void Timer::runTimer() {
     restoreTerminal();
 }
 
+void Timer::runTimer(string algorithm) {
+// this will block all of the terminals searches for terminal inputs and will stop the need to hit enter to stop the program
+    setNonBlockingInput();
+
+    char c = 0;
+
+    start();
+
+    // timer terminal printer 
+    while (true) {
+        c = 0;
+
+        // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        // if any byte gets read from the terminal input then its gonna stop the program.
+        if (bytesRead > 0) {
+            break;
+        }
+
+        // if the program didnt need to break will constantly print the running timer.
+        clearScreen();
+        cout << endl << endl << endl;
+        printCentered("Press any button to stop the timer");
+        cout << endl;
+        printCurrent();
+        cout << endl << endl << endl;
+        printCentered(algorithm);
+    }
+
+    stop();
+    clearScreen();
+    
+    // this will restore all of the changes prevented when setNonBlockingInput was called
+    restoreTerminal();
+}
+
 // 15 second timer countdown
 void Timer::inspectionTime() {
     Clock::time_point inspectionStart;

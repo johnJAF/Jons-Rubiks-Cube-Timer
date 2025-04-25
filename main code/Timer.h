@@ -70,6 +70,8 @@ public:
 
     void runTimer();
 
+    void runTimer(string algorithm);
+
     void inspectionTime();
 
     void timerScreen();

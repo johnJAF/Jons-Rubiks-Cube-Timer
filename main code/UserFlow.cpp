@@ -178,7 +178,8 @@ void algorithmPracticeScreens::pll() {
             ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
             terminalModifier.clearScreen();
-            terminalModifier.printCentered("Would you like to continue practicing this algorithm? y/n");
+            cout << endl << endl << endl << endl;
+            terminalModifier.printCentered("Continue practicing? y/n");
 
             if (c == 'n') {
                 terminalModifier.restoreTerminal();
@@ -335,6 +336,7 @@ string algorithmPracticeScreens::algNavigator(string algName) {
             cout << endl << endl << endl;
             terminalModifer.printCentered(specificAlgName);
             terminalModifer.printCentered(alg);
+            actualAlgorithm = alg;
 
             cout << endl << algAscii;
 
@@ -450,7 +452,7 @@ void algorithmPracticeScreens::mainTimer(string file) {
     // TimeSpan meow(elapsedTime); this turns long long ms into a timespan .grabTime will return the time as a string
     Timer timer;
 
-    timer.runTimer();
+    timer.runTimer(actualAlgorithm);
 }
 
 ////////////////////////////////////////////////////////
