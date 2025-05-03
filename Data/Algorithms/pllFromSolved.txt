@@ -7,8 +7,8 @@ Gc Perm:R U R' U' D R2 U' R U' R' U R' U R2 D'
 Gd Perm:R2 U' R U' R U R' U R2 U D' R U' R' D
 Ja Perm:x R2 F R F' R U2 R' U r U2
 Jb Perm:R U R' F' R U R' U' R' F R2 U' R'
-Ra Perm:R U' R' U' R U R D R' U' R D' R' U2 R'
-Rb Perm:R2 F R U R U' R' F' R U2 R' U2 R
+Ra Perm:R U' R' U' R U R D R' U' R D' R' U2 R' U
+Rb Perm:R2 F R U R U' R' F' R U2 R' U2 R U
 T Perm:R U R' U' R' F R2 U' R' U' R U R' F'
 E Perm:x' L' U L D' L' U' L D L' U' L D' L' U L D
 Na Perm:R U R' U R U R' F' R U R' U' R' F R2 U' R' U2 R U' R'

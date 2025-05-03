@@ -53,6 +53,8 @@ public:
 
     void printCentered(const string& text);
 
+    string centered(const string& meow);
+
     void printTwoColumns(const string& left, const string& right);
 
     // prints elapsed time

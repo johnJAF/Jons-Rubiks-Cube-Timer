@@ -64,6 +64,12 @@ void Timer::printCentered(const string& text) {
         cout << text << endl; // fallback if terminal too narrow
 }
 
+string Timer::centered(const string& text) {
+    int width = 80; // adjust as needed
+    int padding = max((width - static_cast<int>(text.length())) / 2, 0);
+    return string(padding, ' ') + text;
+}
+
 // prints two columns taking in two string references
 void Timer::printTwoColumns(const string& left, const string& right) {
     int width = getTerminalWidth();

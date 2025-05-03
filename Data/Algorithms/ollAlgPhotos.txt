@@ -1,15 +1,57 @@
-W Shape:4:descriptiveName:Algorithm:ascii
-T Shape:4
-Square Shape:2
-Z Shape:4
-Right Angle Shape:6
-P Shape:4
-L Shape:4
-Bar:4
-Right Angle + Dot Shape:4
-Dot:8
-Cross:7
-Four Corners:2
-C Shape:2
-Extended Z Shape:2
-Z + Dot Shape:4
+W a:L' U' L U' L' U L U L F' L' F:      .   .   Y\n    +---+---+---+\n  . | Y | Y | . | .\n  Y | . | Y | Y | .\n  Y | . | . | Y | .\n    +---+---+---+\n      .   Y   .\n
+W b:R U R' U R U' R' U' R' F R F':      Y   .   .\n    +---+---+---+\n  . | . | Y | Y | .\n  . | Y | Y | . | Y\n  . | Y | . | . | Y\n    +---+---+---+\n      .   Y   .\n
+T a:R U R' U' R' F R F':      Y   Y   .\n    +---+---+---+\n  . | . | . | Y | .\n  . | Y | Y | Y | .\n  . | . | . | Y | .\n    +---+---+---+\n      Y   Y   .\n
+T b:F R U R' U' F':      .   Y   .\n    +---+---+---+\n  Y | . | . | Y | .\n  . | Y | Y | Y | .\n  Y | . | . | Y | .\n    +---+---+---+\n      .   Y   .\n
+Square a:l' U2 L U L' U l:      .   .   .\n    +---+---+---+\n  . | Y | Y | . | Y\n  . | Y | Y | . | Y\n  Y | . | . | . | .\n    +---+---+---+\n      .   Y   Y\n
+Square b:r U2 R' U' R U' r':      .   .   .\n    +---+---+---+\n  Y | . | Y | Y | .\n  Y | . | Y | Y | .\n  . | . | . | . | Y\n    +---+---+---+\n      Y   Y   .\n
+Z a:r U R' U R U2 r':      Y   .   .\n    +---+---+---+\n  . | . | Y | . | Y\n  . | Y | Y | . | Y\n  . | Y | . | . | .\n    +---+---+---+\n      .   Y   Y\n
+Z b:l' U' L U' L' U2 l:      .   .   Y\n    +---+---+---+\n  Y | . | Y | . | .\n  Y | . | Y | Y | .\n  . | . | . | Y | .\n    +---+---+---+\n      Y   Y   .\n
+Z c:r U R' U R' F R F' R U2 r':      Y   .   .\n    +---+---+---+\n  . | . | Y | Y | .\n  . | Y | Y | . | Y\n  Y | . | . | . | .\n    +---+---+---+\n      .   Y   Y\n
+Z d:M' R' U' R U' R' U2 R U' R r':      .   .   Y\n    +---+---+---+\n  . | Y | Y | . | .\n  Y | . | Y | Y | .\n  . | . | . | . | Y\n    +---+---+---+\n      Y   Y   .\n
+Right Angle a:R' U' R' F R F' R' F R F' U R:      Y   .   .\n    +---+---+---+\n  . | . | Y | . | Y\n  Y | . | Y | Y | .\n  . | . | . | . | Y\n    +---+---+---+\n      Y   Y   .\n
+Right Angle b:F R U R' U' R U R' U' F':      .   .   Y\n    +---+---+---+\n  Y | . | Y | . | .\n  . | Y | Y | . | Y\n  Y | . | . | . | .\n    +---+---+---+\n      .   Y   Y\n
+Right Angle c:r U' r2 U r2 U r2 U' r:      .   .   Y\n    +---+---+---+\n  Y | . | Y | . | .\n  Y | Y | Y | . | .\n  Y | . | . | . | .\n    +---+---+---+\n      .   Y   Y\n
+Right Angle d:r' U r2 U' r2 U' r2 U r':      .   Y   Y\n    +---+---+---+\n  Y | . | . | . | .\n  Y | . | Y | Y | .\n  Y | . | Y | . | .\n    +---+---+---+\n      .   .   Y\n
+Right Angle e:l' U2 L U L' U' L U L' U l:      Y   .   Y\n    +---+---+---+\n  . | . | Y | . | .\n  Y | . | Y | Y | .\n  . | . | . | . | .\n    +---+---+---+\n      Y   Y   Y\n
+Right Angle f:r U2 R' U' R U R' U' R U' r':      Y   .   Y\n    +---+---+---+\n  . | . | Y | . | .\n  . | Y | Y | . | Y\n  . | . | . | . | .\n    +---+---+---+\n      Y   Y   Y\n
+P a:R' U' F U R U' R' F' R:      Y   .   .\n    +---+---+---+\n  . | . | Y | Y | .\n  Y | . | Y | Y | .\n  . | . | . | Y | .\n    +---+---+---+\n      Y   Y   .\n
+P b:L U F' U' L' U L F L':      .   .   Y\n    +---+---+---+\n  . | Y | Y | . | .\n  . | Y | Y | . | Y\n  . | Y | . | . | .\n    +---+---+---+\n      .   Y   Y\n
+P c:F' U' L' U L F:      .   .   .\n    +---+---+---+\n  Y | . | Y | Y | .\n  Y | . | Y | Y | .\n  Y | . | . | Y | .\n    +---+---+---+\n      .   Y   .\n
+P d:F U R U' R' F':      .   .   .\n    +---+---+---+\n  . | Y | Y | . | Y\n  . | Y | Y | . | Y\n  . | Y | . | . | Y\n    +---+---+---+\n      .   Y   .\n
+L a:F U R U' R2 F' R U R U' R':      Y   Y   .\n    +---+---+---+\n  . | . | . | . | Y\n  . | Y | Y | Y | .\n  . | Y | . | . | .\n    +---+---+---+\n      .   Y   Y\n
+L b:R' F R U R' F' R F U' F':      .   Y   Y\n    +---+---+---+\n  Y | . | . | . | .\n  . | Y | Y | Y | .\n  . | . | . | Y | .\n    +---+---+---+\n      Y   Y   .\n
+L c:l' U' l L' U' L U l' U l:      .   Y   .\n    +---+---+---+\n  . | Y | . | . | Y\n  . | Y | Y | Y | .\n  Y | . | . | . | .\n    +---+---+---+\n      .   Y   Y\n
+L d:r U r' R U R' U' r U' r':      .   Y   .\n    +---+---+---+\n  Y | . | . | Y | .\n  . | Y | Y | Y | .\n  . | . | . | . | Y\n    +---+---+---+\n      Y   Y   .\n
+Bar a:F U R U' R' U R U' R' F':      Y   Y   .\n    +---+---+---+\n  . | . | . | . | Y\n  . | Y | Y | Y | .\n  . | . | . | . | Y\n    +---+---+---+\n      Y   Y   .\n
+Bar b:R U R' U R U' B U' B' R':      Y   .   .\n    +---+---+---+\n  . | Y | . | . | Y\n  Y | . | Y | . | Y\n  . | . | Y | . | Y\n    +---+---+---+\n      Y   .   .\n
+Bar c:R' F R U R U' R2 F' R2 U' R' U R U R':      Y   Y   Y\n    +---+---+---+\n  . | . | . | . | .\n  . | Y | Y | Y | .\n  . | . | . | . | .\n    +---+---+---+\n      Y   Y   Y\n
+Bar d:r' U' r U' R' U R U' R' U R r' U r:      .   Y   .\n    +---+---+---+\n  Y | . | . | . | Y\n  . | Y | Y | Y | .\n  Y | . | . | . | Y\n    +---+---+---+\n      .   Y   .\n
+Right Angle Dot a:R U R' U' R' F R2 U R' U' F':      .   .   Y\n    +---+---+---+\n  Y | . | Y | . | .\n  . | Y | Y | . | Y\n  . | . | . | Y | .\n    +---+---+---+\n      Y   Y   .\n
+Right Angle Dot b:R U R' U R' F R F' R U2 R':      Y   Y   .\n    +---+---+---+\n  . | . | . | Y | .\n  . | Y | Y | . | Y\n  Y | . | Y | . | .\n    +---+---+---+\n      .   .   Y\n
+Right Angle Dot c:R U2 R2 F R F' R U2 R':      .   Y   .\n    +---+---+---+\n  Y | . | . | . | Y\n  Y | . | Y | Y | .\n  . | . | Y | Y | .\n    +---+---+---+\n      Y   .   .\n
+Right Angle Dot d:F R' F' R U R U' R':      .   .   .\n    +---+---+---+\n  . | Y | Y | . | Y\n  . | Y | Y | . | Y\n  . | . | . | Y | .\n    +---+---+---+\n      Y   Y   .\n
+Dot a:R U2 R2 F R F' U2 R' F R F':      .   Y   .\n    +---+---+---+\n  Y | . | . | . | Y\n  Y | . | Y | . | Y\n  Y | . | . | . | Y\n    +---+---+---+\n      .   Y   .\n
+Dot b:r U r' U2 r U2 R' U2 R U' r':      Y   Y   Y\n    +---+---+---+\n  . | . | . | . | .\n  Y | . | Y | . | Y\n  Y | . | . | . | Y\n    +---+---+---+\n      .   Y   .\n
+Dot c:r' R2 U R' U r U2 r' U M':      Y   Y   .\n    +---+---+---+\n  . | . | . | . | Y\n  Y | . | Y | . | Y\n  . | Y | . | . | .\n    +---+---+---+\n      .   Y   Y\n
+Dot d:M U' r U2 r' U' R U' R' M':      .   Y   Y\n    +---+---+---+\n  Y | . | . | . | .\n  Y | . | Y | . | Y\n  . | . | . | Y | .\n    +---+---+---+\n      Y   Y   .\n
+Dot e:F R' F' R2 r' U R U' R' U' M':      .   Y   .\n    +---+---+---+\n  . | Y | . | . | Y\n  Y | . | Y | . | Y\n  . | . | . | Y | .\n    +---+---+---+\n      Y   Y   .\n
+Dot f:r U R' U R U2 r2 U' R U' R' U2 r:      .   Y   .\n    +---+---+---+\n  . | Y | . | Y | .\n  Y | . | Y | . | Y\n  . | . | . | . | .\n    +---+---+---+\n      Y   Y   Y\n
+Dot g:r' R U R U R' U' M' R' F R F':      .   Y   .\n    +---+---+---+\n  . | Y | . | Y | .\n  Y | . | Y | . | Y\n  Y | . | . | . | Y\n    +---+---+---+\n      .   Y   .\n
+Dot h:r U R' U' M2 U R U' R' U' M':      .   Y   .\n    +---+---+---+\n  . | Y | . | Y | .\n  Y | . | Y | . | Y\n  . | Y | . | Y | .\n    +---+---+---+\n      .   Y   .\n
+Cross a:R U2 R' U' R U R' U' R U' R':      Y   .   Y\n    +---+---+---+\n  . | . | Y | . | .\n  . | Y | Y | Y | .\n  . | . | Y | . | .\n    +---+---+---+\n      Y   .   Y\n
+Cross b:R U2 R2 U' R2 U' R2 U2 R:      .   .   Y\n    +---+---+---+\n  Y | . | Y | . | .\n  . | Y | Y | Y | .\n  Y | . | Y | . | .\n    +---+---+---+\n      .   .   Y\n
+Cross c:R2 D R' U2 R D' R' U2 R':      .   .   .\n    +---+---+---+\n  . | Y | Y | Y | .\n  . | Y | Y | Y | .\n  . | . | Y | . | .\n    +---+---+---+\n      Y   .   Y\n
+Cross d:r U R' U' r' F R F':REMEMBER TO DO
+Cross e:F' r U R' U' r' F R:      .   .   .\n    +---+---+---+\n  Y | . | Y | Y | .\n  . | Y | Y | Y | .\n  . | Y | Y | . | .\n    +---+---+---+\n      .   .   Y\n
+Cross f:R U2 R' U' R U' R':      .   .   .\n    +---+---+---+\n  Y | . | Y | Y | .\n  . | Y | Y | Y | .\n  . | . | Y | . | Y\n    +---+---+---+\n      Y   .   .\n
+Cross g:R U R' U R U2 R':      Y   .   .\n    +---+---+---+\n  . | . | Y | . | Y\n  . | Y | Y | Y | .\n  . | Y | Y | . | .\n    +---+---+---+\n      .   .   Y\n
+Four Corners a:r U R' U' r' R U R U' R':      .   .   .\n    +---+---+---+\n  . | Y | Y | Y | .\n  . | Y | Y | . | Y\n  . | Y | . | Y | .\n    +---+---+---+\n      .   Y   .\n
+Four Corners b:R U R' U' M' U R U' r':      .   Y   .\n    +---+---+---+\n  . | Y | . | Y | .\n  . | Y | Y | Y | .\n  . | Y | . | Y | .\n    +---+---+---+\n      .   Y   .\n
+C a:R U R2 U' R' F R U R U' F':      .   Y   .\n    +---+---+---+\n  Y | . | . | . | Y\n  . | Y | Y | Y | .\n  . | Y | . | Y | .\n    +---+---+---+\n      .   Y   .\n
+C b:R' U' R' F R F' U R:      .   .   .\n    +---+---+---+\n  . | Y | Y | . | Y\n  Y | . | Y | . | Y\n  . | Y | Y | . | Y\n    +---+---+---+\n      .   .   .\n
+Extended Z a:L F' L' U' L U F U' L':      Y   Y   .\n    +---+---+---+\n  . | . | . | Y | .\n  . | Y | Y | Y | .\n  . | Y | . | . | Y\n    +---+---+---+\n      .   Y   .\n
+Extended Z b:R' F R U R' U' F' U R:      .   Y   Y\n    +---+---+---+\n  . | Y | . | . | .\n  . | Y | Y | Y | .\n  Y | . | . | Y | .\n    +---+---+---+\n      .   Y   .\n
+Z Dot a:R U R' U' R U' R' F' U' F R U R':      Y   .   .\n    +---+---+---+\n  . | . | Y | Y | .\n  . | Y | Y | . | Y\n  . | . | . | Y | .\n    +---+---+---+\n      Y   Y   .\n
+Z Dot b:F R' F R2 U' R' U' R U R' F2:      Y   .   .\n    +---+---+---+\n  . | . | Y | . | Y\n  . | Y | Y | . | Y\n  . | Y | . | Y | .\n    +---+---+---+\n      .   Y   .\n
+Z Dot c:R U R' U R U2 R' F R U R' U' F':      Y   .   Y\n    +---+---+---+\n  . | . | Y | . | .\n  . | Y | Y | . | Y\n  . | Y | . | Y | .\n    +---+---+---+\n      .   Y   .\n
+Z Dot d:R' U' R U' R' U2 R F R U R' U' F':      .   Y   .\n    +---+---+---+\n  . | Y | . | Y | .\n  . | Y | Y | . | Y\n  . | . | Y | . | .\n    +---+---+---+\n      Y   .   Y\n

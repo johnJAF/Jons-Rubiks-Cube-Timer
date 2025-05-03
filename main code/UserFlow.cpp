@@ -141,16 +141,42 @@ void algorithmPracticeScreens::mainScreen() {
 
 
 void algorithmPracticeScreens::oll() {
+    Timer terminalModifier;
     if(isOll == true) { // assertion for the code to run
-        string file;
-        string finalFile;
+        string algName;
+        string specificAlgName;
+        char c = 0;
 
+        algName = navigator();
+        cout << algName << endl;
+        specificAlgName = algNavigator(algName);
+        cout << specificAlgName << endl;
 
-        file = navigator(); // navigates through alg names
-        finalFile = algNavigator(file); // navigates through alg photos
+        if (specificAlgName == "") {
+            return;
+        }
 
-        fromSolved(finalFile); 
-        mainTimer(finalFile);
+        fromSolved(specificAlgName);
+        mainTimer(specificAlgName);
+
+        while (true) {
+            terminalModifier.setNonBlockingInput(); // sets raw mode
+
+            c = 0;
+            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+            terminalModifier.clearScreen();
+            cout << endl << endl << endl << endl;
+            terminalModifier.printCentered("Continue practicing? y/n");
+
+            if (c == 'n') {
+                terminalModifier.restoreTerminal();
+                return;
+            } else if (c == 'y') {
+                fromSolved(specificAlgName);
+                mainTimer(specificAlgName);
+            }
+        }
         
     } else {
         cout << "Something is wrong with the isOll truth value";
@@ -164,9 +190,12 @@ void algorithmPracticeScreens::pll() {
         string specificAlgName;
         char c = 0;
 
-        cout << endl << "PLL MEOW" << endl;
         algName = navigator();
         specificAlgName = algNavigator(algName);
+
+        if (specificAlgName == "") {
+            return;
+        }
 
         fromSolved(specificAlgName);
         mainTimer(specificAlgName);
@@ -212,10 +241,55 @@ string algorithmPracticeScreens::navigator() {
     char c = 0;
     string algName;
 
-    cout << endl << "I am the navigator" << endl;
-
     if (isOll == true) {
-        cout << endl << "This is the OLL version" << endl;
+        terminalModifer.setNonBlockingInput();
+        int counter = 0;
+        
+        if(!moo.fileInfoHolder.empty()){ // if the vector has something
+            moo.fileInfoHolder.clear();
+        }
+
+        moo.vectorFileInfo("Algorithms", "ollAlgs"); // send all of the information form the pllAlgs file to the moo vector
+
+        while (true) {
+            c = 0;
+
+            // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+            terminalModifer.clearScreen();
+
+            // casual prints
+            terminalModifer.printCentered("Algorithm Navigator");
+            cout << endl;
+            terminalModifer.printCentered("Choose what OLL Algorithm category you want");
+            terminalModifer.printCentered("Space for next, Enter to choose");
+                
+            cout << endl << endl << endl;
+
+            terminalModifer.printCentered(moo.fileInfoHolder[counter]);
+            algName = moo.fileInfoHolder[counter];
+
+            // conditional control for loops/ending
+
+            if(counter > moo.fileInfoHolder.size()-1) {
+                counter = 0;
+            }
+
+            if (c == 32) {
+                counter++;
+                c = 0;
+                continue;
+            }
+
+            if (c == 10) {
+                terminalModifer.restoreTerminal();
+                c = 0;
+                return algName;
+            }
+        }
+        terminalModifer.restoreTerminal();
+        return algName;
     } else { //pll
         terminalModifer.setNonBlockingInput();
         int counter = 0;
@@ -237,7 +311,7 @@ string algorithmPracticeScreens::navigator() {
             // casual prints
             terminalModifer.printCentered("Algorithm Navigator");
             cout << endl;
-            terminalModifer.printCentered("Choose what Algorithm category you want");
+            terminalModifer.printCentered("Choose what Pll Algorithm category you want");
             terminalModifer.printCentered("Space for next, Enter to choose");
                 
             cout << endl << endl << endl;
@@ -276,11 +350,8 @@ string algorithmPracticeScreens::algNavigator(string algName) {
 
     vector<string> tempVec;
 
-    cout << endl << "I am the alg photo navigator" << endl;
 
     if (isOll == true) {
-        cout << endl << "This is the OLL version" << endl;
-    } else { //pll
         terminalModifer.setNonBlockingInput();
         int counter = 0;
 
@@ -288,12 +359,15 @@ string algorithmPracticeScreens::algNavigator(string algName) {
             moo.fileInfoHolder.clear();
         }
 
-        moo.vectorFileInfo("Algorithms", "pllAlgPhotos"); // send the fille algPhoto data into the 
+        moo.vectorFileInfo("Algorithms", "ollAlgPhotos"); // send the fille algPhoto data into the 
 
         // processing for isolating the only related algorithms
 
         for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
-            if (algName.substr(0, 1) == moo.fileInfoHolder[x].substr(0,1)) {
+            string holder = moo.fileInfoHolder[x];
+            holder = holder.substr(0, holder.find(":"));
+            
+            if (algName == holder.substr(0, holder.length()-2)) {
                 tempVec.push_back(moo.fileInfoHolder[x]);
             }
         }
@@ -313,7 +387,7 @@ string algorithmPracticeScreens::algNavigator(string algName) {
                 terminalModifer.printCentered("Algorithm Navigator");
                 cout << endl;
                 terminalModifer.printCentered("What Algorithm do you want to practice?");
-                terminalModifer.printCentered("Space for next, Enter to choose");
+                terminalModifer.printCentered("Space for next, Enter to choose, Esc to exit");
             }
             
             // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
@@ -353,6 +427,98 @@ string algorithmPracticeScreens::algNavigator(string algName) {
                 continue;
             }
 
+            if (c == 27) {
+                c = 0;
+                return "";
+            }
+
+            // if any byte gets read from the terminal input then its gonna stop the program.
+            if (c == 10) {
+                tempVec.clear();
+                terminalModifer.restoreTerminal();
+                break;
+            }
+        }
+    terminalModifer.restoreTerminal();
+    return specificAlgName;
+    } else { //pll
+        terminalModifer.setNonBlockingInput();
+        int counter = 0;
+
+        if(!moo.fileInfoHolder.empty()){ // if the vector has something
+            moo.fileInfoHolder.clear();
+        }
+
+        moo.vectorFileInfo("Algorithms", "pllAlgPhotos"); // send the fille algPhoto data into the 
+
+        // processing for isolating the only related algorithms
+
+        for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
+            if (algName.substr(0, 1) == moo.fileInfoHolder[x].substr(0,1)) {
+                tempVec.push_back(moo.fileInfoHolder[x]);
+            }
+        }
+
+        // this can be used to parse the photos
+        while (true) {
+            c = 0;
+
+            terminalModifer.clearScreen();
+
+            if(tempVec.size() == 1) {
+                terminalModifer.printCentered("Algorithm Navigator");
+                cout << endl;
+                terminalModifer.printCentered("Press enter to see how to get to this");
+                terminalModifer.printCentered("from a solved position");
+            } else {
+                terminalModifer.printCentered("Algorithm Navigator");
+                cout << endl;
+                terminalModifer.printCentered("What Algorithm do you want to practice?");
+                terminalModifer.printCentered("Space for next, Enter to choose, Esc to exit");
+            }
+            
+            // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+            
+            // create a string stream out of every data string thats pulled in, this will get split into specific name, algorithm, and ascii
+            stringstream ss(tempVec[counter]);
+
+            getline(ss, specificAlgName, ':');
+            getline(ss, alg, ':');
+            getline(ss, algAscii);
+
+            // supid string when printed doesnt count /n so had to turn it into //n
+            size_t pos = 0;
+            while ((pos = algAscii.find("\\n", pos)) != string::npos) {
+                algAscii.replace(pos, 2, "\n");
+            }
+
+            // casual print
+            cout << endl << endl << endl;
+            terminalModifer.printCentered(specificAlgName);
+            terminalModifer.printCentered(alg);
+            actualAlgorithm = alg;
+
+            cout << endl << algAscii;
+
+            // conditional control for loops/ending
+
+            if(counter > tempVec.size()-1) {
+                counter = 0;
+            }
+
+            // if you hit a button its gonna grab next alg
+            if (c == 32) {
+                counter++;
+                c = 0;
+                continue;
+            }
+
+            if (c == 27) {
+                c = 0;
+                return "";
+            }
+
             // if any byte gets read from the terminal input then its gonna stop the program.
             if (c == 10) {
                 tempVec.clear();
@@ -379,7 +545,46 @@ void algorithmPracticeScreens::fromSolved(string algName) {
     cout << endl << "This is how you get to the algorithm from a solved state" << endl;
 
     if (isOll == true) {
+        if(!moo.fileInfoHolder.empty()){ // if the vector has something
+            moo.fileInfoHolder.clear();
+        }
 
+        moo.vectorFileInfo("Algorithms", "ollFromSolved"); // send the fille algPhoto data into the 
+
+        // just to grab the single algorithm that has that name
+        for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
+            if (algName.substr(0, 2) == moo.fileInfoHolder[x].substr(0,2)) {
+                temp = moo.fileInfoHolder[x];
+            }
+        }
+
+        while (true) {
+            c = 0;
+            
+            terminalModifer.clearScreen();
+
+            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+            terminalModifer.printCentered("From Solved");
+            cout << endl;
+            terminalModifer.printCentered("This is how you get to the algorithm");
+            terminalModifer.printCentered("from a solved position");
+            terminalModifer.printCentered("Enter to proceed to the timer");
+
+            stringstream ss(temp);
+
+            getline(ss, specName, ':');
+            getline(ss, fromAlg);
+
+            cout << endl << endl << endl;
+            terminalModifer.printCentered(specName);
+            terminalModifer.printCentered(fromAlg);
+
+            if (c == 10) {
+                break;
+            }
+
+        }
     } else { //pll
         //terminalModifer.setNonBlockingInput();
 
