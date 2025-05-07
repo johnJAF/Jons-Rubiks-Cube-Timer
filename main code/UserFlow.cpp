@@ -531,8 +531,6 @@ void algorithmPracticeScreens::mainTimer(string specificAlgname) {
     finalTime = timer.returnFinalTime();
 
     strftime(date, 50, "%m/%d/%y", &datetime);
-    cout << date << "\n";
-    cout << algType << endl << specificAlgname << endl << finalTime;
 
     mooski.saveAlgTime(algType, specificAlgname, finalTime, date);
 }
