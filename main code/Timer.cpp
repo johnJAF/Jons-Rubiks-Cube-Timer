@@ -130,6 +130,7 @@ void Timer::printCurrent() {
     printCentered(moo);
 }
 
+// this takes cares of running the timer for the main timer
 void Timer::runTimer() {
     // this will block all of the terminals searches for terminal inputs and will stop the need to hit enter to stop the program
     setNonBlockingInput();
@@ -164,6 +165,7 @@ void Timer::runTimer() {
     restoreTerminal();
 }
 
+// this takes care of running the time for the algorithm practice screens
 void Timer::runTimer(string algorithm) {
 // this will block all of the terminals searches for terminal inputs and will stop the need to hit enter to stop the program
     setNonBlockingInput();

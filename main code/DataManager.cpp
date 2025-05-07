@@ -128,21 +128,48 @@ void DataManager::vectorFileInfo(string whatFolder, string whatFile) {
     }
 }
 
-// // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
-// void DataManager::saveSolveNoOrientation(string session, long long milliseconds, string date) {
-//     fs::path basePath = fs::absolute("Data/Sessions");
-//     fs::path extension = ".txt";
-//     fs::path fullPath = basePath / session += extension;
+// going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
+void DataManager::saveSolveNoOrientation(string session, long long milliseconds, string date) {
+    fs::path basePath = fs::absolute("Data/Sessions");
+    fs::path extension = ".txt";
+    fs::path fullPath = basePath / session += extension;
 
-//     if (fs::exists(fullPath)) {
-//         cout << endl << "[Notice] File already exists. Choose another name." << endl;
-//         return;
-//     }
-// }
+    if (fs::exists(fullPath)) {
+        cout << endl << "[Notice] File already exists. Choose another name." << endl;
+        return;
+    }
+}
 
-// void DataManager::saveSolveOrientation(string session, long long milliseconds, string orientation, string date) {
+void DataManager::saveSolveOrientation(string session, long long milliseconds, string orientation, string date) {
 
-// }
+}
+
+bool DataManager::saveAlgTime(string ollpll, string specificAlgName, long long milliseconds, char date[50]) {
+    fs::path fullPath;
+
+    if (ollpll == "oll") {
+        fs::path basePath = fs::absolute("Data/Algorithms/OLL");
+        fs::path extension = ".txt";
+        fullPath = basePath / specificAlgName += extension;
+    } else if (ollpll == "pll") {
+        fs::path basePath = fs::absolute("Data/Algorithms/PLL");
+        fs::path extension = ".txt";
+        fullPath = basePath / specificAlgName += extension;
+    }
+
+    ofstream meow(fullPath, ios_base::app);
+    
+    if (!meow) { // if the file isnt created for some reason then we will error out
+        cerr << endl << "[Error] Failed to create file: " << fullPath << endl;
+        return false;
+    }
+    
+    meow << specificAlgName << ":" << milliseconds << ":" << date << endl;;
+
+    meow.close();
+
+    return true;
+}
 
 
 // // getters 

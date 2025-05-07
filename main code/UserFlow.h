@@ -23,7 +23,6 @@ public:
 
 class algorithmPracticeScreens {
     bool isOll;
-    string algorithmBeingUsed;
     string actualAlgorithm;
 
 public:
@@ -90,5 +89,4 @@ public:
         bool getInspectionToggle();
         void orientationToggle();
         bool getOrientationToggle();
-        void undo();
 };

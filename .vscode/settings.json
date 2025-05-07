@@ -48,6 +48,9 @@
         "__split_buffer": "cpp",
         "unordered_map": "cpp",
         "iomanip": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "deque": "cpp",
+        "regex": "cpp",
+        "fstream": "cpp"
     }
 }

@@ -8,7 +8,7 @@
 // first screen user sees "Press any button to continue"
 void introScreens::startScreen() {
 
-    Timer terminalModifier;
+    Timer terminalModifier; // some terminal modifying functions are in the timer class *wink* only look at the object name not the class
 
     terminalModifier.clearScreen();
     terminalModifier.printCentered("Welcome to Jon's Timer App.");
@@ -59,10 +59,12 @@ void scrambleScreen::mainScreen() {
         cout << endl;
         cout << endl;
 
+    // grabs new scramble from scramble object, returns a string, then prints centered
     pookie.newScramble();
     str = pookie.getScramble();
     terminalModifier.printCentered(str);
 
+    // user presses any button to generate a new scramble, if they hit escape they back out of the screen going into main screen
     terminalModifier.setNonBlockingInput();
 
     while (true) {
@@ -99,8 +101,7 @@ void algorithmPracticeScreens::mainScreen() {
     algorithmPracticeScreens algoPracticeSwitch;
     char c = 0;
 
-    // while loop to decide what feature to choose from
-
+    // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
     while (true) {
         terminalModifier.clearScreen();
     
@@ -139,8 +140,12 @@ void algorithmPracticeScreens::mainScreen() {
     terminalModifier.restoreTerminal();
 }
 
-
+// when oll is called it just runs through the same system of actions as PLL but i decieded to duplicate my code
+// because it looks better to have oll() and pll() above
+// anyways this method calls navigator where the user chooses the algorithm category, algNavigator where the user chooses the specific sub-algorithm
+// then fromSolved where the user gets to see how to get to the algorithm ascii from a solved state, then main timer so the user can set a time, save it, and see their data later
 void algorithmPracticeScreens::oll() {
+StartOfOll:
     Timer terminalModifier;
     if(isOll == true) { // assertion for the code to run
         string algName;
@@ -148,9 +153,12 @@ void algorithmPracticeScreens::oll() {
         char c = 0;
 
         algName = navigator();
-        cout << algName << endl;
+
+        if (algName == "") {
+            return;
+        }
+
         specificAlgName = algNavigator(algName);
-        cout << specificAlgName << endl;
 
         if (specificAlgName == "") {
             return;
@@ -171,7 +179,7 @@ void algorithmPracticeScreens::oll() {
 
             if (c == 'n') {
                 terminalModifier.restoreTerminal();
-                return;
+                goto StartOfOll;
             } else if (c == 'y') {
                 fromSolved(specificAlgName);
                 mainTimer(specificAlgName);
@@ -183,7 +191,9 @@ void algorithmPracticeScreens::oll() {
     }
 }
 
+// same as oll :)
 void algorithmPracticeScreens::pll() {
+StartOfPll:
     Timer terminalModifier;
     if(isOll == false) {
         string algName;
@@ -191,6 +201,11 @@ void algorithmPracticeScreens::pll() {
         char c = 0;
 
         algName = navigator();
+
+        if (algName == "") {
+            return;
+        }
+
         specificAlgName = algNavigator(algName);
 
         if (specificAlgName == "") {
@@ -212,7 +227,7 @@ void algorithmPracticeScreens::pll() {
 
             if (c == 'n') {
                 terminalModifier.restoreTerminal();
-                return;
+                goto StartOfPll;
             } else if (c == 'y') {
                 fromSolved(specificAlgName);
                 mainTimer(specificAlgName);
@@ -233,115 +248,81 @@ void algorithmPracticeScreens::editAlgs() {
     cout << "This feature doesnt work homie";
 }
 
-// this navigator screen will be used 4 times in choosing what name of algorithm/photo of algorithm for OLL/PLL
-// uses isOLL
+// navigator goes through oll/pll algorithms by seeing if the user chose oll/pll, then pulling that speific file data
+// the navigator displays the algorithm  categoryon screen, if the user hits enter then that is the users choice, if not
+// then the user can hit space to continue searching
 string algorithmPracticeScreens::navigator() {
     DataManager moo;
     Timer terminalModifer;
     char c = 0;
     string algName;
 
-    if (isOll == true) {
-        terminalModifer.setNonBlockingInput();
-        int counter = 0;
-        
-        if(!moo.fileInfoHolder.empty()){ // if the vector has something
-            moo.fileInfoHolder.clear();
-        }
+    terminalModifer.setNonBlockingInput();
+    int counter = 0;
 
-        moo.vectorFileInfo("Algorithms", "ollAlgs"); // send all of the information form the pllAlgs file to the moo vector
-
-        while (true) {
-            c = 0;
-
-            // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-            terminalModifer.clearScreen();
-
-            // casual prints
-            terminalModifer.printCentered("Algorithm Navigator");
-            cout << endl;
-            terminalModifer.printCentered("Choose what OLL Algorithm category you want");
-            terminalModifer.printCentered("Space for next, Enter to choose");
-                
-            cout << endl << endl << endl;
-
-            terminalModifer.printCentered(moo.fileInfoHolder[counter]);
-            algName = moo.fileInfoHolder[counter];
-
-            // conditional control for loops/ending
-
-            if(counter > moo.fileInfoHolder.size()-1) {
-                counter = 0;
-            }
-
-            if (c == 32) {
-                counter++;
-                c = 0;
-                continue;
-            }
-
-            if (c == 10) {
-                terminalModifer.restoreTerminal();
-                c = 0;
-                return algName;
-            }
-        }
-        terminalModifer.restoreTerminal();
-        return algName;
-    } else { //pll
-        terminalModifer.setNonBlockingInput();
-        int counter = 0;
-        
-        if(!moo.fileInfoHolder.empty()){ // if the vector has something
-            moo.fileInfoHolder.clear();
-        }
-
-        moo.vectorFileInfo("Algorithms", "pllAlgs"); // send all of the information form the pllAlgs file to the moo vector
-
-        while (true) {
-            c = 0;
-
-            // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-            terminalModifer.clearScreen();
-
-            // casual prints
-            terminalModifer.printCentered("Algorithm Navigator");
-            cout << endl;
-            terminalModifer.printCentered("Choose what Pll Algorithm category you want");
-            terminalModifer.printCentered("Space for next, Enter to choose");
-                
-            cout << endl << endl << endl;
-
-            terminalModifer.printCentered(moo.fileInfoHolder[counter]);
-            algName = moo.fileInfoHolder[counter];
-
-            // conditional control for loops/ending
-
-            if(counter > moo.fileInfoHolder.size()-1) {
-                counter = 0;
-            }
-
-            if (c == 32) {
-                counter++;
-                c = 0;
-                continue;
-            }
-
-            if (c == 10) {
-                terminalModifer.restoreTerminal();
-                c = 0;
-                return algName;
-            }
-        }
-        terminalModifer.restoreTerminal();
-        return algName;
+    if(!moo.fileInfoHolder.empty()) { // if the vector has something
+        moo.fileInfoHolder.clear();
     }
+
+    if (isOll) {
+        moo.vectorFileInfo("Algorithms", "ollAlgs"); // send all of the information form the ollAlgs file to the moo vector
+    } else {
+        moo.vectorFileInfo("Algorithms", "pllAlgs"); // send all of the information form the pllAlgs file to the moo vector
+    }
+
+    while (true) {
+        c = 0; // for std input
+
+        // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        terminalModifer.clearScreen();
+
+        // casual prints
+        terminalModifer.printCentered("Algorithm Navigator");
+        cout << endl;
+        terminalModifer.printCentered("Choose what OLL Algorithm category you want");
+        terminalModifer.printCentered("Space for next, Enter to choose");
+            
+        cout << endl << endl << endl;
+
+        // prints alg category
+        terminalModifer.printCentered(moo.fileInfoHolder[counter]);
+        algName = moo.fileInfoHolder[counter];
+
+        // conditional control for loops/ending
+
+        if(counter > moo.fileInfoHolder.size()-1) {
+            counter = 0;
+        }
+
+        // if spacebar
+        if (c == 32) {
+            counter++;
+            c = 0;
+            continue;
+        }
+
+        if (c == 27) { // escape for leaving
+            c = 0;
+            return "";
+        }
+
+        // if enter
+        if (c == 10) {
+            terminalModifer.restoreTerminal();
+            c = 0;
+            return algName;
+        }
+    }
+
+    terminalModifer.restoreTerminal();
+    return algName;
 }
 
+// alg navigator works by taking the alg category, then searching the algPhotos file, parsing one string at a time
+// then separating the string into specificAlgName, alg, and aglAscii -- this is used for display and for determining the specific sub-algoirthm
+// the determining is done the same way navigaor determines
 string algorithmPracticeScreens::algNavigator(string algName) {
     DataManager moo;
     Timer terminalModifer;
@@ -350,18 +331,15 @@ string algorithmPracticeScreens::algNavigator(string algName) {
 
     vector<string> tempVec;
 
+    terminalModifer.setNonBlockingInput();
+    int counter = 0;
 
-    if (isOll == true) {
-        terminalModifer.setNonBlockingInput();
-        int counter = 0;
+    if(!moo.fileInfoHolder.empty()) { // if the vector has something
+        moo.fileInfoHolder.clear();
+    }
 
-        if(!moo.fileInfoHolder.empty()){ // if the vector has something
-            moo.fileInfoHolder.clear();
-        }
-
-        moo.vectorFileInfo("Algorithms", "ollAlgPhotos"); // send the fille algPhoto data into the 
-
-        // processing for isolating the only related algorithms
+    if (isOll) {
+        moo.vectorFileInfo("Algorithms", "ollAlgPhotos"); // send send specific data into vector
 
         for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
             string holder = moo.fileInfoHolder[x];
@@ -372,84 +350,8 @@ string algorithmPracticeScreens::algNavigator(string algName) {
             }
         }
 
-        // this can be used to parse the photos
-        while (true) {
-            c = 0;
-
-            terminalModifer.clearScreen();
-
-            if(tempVec.size() == 1) {
-                terminalModifer.printCentered("Algorithm Navigator");
-                cout << endl;
-                terminalModifer.printCentered("Press enter to see how to get to this");
-                terminalModifer.printCentered("from a solved position");
-            } else {
-                terminalModifer.printCentered("Algorithm Navigator");
-                cout << endl;
-                terminalModifer.printCentered("What Algorithm do you want to practice?");
-                terminalModifer.printCentered("Space for next, Enter to choose, Esc to exit");
-            }
-            
-            // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-            
-            // create a string stream out of every data string thats pulled in, this will get split into specific name, algorithm, and ascii
-            stringstream ss(tempVec[counter]);
-
-            getline(ss, specificAlgName, ':');
-            getline(ss, alg, ':');
-            getline(ss, algAscii);
-
-            // supid string when printed doesnt count /n so had to turn it into //n
-            size_t pos = 0;
-            while ((pos = algAscii.find("\\n", pos)) != string::npos) {
-                algAscii.replace(pos, 2, "\n");
-            }
-
-            // casual print
-            cout << endl << endl << endl;
-            terminalModifer.printCentered(specificAlgName);
-            terminalModifer.printCentered(alg);
-            actualAlgorithm = alg;
-
-            cout << endl << algAscii;
-
-            // conditional control for loops/ending
-
-            if(counter > tempVec.size()-1) {
-                counter = 0;
-            }
-
-            // if you hit a button its gonna grab next alg
-            if (c == 32) {
-                counter++;
-                c = 0;
-                continue;
-            }
-
-            if (c == 27) {
-                c = 0;
-                return "";
-            }
-
-            // if any byte gets read from the terminal input then its gonna stop the program.
-            if (c == 10) {
-                tempVec.clear();
-                terminalModifer.restoreTerminal();
-                break;
-            }
-        }
-    terminalModifer.restoreTerminal();
-    return specificAlgName;
-    } else { //pll
-        terminalModifer.setNonBlockingInput();
-        int counter = 0;
-
-        if(!moo.fileInfoHolder.empty()){ // if the vector has something
-            moo.fileInfoHolder.clear();
-        }
-
-        moo.vectorFileInfo("Algorithms", "pllAlgPhotos"); // send the fille algPhoto data into the 
+    } else {
+        moo.vectorFileInfo("Algorithms", "pllAlgPhotos"); // send send specific data into vector
 
         // processing for isolating the only related algorithms
 
@@ -458,81 +360,77 @@ string algorithmPracticeScreens::algNavigator(string algName) {
                 tempVec.push_back(moo.fileInfoHolder[x]);
             }
         }
+    }
 
-        // this can be used to parse the photos
-        while (true) {
+    while (true) {
+        c = 0;
+
+        terminalModifer.clearScreen();
+
+        if(tempVec.size() == 1) { // only if the alg category has one specific algorithm (that is just your choice)
+            terminalModifer.printCentered("Algorithm Navigator");
+            cout << endl;
+            terminalModifer.printCentered("Press enter to view");
+            terminalModifer.printCentered("from a solved position");
+        } else {
+            terminalModifer.printCentered("Algorithm Navigator");
+            cout << endl;
+            terminalModifer.printCentered("What Algorithm do you want to practice?");
+            terminalModifer.printCentered("Space for next, Enter to view from a solved position");
+            terminalModifer.printCentered("Esc to exit");
+        }
+        
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        
+        // create a string stream out of every data string thats pulled in, this will get split into specific name, algorithm, and ascii
+        stringstream ss(tempVec[counter]);
+
+        getline(ss, specificAlgName, ':');
+        getline(ss, alg, ':');
+        getline(ss, algAscii);
+
+        // supid string when printed doesnt count \n so had to turn it into \\n
+        size_t pos = 0;
+        while ((pos = algAscii.find("\\n", pos)) != string::npos) {
+            algAscii.replace(pos, 2, "\n");
+        }
+
+        // casual print
+        cout << endl << endl << endl;
+        terminalModifer.printCentered(specificAlgName);
+        terminalModifer.printCentered(alg);
+        actualAlgorithm = alg;
+
+        cout << endl << algAscii;
+
+        // conditional control for loops/ending
+        if(counter > tempVec.size()-1) {
+            counter = 0;
+        }
+
+        if (c == 32) { // space for next
+            counter++;
             c = 0;
+            continue;
+        }
 
-            terminalModifer.clearScreen();
+        if (c == 27) { // escape for leaving
+            c = 0;
+            return "";
+        }
 
-            if(tempVec.size() == 1) {
-                terminalModifer.printCentered("Algorithm Navigator");
-                cout << endl;
-                terminalModifer.printCentered("Press enter to see how to get to this");
-                terminalModifer.printCentered("from a solved position");
-            } else {
-                terminalModifer.printCentered("Algorithm Navigator");
-                cout << endl;
-                terminalModifer.printCentered("What Algorithm do you want to practice?");
-                terminalModifer.printCentered("Space for next, Enter to choose, Esc to exit");
-            }
-            
-            // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-            
-            // create a string stream out of every data string thats pulled in, this will get split into specific name, algorithm, and ascii
-            stringstream ss(tempVec[counter]);
-
-            getline(ss, specificAlgName, ':');
-            getline(ss, alg, ':');
-            getline(ss, algAscii);
-
-            // supid string when printed doesnt count /n so had to turn it into //n
-            size_t pos = 0;
-            while ((pos = algAscii.find("\\n", pos)) != string::npos) {
-                algAscii.replace(pos, 2, "\n");
-            }
-
-            // casual print
-            cout << endl << endl << endl;
-            terminalModifer.printCentered(specificAlgName);
-            terminalModifer.printCentered(alg);
-            actualAlgorithm = alg;
-
-            cout << endl << algAscii;
-
-            // conditional control for loops/ending
-
-            if(counter > tempVec.size()-1) {
-                counter = 0;
-            }
-
-            // if you hit a button its gonna grab next alg
-            if (c == 32) {
-                counter++;
-                c = 0;
-                continue;
-            }
-
-            if (c == 27) {
-                c = 0;
-                return "";
-            }
-
-            // if any byte gets read from the terminal input then its gonna stop the program.
-            if (c == 10) {
-                tempVec.clear();
-                terminalModifer.restoreTerminal();
-                break;
-            }
+        if (c == 10) { // enter to choose
+            tempVec.clear();
+            terminalModifer.restoreTerminal();
+            break;
         }
     }
     terminalModifer.restoreTerminal();
     return specificAlgName;
 }
 
-// pulls from dataset that checks what algorithm you're doing
-// uses isOll
+// from solved will go to the fromSolved.txt files and grab if its oll/pll, then it will compare the algorithm that was chosen
+// with the algorithms in the respective algphotos txt and will find the correct data to get to an algorithm from a solved state
 void algorithmPracticeScreens::fromSolved(string algName) {
     DataManager moo;
     Timer terminalModifer;
@@ -542,94 +440,52 @@ void algorithmPracticeScreens::fromSolved(string algName) {
     string specName; // holds alg name
     string fromAlg; // holds algorithm
 
-    cout << endl << "This is how you get to the algorithm from a solved state" << endl;
-
-    if (isOll == true) {
-        if(!moo.fileInfoHolder.empty()){ // if the vector has something
+    if(!moo.fileInfoHolder.empty()){ // if the vector has something
             moo.fileInfoHolder.clear();
         }
 
-        moo.vectorFileInfo("Algorithms", "ollFromSolved"); // send the fille algPhoto data into the 
+    if(isOll) {
+        moo.vectorFileInfo("Algorithms", "ollFromSolved");
+    } else {
+        moo.vectorFileInfo("Algorithms", "pllFromSolved");
+    }
 
-        // just to grab the single algorithm that has that name
-        for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
-            if (algName.substr(0, 2) == moo.fileInfoHolder[x].substr(0,2)) {
-                temp = moo.fileInfoHolder[x];
-            }
+    // just to grab the single algorithm that has that name
+    for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
+        if (algName.substr(0, 2) == moo.fileInfoHolder[x].substr(0,2)) {
+            temp = moo.fileInfoHolder[x];
         }
+    }
 
-        while (true) {
-            c = 0;
-            
-            terminalModifer.clearScreen();
+    // user interaciton loop
+    while (true) {
+        c = 0;
+        
+        terminalModifer.clearScreen();
 
-            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
-            terminalModifer.printCentered("From Solved");
-            cout << endl;
-            terminalModifer.printCentered("This is how you get to the algorithm");
-            terminalModifer.printCentered("from a solved position");
-            terminalModifer.printCentered("Enter to proceed to the timer");
+        terminalModifer.printCentered("From Solved");
+        cout << endl;
+        terminalModifer.printCentered("This is how you get to the algorithm");
+        terminalModifer.printCentered("from a solved position");
+        terminalModifer.printCentered("Enter to proceed to the timer");
 
-            stringstream ss(temp);
+        stringstream ss(temp);
 
-            getline(ss, specName, ':');
-            getline(ss, fromAlg);
+        getline(ss, specName, ':');
+        getline(ss, fromAlg);
 
-            cout << endl << endl << endl;
-            terminalModifer.printCentered(specName);
-            terminalModifer.printCentered(fromAlg);
+        cout << endl << endl << endl;
+        terminalModifer.printCentered(specName);
+        terminalModifer.printCentered(fromAlg);
 
-            if (c == 10) {
-                break;
-            }
-
-        }
-    } else { //pll
-        //terminalModifer.setNonBlockingInput();
-
-        if(!moo.fileInfoHolder.empty()){ // if the vector has something
-            moo.fileInfoHolder.clear();
-        }
-
-        moo.vectorFileInfo("Algorithms", "pllFromSolved"); // send the fille algPhoto data into the 
-
-        // just to grab the single algorithm that has that name
-        for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
-            if (algName.substr(0, 2) == moo.fileInfoHolder[x].substr(0,2)) {
-                temp = moo.fileInfoHolder[x];
-            }
-        }
-
-        while (true) {
-            c = 0;
-            
-            terminalModifer.clearScreen();
-
-            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-            terminalModifer.printCentered("From Solved");
-            cout << endl;
-            terminalModifer.printCentered("This is how you get to the algorithm");
-            terminalModifer.printCentered("from a solved position");
-            terminalModifer.printCentered("Enter to proceed to the timer");
-
-            stringstream ss(temp);
-
-            getline(ss, specName, ':');
-            getline(ss, fromAlg);
-
-            cout << endl << endl << endl;
-            terminalModifer.printCentered(specName);
-            terminalModifer.printCentered(fromAlg);
-
-            if (c == 10) {
-                break;
-            }
-
+        if (c == 10) {
+            break;
         }
 
     }
+
     return;
 }
 
@@ -653,11 +509,32 @@ void algorithmPracticeScreens::drawMap() {
 
 // creates a timer instance based on algorithm chosen, saves it to that respective file
 // different baesd on isOll. Uses data vizualizer object code to show PB, Ao5, Ao12.
-void algorithmPracticeScreens::mainTimer(string file) {
+void algorithmPracticeScreens::mainTimer(string specificAlgname) {
+    string algType;
     // TimeSpan meow(elapsedTime); this turns long long ms into a timespan .grabTime will return the time as a string
     Timer timer;
+    DataManager mooski;
+    time_t timestamp = time(NULL);
+    struct tm datetime = *localtime(&timestamp);
+    char date[50];
+
+    if (isOll) {
+        algType = "oll";
+    } else {
+        algType = "pll";
+    }
+
+    long long finalTime;
 
     timer.runTimer(actualAlgorithm);
+
+    finalTime = timer.returnFinalTime();
+
+    strftime(date, 50, "%m/%d/%y", &datetime);
+    cout << date << "\n";
+    cout << algType << endl << specificAlgname << endl << finalTime;
+
+    mooski.saveAlgTime(algType, specificAlgname, finalTime, date);
 }
 
 ////////////////////////////////////////////////////////
@@ -746,8 +623,4 @@ void timerScreen::orientationToggle() {
 
 bool timerScreen::getOrientationToggle() {
     return toggleOrientation;
-}
-
-void timerScreen::undo() {
-
 }

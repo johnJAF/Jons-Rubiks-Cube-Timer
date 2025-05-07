@@ -27,9 +27,9 @@ public:
     void displayFolder(string whatFolder); // prints the feature folder
     void vectorFileInfo(string whatFolder, string whatFile); // grabs all file info as a dynamic vector and stores it
 
-//     // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
-//     void saveSolveNoOrientation(string session, long long milliseconds, string date);
-//     void saveSolveOrientation(string session, long long milliseconds, string orientation, string date);
+    // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
+    void saveSolveNoOrientation(string session, long long milliseconds, string date);
+    void saveSolveOrientation(string session, long long milliseconds, string orientation, string date);
 
 //     // getters 
 //     string getSessionName(); // returns current session file name
@@ -42,6 +42,7 @@ public:
 //     // for the algorithmPractice class
 //     void writeAlgorithm();
 //     void drawAlgorithm(); 
+    bool saveAlgTime(string ollpll, string specificAlgName, long long milliseconds, char[50]);
 
 //     // for averaging
 //     long long grabAO5(); // returns miliseconds
