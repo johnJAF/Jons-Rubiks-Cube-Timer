@@ -49,8 +49,8 @@ public:
     long long getLatestAlgTime(string ollpll, string whatAlgorithm);
     bool undoTime(string);
 
-//     // for averaging
-//     long long grabAO5(); // returns miliseconds
-//     long long grabAO12();
-//     long long grabPB(); // returns lowest time
+    // for averaging
+    long long grabAO5(); // returns miliseconds
+    long long grabAO12();
+    long long grabPB(); // returns lowest time
 };

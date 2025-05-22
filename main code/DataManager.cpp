@@ -281,17 +281,17 @@ long long DataManager::getLatestAlgTime(string ollpll, string whatAlgorithm) {
 // }
 
 
-// // for averaging
-// // returns miliseconds
-// long long DataManager::grabAO5() {
+// for averaging
+// returns miliseconds
+long long DataManager::grabAO5() {
 
-// }
+}
 
-// long long DataManager::grabAO12() {
+long long DataManager::grabAO12() {
 
-// }
+}
 
-// // returns lowest time
-// long long DataManager::grabPB() {
+// returns lowest time
+long long DataManager::grabPB() {
     
-// }
+}

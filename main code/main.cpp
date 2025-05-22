@@ -37,6 +37,7 @@ int main() {
         meow.clearScreen();
         
         char c = 0;
+        cout << endl << endl << endl << endl << endl << endl;
 
         meow.printCentered("Type in one of the letters to pick between the options:");
         meow.printCentered("(esc to quit the app)");

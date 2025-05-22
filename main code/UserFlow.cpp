@@ -11,11 +11,12 @@ void introScreens::startScreen() {
     Timer terminalModifier; // some terminal modifying functions are in the timer class *wink* only look at the object name not the class
 
     terminalModifier.clearScreen();
+    cout << endl << endl << endl << endl << endl << endl;
     terminalModifier.printCentered("Welcome to Jon's Timer App.");
     terminalModifier.printCentered("Press any button to continue!");
     cout << endl << endl;
 
-} // branch test
+} 
 
 // second screen user sees, shows all four options between scrambler, timer, datavisualizer, alogirthmpractice
 void introScreens::mainScreen(char moo) {
@@ -53,6 +54,7 @@ void scrambleScreen::mainScreen() {
     string str = "";
 
     terminalModifier.clearScreen();
+    cout << endl << endl << endl << endl << endl << endl;
     terminalModifier.printCentered("Press any button to generate a scramble:");
     terminalModifier.printCentered("(esc to go to main menu)");
 
@@ -77,6 +79,7 @@ void scrambleScreen::mainScreen() {
                 return;
             }
             terminalModifier.clearScreen();
+            cout << endl << endl << endl << endl << endl << endl;
             terminalModifier.printCentered("Press any button to generate a scramble:");
             terminalModifier.printCentered("(esc to go to main menu)");
 
@@ -103,6 +106,8 @@ top:
     char c = 0;
 
     terminalModifier.clearScreen();
+
+        cout << endl << endl << endl << endl << endl << endl;
     
         terminalModifier.printCentered("Algorithm Practice");
         terminalModifier.printCentered("(esc to return to main screen)");
@@ -186,7 +191,7 @@ algNavigator:
             returnStatement = splashScreen(specificAlgName);
 
             if (returnStatement == "F") {
-                return;
+                continue;
             }
 
             mainTimer(specificAlgName);
@@ -227,37 +232,43 @@ string algorithmPracticeScreens::navigator() {
         moo.vectorFileInfo("Algorithms", "pllAlgs"); // send all of the information form the pllAlgs file to the moo vector
     }
 
+reprint_w_new_values:
+    // for printing
+    terminalModifer.clearScreen();
+
+    cout << endl << endl << endl << endl << endl << endl;
+
+    // casual prints
+    terminalModifer.printCentered("Algorithm Navigator");
+    cout << endl;
+    terminalModifer.printCentered("Choose what OLL Algorithm category you want");
+    terminalModifer.printCentered("Space for next, Enter to choose");
+        
+    cout << endl << endl << endl;
+
+    // prints alg category
+    terminalModifer.printCentered(moo.fileInfoHolder[counter]);
+    algName = moo.fileInfoHolder[counter];
+
+
     while (true) {
         c = 0; // for std input
 
         // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
-        terminalModifer.clearScreen();
-
-        // casual prints
-        terminalModifer.printCentered("Algorithm Navigator");
-        cout << endl;
-        terminalModifer.printCentered("Choose what OLL Algorithm category you want");
-        terminalModifer.printCentered("Space for next, Enter to choose");
-            
-        cout << endl << endl << endl;
-
-        // prints alg category
-        terminalModifer.printCentered(moo.fileInfoHolder[counter]);
-        algName = moo.fileInfoHolder[counter];
-
         // conditional control for loops/ending
-
-        if(counter > moo.fileInfoHolder.size()-1) {
-            counter = 0;
-        }
 
         // if spacebar
         if (c == 32) {
             counter++;
             c = 0;
-            continue;
+
+            if(counter > moo.fileInfoHolder.size()) {
+                counter = 0;
+            }
+
+            goto reprint_w_new_values;
         }
 
         if (c == 27) { // escape for leaving
@@ -319,56 +330,61 @@ string algorithmPracticeScreens::algNavigator(string algName) {
         }
     }
 
+reprint_w_new_values:
+
+    terminalModifer.clearScreen();
+
+    cout << endl << endl << endl << endl << endl << endl;
+
+    if(tempVec.size() == 1) { // only if the alg category has one specific algorithm (that is just your choice)
+        terminalModifer.printCentered("Algorithm Navigator");
+        cout << endl;
+        terminalModifer.printCentered("Press enter to view");
+        terminalModifer.printCentered("from a solved position");
+    } else {
+        terminalModifer.printCentered("Algorithm Navigator");
+        cout << endl;
+        terminalModifer.printCentered("What Algorithm do you want to practice?");
+        terminalModifer.printCentered("Space for next, Enter to view from a solved position");
+        terminalModifer.printCentered("Esc to exit");
+    }
+
+    // create a string stream out of every data string thats pulled in, this will get split into specific name, algorithm, and ascii
+    stringstream ss(tempVec[counter]);
+
+    getline(ss, specificAlgName, ':');
+    getline(ss, alg, ':');
+    getline(ss, algAscii);
+
+    // supid string when printed doesnt count \n so had to turn it into \\n
+    size_t pos = 0;
+    while ((pos = algAscii.find("\\n", pos)) != string::npos) {
+        algAscii.replace(pos, 2, "\n");
+    }
+
+    // casual print
+    cout << endl << endl << endl;
+    terminalModifer.printCentered(specificAlgName);
+    terminalModifer.printCentered(alg);
+    actualAlgorithm = alg;
+
+    cout << endl << algAscii;
+
     while (true) {
-        c = 0;
-
-        terminalModifer.clearScreen();
-
-        if(tempVec.size() == 1) { // only if the alg category has one specific algorithm (that is just your choice)
-            terminalModifer.printCentered("Algorithm Navigator");
-            cout << endl;
-            terminalModifer.printCentered("Press enter to view");
-            terminalModifer.printCentered("from a solved position");
-        } else {
-            terminalModifer.printCentered("Algorithm Navigator");
-            cout << endl;
-            terminalModifer.printCentered("What Algorithm do you want to practice?");
-            terminalModifer.printCentered("Space for next, Enter to view from a solved position");
-            terminalModifer.printCentered("Esc to exit");
-        }
-        
+        c = 0;        
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-        
-        // create a string stream out of every data string thats pulled in, this will get split into specific name, algorithm, and ascii
-        stringstream ss(tempVec[counter]);
-
-        getline(ss, specificAlgName, ':');
-        getline(ss, alg, ':');
-        getline(ss, algAscii);
-
-        // supid string when printed doesnt count \n so had to turn it into \\n
-        size_t pos = 0;
-        while ((pos = algAscii.find("\\n", pos)) != string::npos) {
-            algAscii.replace(pos, 2, "\n");
-        }
-
-        // casual print
-        cout << endl << endl << endl;
-        terminalModifer.printCentered(specificAlgName);
-        terminalModifer.printCentered(alg);
-        actualAlgorithm = alg;
-
-        cout << endl << algAscii;
 
         // conditional control for loops/ending
-        if(counter > tempVec.size()-1) {
-            counter = 0;
-        }
 
         if (c == 32) { // space for next
             counter++;
             c = 0;
-            continue;
+
+            if(counter > tempVec.size()-1) {
+                counter = 0;
+            }
+
+            goto reprint_w_new_values;
         }
 
         if (c == 27) { // escape for leaving
@@ -414,30 +430,32 @@ string algorithmPracticeScreens::fromSolved(string algName) {
         }
     }
 
+    terminalModifer.clearScreen();
+
+    cout << endl << endl << endl << endl << endl << endl;
+
+    terminalModifer.printCentered("From Solved");
+    cout << endl;
+    terminalModifer.printCentered("This is how you get to the algorithm");
+    terminalModifer.printCentered("from a solved position");
+    terminalModifer.printCentered("Enter to proceed");
+
+    stringstream ss(temp);
+
+    getline(ss, specName, ':');
+    getline(ss, fromAlg);
+
+    cout << endl << endl << endl;
+    terminalModifer.printCentered(specName);
+    cout << endl;
+    terminalModifer.printCentered(fromAlg);
+
+    terminalModifer.setNonBlockingInput();
     // user interaciton loop
     while (true) {
         c = 0;
-        terminalModifer.setNonBlockingInput();
-        
-        terminalModifer.clearScreen();
 
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-        terminalModifer.printCentered("From Solved");
-        cout << endl;
-        terminalModifer.printCentered("This is how you get to the algorithm");
-        terminalModifer.printCentered("from a solved position");
-        terminalModifer.printCentered("Enter to proceed");
-
-        stringstream ss(temp);
-
-        getline(ss, specName, ':');
-        getline(ss, fromAlg);
-
-        cout << endl << endl << endl;
-        terminalModifer.printCentered(specName);
-        cout << endl;
-        terminalModifer.printCentered(fromAlg);
 
         if (c == 10) {
             break;
@@ -473,7 +491,7 @@ string algorithmPracticeScreens::splashScreen(string specificAlgName) {
 
     terminalModifier.clearScreen();
 
-    cout << endl << endl << endl;
+    cout << endl << endl << endl << endl << endl << endl;
 
     terminalModifier.printCentered(specificAlgName);
 
