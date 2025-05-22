@@ -8,6 +8,7 @@
 #include <vector>
 #include <filesystem>
 #include <regex>
+#include <limits>
 
 using namespace std;
 namespace fs = std::filesystem;
@@ -47,10 +48,10 @@ public:
 //     void drawAlgorithm(); 
     bool saveAlgTime(string ollpll, string specificAlgName, long long milliseconds, char[50]);
     long long getLatestAlgTime(string ollpll, string whatAlgorithm);
-    bool undoTime(string);
+    void undoTime(string algType, string specificAlgName);
 
     // for averaging
     long long grabAO5(); // returns miliseconds
     long long grabAO12();
-    long long grabPB(); // returns lowest time
+    long long grabPB(string ollpll, string whatAlgorithm); // returns lowest time
 };

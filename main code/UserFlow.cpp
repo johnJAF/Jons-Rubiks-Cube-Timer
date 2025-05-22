@@ -181,18 +181,20 @@ algNavigator:
         }
 
         while (true) {
-            returnStatement2 = fromSolved(specificAlgName);
-
-            if (returnStatement2 == "") {
-                terminalModifier.restoreTerminal();
-                goto algNavigator;
-            }
 
             returnStatement = splashScreen(specificAlgName);
 
             if (returnStatement == "F") {
+                goto algNavigator;
+            }
+
+            returnStatement2 = fromSolved(specificAlgName);
+
+            if (returnStatement2 == "") {
+                terminalModifier.restoreTerminal();
                 continue;
             }
+
 
             mainTimer(specificAlgName);
         }
@@ -345,7 +347,7 @@ reprint_w_new_values:
         terminalModifer.printCentered("Algorithm Navigator");
         cout << endl;
         terminalModifer.printCentered("What Algorithm do you want to practice?");
-        terminalModifer.printCentered("Space for next, Enter to view from a solved position");
+        terminalModifer.printCentered("Space for next, Enter to proceed to timer screen");
         terminalModifer.printCentered("Esc to exit");
     }
 
@@ -438,7 +440,7 @@ string algorithmPracticeScreens::fromSolved(string algName) {
     cout << endl;
     terminalModifer.printCentered("This is how you get to the algorithm");
     terminalModifer.printCentered("from a solved position");
-    terminalModifer.printCentered("Enter to proceed");
+    terminalModifer.printCentered("Enter to start timer");
 
     stringstream ss(temp);
 
@@ -476,8 +478,6 @@ string algorithmPracticeScreens::splashScreen(string specificAlgName) {
     DataManager dataMod;
     string algType;
     char c = 0;
-    long long time = 0;
-    string formattedTime;
 
     if(!dataMod.fileInfoHolder.empty()) { // if the vector has something
         dataMod.fileInfoHolder.clear();
@@ -488,33 +488,39 @@ string algorithmPracticeScreens::splashScreen(string specificAlgName) {
     } else {
         algType = "pll";
     }
+refresh_the_screen:
+    long long lasttime = 0;
+    long long pbtime = 0;
+    string formattedTime;
+    string pbString = "PB: ";
+    string ao5String;
+    string ao10String;
 
     terminalModifier.clearScreen();
-
     cout << endl << endl << endl << endl << endl << endl;
-
     terminalModifier.printCentered(specificAlgName);
-
     cout << endl;
- 
-    time = dataMod.getLatestAlgTime(algType, specificAlgName);
 
-    TimeSpan meow(time); // this turns long long ms into a timespan .grabTime will return the time as a string
-    
-    formattedTime = meow.grabTime();
+    lasttime = dataMod.getLatestAlgTime(algType, specificAlgName);
+    TimeSpan lastSpan(lasttime); // this turns long long ms into a timespan .grabTime will return the time as a string
+    formattedTime = lastSpan.grabTime();
 
     terminalModifier.printCentered(formattedTime);
-
     cout << endl << endl;
 
+    pbtime = dataMod.grabPB(algType, specificAlgName);
+    TimeSpan pbSpan(pbtime);
+    pbString += pbSpan.grabTime();
+
     // PLACEHOLDER FOR THE AVERAGES AND THINGS OF THAT NATURE
-    terminalModifier.printTwoColumns("PB:", "Ao5:");
+    terminalModifier.printTwoColumns(pbString, "Ao5:");
     terminalModifier.printTwoColumns("Ao10:", "Ao100:");
 
     cout << endl << endl;
 
-    terminalModifier.printCentered("Press any button to proceed to timer");
-    terminalModifier.printCentered("Esc to return to main menu");
+    terminalModifier.printCentered("Press any button to proceed seeing it from a solved position");
+    terminalModifier.printCentered("u to undo last solve");
+    terminalModifier.printCentered("Esc to go back");
 
     terminalModifier.setNonBlockingInput(); // sets raw mode
 
@@ -524,6 +530,9 @@ string algorithmPracticeScreens::splashScreen(string specificAlgName) {
 
         if (c == 27) {
             return "F"; // escape to menu
+        }  else if (c == 117) { // undo button
+            dataMod.undoTime(algType, specificAlgName);
+            goto refresh_the_screen;
         } else if (c > 0) {
             return "T";
         }

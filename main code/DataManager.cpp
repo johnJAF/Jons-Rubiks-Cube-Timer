@@ -203,7 +203,6 @@ long long DataManager::getLatestAlgTime(string ollpll, string whatAlgorithm) {
     string algName;
     string algTime;
     string algDate;
-    string folder;
     string holder;
 
     vector<string> allTimes;
@@ -212,12 +211,10 @@ long long DataManager::getLatestAlgTime(string ollpll, string whatAlgorithm) {
 
     if (ollpll == "oll") {
         fs::path basePath = fs::absolute("Data/Algorithms/OLL");
-        string folder = "Oll";
         fs::path extension = ".txt";
         fullPath = basePath / whatAlgorithm += extension;
     } else if (ollpll == "pll") {
         fs::path basePath = fs::absolute("Data/Algorithms/PLL");
-        string folder = "PLL";
         fs::path extension = ".txt";
         fullPath = basePath / whatAlgorithm += extension;
     }
@@ -243,6 +240,46 @@ long long DataManager::getLatestAlgTime(string ollpll, string whatAlgorithm) {
     time = stoll(algTime);
 
     return time;
+}
+
+void DataManager::undoTime(string ollpll, string whatAlgorithm) {
+    fs::path fullPath;
+    string algName;
+    string algTime;
+    string algDate;
+    string holder;
+
+    vector<string> allTimes;
+
+    long long time;
+
+    if (ollpll == "oll") {
+        fs::path basePath = fs::absolute("Data/Algorithms/OLL");
+        fs::path extension = ".txt";
+        fullPath = basePath / whatAlgorithm += extension;
+    } else if (ollpll == "pll") {
+        fs::path basePath = fs::absolute("Data/Algorithms/PLL");
+        fs::path extension = ".txt";
+        fullPath = basePath / whatAlgorithm += extension;
+    }
+
+    if (!fileInfoHolder.empty()) {
+        fileInfoHolder.clear();
+    }
+
+    vectorFileInfo(fullPath);
+
+    // If file is not empty
+    if (!fileInfoHolder.empty()) {
+        fileInfoHolder.pop_back();  // Remove the last line
+    }
+
+    // Write lines back to the same file (overwrite)
+    ofstream of(fullPath, ios::trunc);  // trunc clears the file
+    for (const string& s : fileInfoHolder) {
+        of << s << '\n';
+    }
+    of.close();
 }
 
 
@@ -292,6 +329,54 @@ long long DataManager::grabAO12() {
 }
 
 // returns lowest time
-long long DataManager::grabPB() {
-    
+long long DataManager::grabPB(string ollpll, string whatAlgorithm) {
+    fs::path fullPath;
+    string algName;
+    string algTime;
+    string algDate;
+    string holder;
+
+    vector<string> allTimes;
+
+    long long time;
+
+    if (ollpll == "oll") {
+        fs::path basePath = fs::absolute("Data/Algorithms/OLL");
+        fs::path extension = ".txt";
+        fullPath = basePath / whatAlgorithm += extension;
+    } else if (ollpll == "pll") {
+        fs::path basePath = fs::absolute("Data/Algorithms/PLL");
+        fs::path extension = ".txt";
+        fullPath = basePath / whatAlgorithm += extension;
+    }
+
+    if (!fileInfoHolder.empty()) {
+        fileInfoHolder.clear();
+    }
+
+    vectorFileInfo(fullPath);
+
+    if (fileInfoHolder.empty()) {
+        return 0;
+    }
+
+    long long personalBest = numeric_limits<long long>::max();
+
+    // logic to grab the quickest time
+    // Aa Perm:7043:05/08/25
+    for (string s : fileInfoHolder) {
+        stringstream ss(s);
+
+        getline(ss, algName, ':'); // "Aa Perm"
+        getline(ss, algTime, ':'); // "7042"
+        getline(ss, algDate); // "05/08/25"
+
+        time = stoll(algTime); // 7042
+
+        if (time < personalBest) {
+            personalBest = time;
+        }
+    }
+
+    return personalBest;
 }
