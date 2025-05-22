@@ -97,13 +97,12 @@ void scrambleScreen::mainScreen() {
 ////////////////////////////////////////////////////////
 
 void algorithmPracticeScreens::mainScreen() {
+top:
     Timer terminalModifier;
     algorithmPracticeScreens algoPracticeSwitch;
     char c = 0;
 
-    // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
-    while (true) {
-        terminalModifier.clearScreen();
+    terminalModifier.clearScreen();
     
         terminalModifier.printCentered("Algorithm Practice");
         terminalModifier.printCentered("(esc to return to main screen)");
@@ -114,6 +113,8 @@ void algorithmPracticeScreens::mainScreen() {
         terminalModifier.printTwoColumns("OLL (o)", "PLL (p)");
         terminalModifier.printTwoColumns("Create Algorithm (c)", "Edit Algorithms (e)");
 
+    // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
+    while (true) {
         terminalModifier.setNonBlockingInput();
 
         c = 0;
@@ -121,19 +122,25 @@ void algorithmPracticeScreens::mainScreen() {
 
         if (c == 'o') {
             isOll = true;
-            oll();
+            opll();
             terminalModifier.restoreTerminal();
+            goto top;
         } else if (c == 'p') {
             isOll = false;
-            pll();
+            opll(); // calls the same function as oll but the truth value is what makes the difference
+            terminalModifier.restoreTerminal();
+            goto top;
         } else if (c == 'c') {
             own();
             terminalModifier.restoreTerminal();
+            goto top;
         } else if (c == 'e') {
             editAlgs();
             terminalModifier.restoreTerminal();
+            goto top;
         } else if (c == 27) { // escape to exit
             c = 0;
+            terminalModifier.restoreTerminal();
             return;
         }
     }
@@ -144,99 +151,49 @@ void algorithmPracticeScreens::mainScreen() {
 // because it looks better to have oll() and pll() above
 // anyways this method calls navigator where the user chooses the algorithm category, algNavigator where the user chooses the specific sub-algorithm
 // then fromSolved where the user gets to see how to get to the algorithm ascii from a solved state, then main timer so the user can set a time, save it, and see their data later
-void algorithmPracticeScreens::oll() {
-StartOfOll:
+void algorithmPracticeScreens::opll() {
+StartOfOPll:
     Timer terminalModifier;
-    if(isOll == true) { // assertion for the code to run
-        string algName;
-        string specificAlgName;
-        char c = 0;
+    string algName;
+    string specificAlgName;
+    char c = 0;
+    string returnStatement;
+    string returnStatement2;
 
+    // gameplay loop
+    while (true) {
         algName = navigator();
 
-        if (algName == "") {
+        if (algName == "") { // if you esc out of nav you leave to main menu
             return;
         }
 
+algNavigator:
         specificAlgName = algNavigator(algName);
 
-        if (specificAlgName == "") {
-            return;
+        if (specificAlgName == "") { // if you esc out of algNav you go back to nav
+            continue;
         }
-
-        fromSolved(specificAlgName);
-        mainTimer(specificAlgName);
 
         while (true) {
-            terminalModifier.setNonBlockingInput(); // sets raw mode
+            returnStatement2 = fromSolved(specificAlgName);
 
-            c = 0;
-            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-            terminalModifier.clearScreen();
-            cout << endl << endl << endl << endl;
-            terminalModifier.printCentered("Continue practicing? y/n");
-
-            if (c == 'n') {
+            if (returnStatement2 == "") {
                 terminalModifier.restoreTerminal();
-                goto StartOfOll;
-            } else if (c == 'y') {
-                fromSolved(specificAlgName);
-                mainTimer(specificAlgName);
+                goto algNavigator;
             }
+
+            returnStatement = splashScreen(specificAlgName);
+
+            if (returnStatement == "F") {
+                return;
+            }
+
+            mainTimer(specificAlgName);
         }
-        
-    } else {
-        cout << "Something is wrong with the isOll truth value";
     }
 }
 
-// same as oll :)
-void algorithmPracticeScreens::pll() {
-StartOfPll:
-    Timer terminalModifier;
-    if(isOll == false) {
-        string algName;
-        string specificAlgName;
-        char c = 0;
-
-        algName = navigator();
-
-        if (algName == "") {
-            return;
-        }
-
-        specificAlgName = algNavigator(algName);
-
-        if (specificAlgName == "") {
-            return;
-        }
-
-        fromSolved(specificAlgName);
-        mainTimer(specificAlgName);
-
-        while (true) {
-            terminalModifier.setNonBlockingInput(); // sets raw mode
-
-            c = 0;
-            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-            terminalModifier.clearScreen();
-            cout << endl << endl << endl << endl;
-            terminalModifier.printCentered("Continue practicing? y/n");
-
-            if (c == 'n') {
-                terminalModifier.restoreTerminal();
-                goto StartOfPll;
-            } else if (c == 'y') {
-                fromSolved(specificAlgName);
-                mainTimer(specificAlgName);
-            }
-        }
-    } else {
-        cout << "Something is wrong with the isOll truth value";
-    }
-}
 
 void algorithmPracticeScreens::own() {
     cout << endl << "OWN MEOW" << endl;
@@ -431,7 +388,7 @@ string algorithmPracticeScreens::algNavigator(string algName) {
 
 // from solved will go to the fromSolved.txt files and grab if its oll/pll, then it will compare the algorithm that was chosen
 // with the algorithms in the respective algphotos txt and will find the correct data to get to an algorithm from a solved state
-void algorithmPracticeScreens::fromSolved(string algName) {
+string algorithmPracticeScreens::fromSolved(string algName) {
     DataManager moo;
     Timer terminalModifer;
     char c = 0;
@@ -452,7 +409,7 @@ void algorithmPracticeScreens::fromSolved(string algName) {
 
     // just to grab the single algorithm that has that name
     for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
-        if (algName.substr(0, 2) == moo.fileInfoHolder[x].substr(0,2)) {
+        if (algName.substr(0, 3) == moo.fileInfoHolder[x].substr(0,3)) {
             temp = moo.fileInfoHolder[x];
         }
     }
@@ -460,6 +417,7 @@ void algorithmPracticeScreens::fromSolved(string algName) {
     // user interaciton loop
     while (true) {
         c = 0;
+        terminalModifer.setNonBlockingInput();
         
         terminalModifer.clearScreen();
 
@@ -469,7 +427,7 @@ void algorithmPracticeScreens::fromSolved(string algName) {
         cout << endl;
         terminalModifer.printCentered("This is how you get to the algorithm");
         terminalModifer.printCentered("from a solved position");
-        terminalModifer.printCentered("Enter to proceed to the timer");
+        terminalModifer.printCentered("Enter to proceed");
 
         stringstream ss(temp);
 
@@ -478,15 +436,82 @@ void algorithmPracticeScreens::fromSolved(string algName) {
 
         cout << endl << endl << endl;
         terminalModifer.printCentered(specName);
+        cout << endl;
         terminalModifer.printCentered(fromAlg);
 
         if (c == 10) {
             break;
         }
 
+        if (c == 27) {
+            terminalModifer.restoreTerminal();
+            return "";
+        }
+
+    }
+    terminalModifer.restoreTerminal();
+    return "meow";
+}
+
+string algorithmPracticeScreens::splashScreen(string specificAlgName) {
+    Timer terminalModifier;
+    DataManager dataMod;
+    string algType;
+    char c = 0;
+    long long time = 0;
+    string formattedTime;
+
+    if(!dataMod.fileInfoHolder.empty()) { // if the vector has something
+        dataMod.fileInfoHolder.clear();
     }
 
-    return;
+    if (isOll) {
+        algType = "oll";
+    } else {
+        algType = "pll";
+    }
+
+    terminalModifier.clearScreen();
+
+    cout << endl << endl << endl;
+
+    terminalModifier.printCentered(specificAlgName);
+
+    cout << endl;
+ 
+    time = dataMod.getLatestAlgTime(algType, specificAlgName);
+
+    TimeSpan meow(time); // this turns long long ms into a timespan .grabTime will return the time as a string
+    
+    formattedTime = meow.grabTime();
+
+    terminalModifier.printCentered(formattedTime);
+
+    cout << endl << endl;
+
+    // PLACEHOLDER FOR THE AVERAGES AND THINGS OF THAT NATURE
+    terminalModifier.printTwoColumns("PB:", "Ao5:");
+    terminalModifier.printTwoColumns("Ao10:", "Ao100:");
+
+    cout << endl << endl;
+
+    terminalModifier.printCentered("Press any button to proceed to timer");
+    terminalModifier.printCentered("Esc to return to main menu");
+
+    terminalModifier.setNonBlockingInput(); // sets raw mode
+
+    while (true) {
+        c = 0;
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        if (c == 27) {
+            return "F"; // escape to menu
+        } else if (c > 0) {
+            return "T";
+        }
+
+    }
+
 }
 
 // just in case while you were solving you made some mistake and you want to remove the very last solve instance.
@@ -511,7 +536,6 @@ void algorithmPracticeScreens::drawMap() {
 // different baesd on isOll. Uses data vizualizer object code to show PB, Ao5, Ao12.
 void algorithmPracticeScreens::mainTimer(string specificAlgname) {
     string algType;
-    // TimeSpan meow(elapsedTime); this turns long long ms into a timespan .grabTime will return the time as a string
     Timer timer;
     DataManager mooski;
     time_t timestamp = time(NULL);

@@ -3,12 +3,14 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <sstream>
 #include <ctime>
 #include <vector>
 #include <filesystem>
 #include <regex>
 
 using namespace std;
+namespace fs = std::filesystem;
 
 // class to manage the data of any given function. Abstracted enough to be used universally
 class DataManager {
@@ -26,6 +28,7 @@ public:
     bool deleteFile(string whatFolder, string whatFile); // deletes a file or session
     void displayFolder(string whatFolder); // prints the feature folder
     void vectorFileInfo(string whatFolder, string whatFile); // grabs all file info as a dynamic vector and stores it
+    void vectorFileInfo(fs::path pathy);
 
     // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
     void saveSolveNoOrientation(string session, long long milliseconds, string date);
@@ -43,6 +46,8 @@ public:
 //     void writeAlgorithm();
 //     void drawAlgorithm(); 
     bool saveAlgTime(string ollpll, string specificAlgName, long long milliseconds, char[50]);
+    long long getLatestAlgTime(string ollpll, string whatAlgorithm);
+    bool undoTime(string);
 
 //     // for averaging
 //     long long grabAO5(); // returns miliseconds

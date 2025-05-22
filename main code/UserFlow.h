@@ -27,8 +27,7 @@ class algorithmPracticeScreens {
 
 public:
     void mainScreen();
-        void oll();
-        void pll();
+        void opll();
         void own();
         void editAlgs(); // probably has an object that extends datavisualizer which allows for display, and editation
 
@@ -39,7 +38,9 @@ public:
 
     // pulls from dataset that checks what algorithm you're doing
     // uses isOll
-    void fromSolved(string file);
+    string fromSolved(string file);
+
+    string splashScreen(string justInCase);
 
     // just in case while you were solving you made some mistake and you want to remove the very last solve instance.
     void undoSolve();

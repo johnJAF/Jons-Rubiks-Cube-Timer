@@ -126,6 +126,33 @@ void DataManager::vectorFileInfo(string whatFolder, string whatFile) {
     while(getline(meow, line)) {
         fileInfoHolder.push_back(line);
     }
+
+    fileInfoHolder.pop_back(); // removes white space
+
+    meow.close();
+}
+
+// i created this method because it does vectorFileInfo but it has more power because it doesnt check if the file name is valid, it just runs it
+// only use it if you know the exact path
+void DataManager::vectorFileInfo(fs::path fully) {
+    fs::path fullPath = fully;
+    string line;
+
+    if (!fs::exists(fullPath)) {
+        return;
+    }
+
+    ifstream meow(fullPath);
+
+    if (!meow.is_open()) {
+        return;
+    }
+
+    while (getline(meow, line)) {
+        fileInfoHolder.push_back(line);
+    }
+
+    meow.close();
 }
 
 // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
@@ -169,6 +196,53 @@ bool DataManager::saveAlgTime(string ollpll, string specificAlgName, long long m
     meow.close();
 
     return true;
+}
+
+long long DataManager::getLatestAlgTime(string ollpll, string whatAlgorithm) {
+    fs::path fullPath;
+    string algName;
+    string algTime;
+    string algDate;
+    string folder;
+    string holder;
+
+    vector<string> allTimes;
+
+    long long time;
+
+    if (ollpll == "oll") {
+        fs::path basePath = fs::absolute("Data/Algorithms/OLL");
+        string folder = "Oll";
+        fs::path extension = ".txt";
+        fullPath = basePath / whatAlgorithm += extension;
+    } else if (ollpll == "pll") {
+        fs::path basePath = fs::absolute("Data/Algorithms/PLL");
+        string folder = "PLL";
+        fs::path extension = ".txt";
+        fullPath = basePath / whatAlgorithm += extension;
+    }
+
+    if (!fileInfoHolder.empty()) {
+        fileInfoHolder.clear();
+    }
+
+    vectorFileInfo(fullPath);
+
+    if (fileInfoHolder.empty()) {
+        return 0;
+    }
+
+    holder = fileInfoHolder.back();
+
+    stringstream ss(holder);
+
+    getline(ss, algName, ':');
+    getline(ss, algTime, ':'); // should hold the alg timer
+    getline(ss, algDate);
+
+    time = stoll(algTime);
+
+    return time;
 }
 
 
