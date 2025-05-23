@@ -23,17 +23,17 @@ class DataManager {
 public:
     vector<string> fileInfoHolder;
     // file navigation
-    bool createFile(string whatFolder, string fileName); // creates a session or an algorithm
+    bool createFile(const string& whatFolder, const string& fileName); // creates a session or an algorithm
     void createSessionLoop();
     bool isValidFilename(const string& name);
-    bool deleteFile(string whatFolder, string whatFile); // deletes a file or session
-    void displayFolder(string whatFolder); // prints the feature folder
-    void vectorFileInfo(string whatFolder, string whatFile); // grabs all file info as a dynamic vector and stores it
-    void vectorFileInfo(fs::path pathy);
+    bool deleteFile(const string& whatFolder, const string& whatFile); // deletes a file or session
+    void displayFolder(const string& whatFolder); // prints the feature folder
+    void vectorFileInfo(const string& whatFolder, const string& whatFile); // grabs all file info as a dynamic vector and stores it
+    void vectorFileInfo(const fs::path& pathy);
 
     // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
-    void saveSolveNoOrientation(string session, long long milliseconds, string date);
-    void saveSolveOrientation(string session, long long milliseconds, string orientation, string date);
+    void saveSolveNoOrientation(const string& session, const long long milliseconds, const string& date);
+    void saveSolveOrientation(const string& session, const long long milliseconds, const string& orientation, const string& date);
 
 //     // getters 
 //     string getSessionName(); // returns current session file name
@@ -46,12 +46,12 @@ public:
 //     // for the algorithmPractice class
 //     void writeAlgorithm();
 //     void drawAlgorithm(); 
-    bool saveAlgTime(string ollpll, string specificAlgName, long long milliseconds, char[50]);
-    long long getLatestAlgTime(string ollpll, string whatAlgorithm);
-    void undoTime(string algType, string specificAlgName);
+    bool saveAlgTime(const string& ollpll, const string& specificAlgName, const long long milliseconds, const char[50]);
+    long long getLatestAlgTime(const string& ollpll, const string& whatAlgorithm);
+    void undoTime(const string& algType, const string& specificAlgName);
 
     // for averaging
     long long grabAO5(); // returns miliseconds
     long long grabAO12();
-    long long grabPB(string ollpll, string whatAlgorithm); // returns lowest time
+    long long grabPB(const string& ollpll, const string& whatAlgorithm); // returns lowest time
 };

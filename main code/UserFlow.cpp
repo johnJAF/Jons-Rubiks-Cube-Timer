@@ -341,8 +341,7 @@ reprint_w_new_values:
     if(tempVec.size() == 1) { // only if the alg category has one specific algorithm (that is just your choice)
         terminalModifer.printCentered("Algorithm Navigator");
         cout << endl;
-        terminalModifer.printCentered("Press enter to view");
-        terminalModifer.printCentered("from a solved position");
+        terminalModifer.printCentered("Press enter to view timer screen");
     } else {
         terminalModifer.printCentered("Algorithm Navigator");
         cout << endl;

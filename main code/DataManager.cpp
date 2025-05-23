@@ -6,7 +6,7 @@ namespace fs = std::filesystem;
 // whatFolder can be Algorithms or TimerSessions 
 // returns true if created, false if typed in improperly. Implemented by programmer
 // REMINDER: IMPLIMENT EXISTS LOGIC WHEN USED SO WHEN THE FILE EXISTS I KNOW TO JUST OPEN THAT FILE
-bool DataManager::createFile(string whatFolder, string fileName) {
+bool DataManager::createFile(const string& whatFolder, const string& fileName) {
     // path connection without concatonation because this is safer
     fs::path basePath = fs::absolute("Data/" + whatFolder);
     fs::path extension = ".txt";
@@ -24,12 +24,6 @@ bool DataManager::createFile(string whatFolder, string fileName) {
         cerr << endl << "[Error] Unauthorized path access attempt." << endl;
         return false;
     }
-
-    // // if the path already exists, its gonna print an error and send you back
-    // if (fs::exists(fullPath)) {
-    //     cout << endl << "[Notice] File already exists. Choose another name." << endl;
-    //     return false;
-    // }
 
     // creates the file at the given path, if something was wrong with the file creation itll throw an error.
     ofstream meow(fullPath);
@@ -67,7 +61,7 @@ void DataManager::createSessionLoop() {
 }
 
 // deletes a file or session
-bool DataManager::deleteFile(string whatFolder, string whatFile) {
+bool DataManager::deleteFile(const string& whatFolder, const string& whatFile) {
     fs::path basePath = fs::absolute("Data/" + whatFolder);
     fs::path extension = ".txt";
     fs::path fullPath = basePath / whatFile += extension;
@@ -95,7 +89,7 @@ bool DataManager::deleteFile(string whatFolder, string whatFile) {
 // prints the feature folder
 // folder can only be algorithms -> OLL, PLL -> (alg names depending on o/pll)
 // or the folder can be sessions -> (all session names)
-void DataManager::displayFolder(string whatFolder) {
+void DataManager::displayFolder(const string& whatFolder) {
     fs::path basePath = fs::absolute("Data/" + whatFolder);
 
     for (auto const& dir_entry : fs::directory_iterator{basePath}) {
@@ -109,7 +103,7 @@ void DataManager::displayFolder(string whatFolder) {
 
 // grabs all file info as a dynamic vector and stores it to fileInfoHolder
 // make whatFolder "" in order to grab the oll/pll algs/algphoto txt files
-void DataManager::vectorFileInfo(string whatFolder, string whatFile) {
+void DataManager::vectorFileInfo(const string& whatFolder, const string& whatFile) {
     fs::path basePath = fs::absolute("Data/" + whatFolder);
     fs::path extension = ".txt";
     fs::path fullPath = basePath / whatFile += extension;
@@ -124,7 +118,7 @@ void DataManager::vectorFileInfo(string whatFolder, string whatFile) {
     ifstream meow(fullPath);
 
     while(getline(meow, line)) {
-        fileInfoHolder.push_back(line);
+        fileInfoHolder.emplace_back(line);
     }
 
     fileInfoHolder.pop_back(); // removes white space
@@ -134,29 +128,28 @@ void DataManager::vectorFileInfo(string whatFolder, string whatFile) {
 
 // i created this method because it does vectorFileInfo but it has more power because it doesnt check if the file name is valid, it just runs it
 // only use it if you know the exact path
-void DataManager::vectorFileInfo(fs::path fully) {
-    fs::path fullPath = fully;
+void DataManager::vectorFileInfo(const fs::path& fully) {
     string line;
 
-    if (!fs::exists(fullPath)) {
+    if (!fs::exists(fully)) {
         return;
     }
 
-    ifstream meow(fullPath);
+    ifstream meow(fully);
 
     if (!meow.is_open()) {
         return;
     }
 
     while (getline(meow, line)) {
-        fileInfoHolder.push_back(line);
+        fileInfoHolder.emplace_back(line);
     }
 
     meow.close();
 }
 
 // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
-void DataManager::saveSolveNoOrientation(string session, long long milliseconds, string date) {
+void DataManager::saveSolveNoOrientation(const string& session, const long long milliseconds, const string& date) {
     fs::path basePath = fs::absolute("Data/Sessions");
     fs::path extension = ".txt";
     fs::path fullPath = basePath / session += extension;
@@ -167,11 +160,11 @@ void DataManager::saveSolveNoOrientation(string session, long long milliseconds,
     }
 }
 
-void DataManager::saveSolveOrientation(string session, long long milliseconds, string orientation, string date) {
+void DataManager::saveSolveOrientation(const string& session, const long long milliseconds, const string& orientation, const string& date) {
 
 }
 
-bool DataManager::saveAlgTime(string ollpll, string specificAlgName, long long milliseconds, char date[50]) {
+bool DataManager::saveAlgTime(const string& ollpll, const string& specificAlgName, const long long milliseconds, const char date[50]) {
     fs::path fullPath;
 
     if (ollpll == "oll") {
@@ -198,7 +191,7 @@ bool DataManager::saveAlgTime(string ollpll, string specificAlgName, long long m
     return true;
 }
 
-long long DataManager::getLatestAlgTime(string ollpll, string whatAlgorithm) {
+long long DataManager::getLatestAlgTime(const string& ollpll, const string& whatAlgorithm) {
     fs::path fullPath;
     string algName;
     string algTime;
@@ -242,7 +235,7 @@ long long DataManager::getLatestAlgTime(string ollpll, string whatAlgorithm) {
     return time;
 }
 
-void DataManager::undoTime(string ollpll, string whatAlgorithm) {
+void DataManager::undoTime(const string& ollpll, const string& whatAlgorithm) {
     fs::path fullPath;
     string algName;
     string algTime;
@@ -329,14 +322,11 @@ long long DataManager::grabAO12() {
 }
 
 // returns lowest time
-long long DataManager::grabPB(string ollpll, string whatAlgorithm) {
+long long DataManager::grabPB(const string& ollpll, const string& whatAlgorithm) {
     fs::path fullPath;
     string algName;
     string algTime;
     string algDate;
-    string holder;
-
-    vector<string> allTimes;
 
     long long time;
 
