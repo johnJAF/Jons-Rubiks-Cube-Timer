@@ -273,7 +273,7 @@ reprint_w_new_values:
         }
 
         // if F
-        if (c == 100) {
+        if (c == 102) {
             navCounter--;
             c = 0;
 
