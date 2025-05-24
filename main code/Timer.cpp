@@ -166,7 +166,7 @@ void Timer::runTimer() {
 }
 
 // this takes care of running the time for the algorithm practice screens
-void Timer::runTimer(string algorithm) {
+void Timer::runTimer(const string& algorithm) {
 // this will block all of the terminals searches for terminal inputs and will stop the need to hit enter to stop the program
     setNonBlockingInput();
 
@@ -269,8 +269,4 @@ void Timer::inspectionTime() {
     
     // this will restore all of the changes prevented when setNonBlockingInput was called
     restoreTerminal();
-}
-
-void Timer::timerScreen() {
-
 }

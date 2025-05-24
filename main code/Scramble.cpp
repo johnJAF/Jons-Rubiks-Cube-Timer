@@ -1,15 +1,14 @@
 #include "Scramble.h"
 
-// arrays of submoves
-array<string, 3> rightSide = {"R", "R'", "R2"};
-array<string, 3> leftSide =  {"L", "L'", "L2"};
-array<string, 3> face =      {"F", "F'", "F2"};
-array<string, 3> up =        {"U", "U'", "U2"};
-array<string, 3> down =      {"D", "D'", "D2"};
-array<string, 3> back =      {"B", "B'", "B2"};
+const array<string, 3> Scramble::rightSide = {"R", "R'", "R2"};
+const array<string, 3> Scramble::leftSide  = {"L", "L'", "L2"};
+const array<string, 3> Scramble::face      = {"F", "F'", "F2"};
+const array<string, 3> Scramble::up        = {"U", "U'", "U2"};
+const array<string, 3> Scramble::down      = {"D", "D'", "D2"};
+const array<string, 3> Scramble::back      = {"B", "B'", "B2"};
 
-// dictionary of all of the main moves
-array<array<string, 3>, 6> twoDeeList = {rightSide, leftSide, face, up, down, back};
+const array<array<string, 3>, 6> Scramble::twoDeeList = {Scramble::rightSide, Scramble::leftSide, Scramble::face, Scramble::up, Scramble::down, Scramble::back
+};
 
 // random scramble using random at current time (20 positions)
 void Scramble::newScramble() {
@@ -133,7 +132,7 @@ void Scramble::setScramble() {
     scrambled = newListOfPositions;
 }
 
-bool Scramble::checkScrambleIssues(array<string, 20> scramblington) {
+bool Scramble::checkScrambleIssues(const array<string, 20>& scramblington) {
     // for every item in the array
     for(int x = 0; x < scramblington.size(); x++) {
         // X's are okay for blanks
@@ -188,7 +187,7 @@ void Scramble::setOrientation() { // for top and front in that order
 }
 
 // overwritten method for the just in case scenario where we have the orientation string already and we want to preload it
-void Scramble::setOrientation(string presetOrientation) {
+void Scramble::setOrientation(const string& presetOrientation) {
     frontOrientation = presetOrientation[0];
     topOrientation = presetOrientation[1];
 }

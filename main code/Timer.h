@@ -32,7 +32,6 @@ class Timer {
 public:
     int originalFlags = fcntl(STDIN_FILENO, F_GETFL);
 
-
     // basic timer manipulation functions
     void start();
 
@@ -72,10 +71,8 @@ public:
 
     void runTimer();
 
-    void runTimer(string algorithm);
+    void runTimer(const string& algorithm);
 
     void inspectionTime();
-
-    void timerScreen();
 
 };

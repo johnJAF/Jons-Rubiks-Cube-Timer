@@ -13,7 +13,7 @@ public:
     void startScreen();
 
     // second screen user sees, shows all four options between scrambler, timer, datavisualizer, alogirthmpractice
-    void mainScreen(char moo);
+    void mainScreen(const char moo);
 };
 
 class scrambleScreen {
@@ -24,6 +24,8 @@ public:
 class algorithmPracticeScreens {
     bool isOll;
     string actualAlgorithm;
+    int navCounter = 0;
+    int algNavCounter = 0;
 
 public:
     void mainScreen();
@@ -34,13 +36,13 @@ public:
     // this navigator screen will be used 4 times in choosing what name of algorithm/photo of algorithm for OLL/PLL
     // uses isOLL
     string navigator(); // navigates through list of alg names
-    string algNavigator(string file); // navigates thorugh list of alg photos
+    string algNavigator(const string& file); // navigates thorugh list of alg photos
 
     // pulls from dataset that checks what algorithm you're doing
     // uses isOll
-    string fromSolved(string file);
+    string fromSolved(const string& file);
 
-    string splashScreen(string justInCase);
+    string splashScreen(const string& justInCase);
 
     // just in case while you were solving you made some mistake and you want to remove the very last solve instance.
     void undoSolve();
@@ -52,7 +54,7 @@ public:
 
     // creates a timer instance based on algorithm chosen, saves it to that respective file
     // different baesd on isOll. Uses data vizualizer object code to show PB, Ao5, Ao12.
-    void mainTimer(string file); 
+    void mainTimer(const string& file); 
 
 };
 

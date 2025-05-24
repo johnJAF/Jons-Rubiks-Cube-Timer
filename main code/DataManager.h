@@ -47,11 +47,11 @@ public:
 //     void writeAlgorithm();
 //     void drawAlgorithm(); 
     bool saveAlgTime(const string& ollpll, const string& specificAlgName, const long long milliseconds, const char[50]);
-    long long getLatestAlgTime(const string& ollpll, const string& whatAlgorithm);
-    void undoTime(const string& algType, const string& specificAlgName);
+    long long getLatestAlgTime();
+    void undoTime(const fs::path& fullPath);
 
     // for averaging
     long long grabAO5(); // returns miliseconds
     long long grabAO12();
-    long long grabPB(const string& ollpll, const string& whatAlgorithm); // returns lowest time
+    long long grabPB(); // returns lowest time
 };

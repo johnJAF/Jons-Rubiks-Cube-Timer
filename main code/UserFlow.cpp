@@ -19,7 +19,7 @@ void introScreens::startScreen() {
 } 
 
 // second screen user sees, shows all four options between scrambler, timer, datavisualizer, alogirthmpractice
-void introScreens::mainScreen(char moo) {
+void introScreens::mainScreen(const char moo) {
     // all objects to take care of screen switching when an option is chosen.
     Timer terminalModifier;
     scrambleScreen scrambleSwitch;
@@ -103,6 +103,8 @@ void algorithmPracticeScreens::mainScreen() {
 top:
     Timer terminalModifier;
     algorithmPracticeScreens algoPracticeSwitch;
+    navCounter = 0;
+    algNavCounter = 0;
     char c = 0;
 
     terminalModifier.clearScreen();
@@ -118,10 +120,9 @@ top:
         terminalModifier.printTwoColumns("OLL (o)", "PLL (p)");
         terminalModifier.printTwoColumns("Create Algorithm (c)", "Edit Algorithms (e)");
 
+    terminalModifier.setNonBlockingInput();
     // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
     while (true) {
-        terminalModifier.setNonBlockingInput();
-
         c = 0;
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
@@ -157,7 +158,6 @@ top:
 // anyways this method calls navigator where the user chooses the algorithm category, algNavigator where the user chooses the specific sub-algorithm
 // then fromSolved where the user gets to see how to get to the algorithm ascii from a solved state, then main timer so the user can set a time, save it, and see their data later
 void algorithmPracticeScreens::opll() {
-StartOfOPll:
     Timer terminalModifier;
     string algName;
     string specificAlgName;
@@ -221,9 +221,6 @@ string algorithmPracticeScreens::navigator() {
     char c = 0;
     string algName;
 
-    terminalModifer.setNonBlockingInput();
-    int counter = 0;
-
     if(!moo.fileInfoHolder.empty()) { // if the vector has something
         moo.fileInfoHolder.clear();
     }
@@ -234,6 +231,7 @@ string algorithmPracticeScreens::navigator() {
         moo.vectorFileInfo("Algorithms", "pllAlgs"); // send all of the information form the pllAlgs file to the moo vector
     }
 
+    terminalModifer.setNonBlockingInput();
 reprint_w_new_values:
     // for printing
     terminalModifer.clearScreen();
@@ -243,14 +241,15 @@ reprint_w_new_values:
     // casual prints
     terminalModifer.printCentered("Algorithm Navigator");
     cout << endl;
-    terminalModifer.printCentered("Choose what OLL Algorithm category you want");
-    terminalModifer.printCentered("Space for next, Enter to choose");
+    terminalModifer.printCentered("Choose what Algorithm category you want");
+    terminalModifer.printCentered("Enter to proceed, Esc to exit");
+    terminalModifer.printTwoColumns("<- F", "J ->");
         
     cout << endl << endl << endl;
 
     // prints alg category
-    terminalModifer.printCentered(moo.fileInfoHolder[counter]);
-    algName = moo.fileInfoHolder[counter];
+    terminalModifer.printCentered(moo.fileInfoHolder[navCounter]);
+    algName = moo.fileInfoHolder[navCounter];
 
 
     while (true) {
@@ -261,13 +260,25 @@ reprint_w_new_values:
 
         // conditional control for loops/ending
 
-        // if spacebar
-        if (c == 32) {
-            counter++;
+        // if J
+        if (c == 106) {
+            navCounter++;
             c = 0;
 
-            if(counter > moo.fileInfoHolder.size()) {
-                counter = 0;
+            if(navCounter > moo.fileInfoHolder.size()) {
+                navCounter = 0;
+            }
+
+            goto reprint_w_new_values;
+        }
+
+        // if F
+        if (c == 100) {
+            navCounter--;
+            c = 0;
+
+            if (navCounter < 0) {
+                navCounter = moo.fileInfoHolder.size();
             }
 
             goto reprint_w_new_values;
@@ -293,7 +304,7 @@ reprint_w_new_values:
 // alg navigator works by taking the alg category, then searching the algPhotos file, parsing one string at a time
 // then separating the string into specificAlgName, alg, and aglAscii -- this is used for display and for determining the specific sub-algoirthm
 // the determining is done the same way navigaor determines
-string algorithmPracticeScreens::algNavigator(string algName) {
+string algorithmPracticeScreens::algNavigator(const string& algName) {
     DataManager moo;
     Timer terminalModifer;
     string specificAlgName, alg, algAscii;
@@ -302,7 +313,6 @@ string algorithmPracticeScreens::algNavigator(string algName) {
     vector<string> tempVec;
 
     terminalModifer.setNonBlockingInput();
-    int counter = 0;
 
     if(!moo.fileInfoHolder.empty()) { // if the vector has something
         moo.fileInfoHolder.clear();
@@ -316,7 +326,7 @@ string algorithmPracticeScreens::algNavigator(string algName) {
             holder = holder.substr(0, holder.find(":"));
             
             if (algName == holder.substr(0, holder.length()-2)) {
-                tempVec.push_back(moo.fileInfoHolder[x]);
+                tempVec.emplace_back(moo.fileInfoHolder[x]);
             }
         }
 
@@ -327,7 +337,7 @@ string algorithmPracticeScreens::algNavigator(string algName) {
 
         for(int x = 0; x < moo.fileInfoHolder.size(); x++) {
             if (algName.substr(0, 1) == moo.fileInfoHolder[x].substr(0,1)) {
-                tempVec.push_back(moo.fileInfoHolder[x]);
+                tempVec.emplace_back(moo.fileInfoHolder[x]);
             }
         }
     }
@@ -346,12 +356,12 @@ reprint_w_new_values:
         terminalModifer.printCentered("Algorithm Navigator");
         cout << endl;
         terminalModifer.printCentered("What Algorithm do you want to practice?");
-        terminalModifer.printCentered("Space for next, Enter to proceed to timer screen");
-        terminalModifer.printCentered("Esc to exit");
+        terminalModifer.printCentered("Enter to proceed, Esc to exit");
+        terminalModifer.printTwoColumns("<- F", "J ->");
     }
 
     // create a string stream out of every data string thats pulled in, this will get split into specific name, algorithm, and ascii
-    stringstream ss(tempVec[counter]);
+    stringstream ss(tempVec[algNavCounter]);
 
     getline(ss, specificAlgName, ':');
     getline(ss, alg, ':');
@@ -377,12 +387,25 @@ reprint_w_new_values:
 
         // conditional control for loops/ending
 
-        if (c == 32) { // space for next
-            counter++;
+        // if J
+        if (c == 106) {
+            algNavCounter++;
             c = 0;
 
-            if(counter > tempVec.size()-1) {
-                counter = 0;
+            if(algNavCounter > tempVec.size()-1) {
+                algNavCounter = 0;
+            }
+
+            goto reprint_w_new_values;
+        }
+
+        // if F
+        if (c == 102) {
+            algNavCounter--;
+            c = 0;
+
+            if (algNavCounter < 0) {
+                algNavCounter = tempVec.size()-1;
             }
 
             goto reprint_w_new_values;
@@ -405,7 +428,7 @@ reprint_w_new_values:
 
 // from solved will go to the fromSolved.txt files and grab if its oll/pll, then it will compare the algorithm that was chosen
 // with the algorithms in the respective algphotos txt and will find the correct data to get to an algorithm from a solved state
-string algorithmPracticeScreens::fromSolved(string algName) {
+string algorithmPracticeScreens::fromSolved(const string& algName) {
     DataManager moo;
     Timer terminalModifer;
     char c = 0;
@@ -415,8 +438,8 @@ string algorithmPracticeScreens::fromSolved(string algName) {
     string fromAlg; // holds algorithm
 
     if(!moo.fileInfoHolder.empty()){ // if the vector has something
-            moo.fileInfoHolder.clear();
-        }
+        moo.fileInfoHolder.clear();
+    }
 
     if(isOll) {
         moo.vectorFileInfo("Algorithms", "ollFromSolved");
@@ -472,21 +495,29 @@ string algorithmPracticeScreens::fromSolved(string algName) {
     return "meow";
 }
 
-string algorithmPracticeScreens::splashScreen(string specificAlgName) {
+string algorithmPracticeScreens::splashScreen(const string& specificAlgName) {
     Timer terminalModifier;
     DataManager dataMod;
     string algType;
+    fs::path fullPath;
     char c = 0;
 
-    if(!dataMod.fileInfoHolder.empty()) { // if the vector has something
+    if(!dataMod.fileInfoHolder.empty()){ // if the vector has something
         dataMod.fileInfoHolder.clear();
     }
 
-    if (isOll) {
-        algType = "oll";
+    if(isOll) {
+        fs::path basePath = fs::absolute("Data/Algorithms/OLL");
+        fs::path extension = ".txt";
+        fullPath = basePath / specificAlgName += extension;
+        dataMod.vectorFileInfo(fullPath);
     } else {
-        algType = "pll";
+        fs::path basePath = fs::absolute("Data/Algorithms/PLL");
+        fs::path extension = ".txt";
+        fullPath = basePath / specificAlgName += extension;
+        dataMod.vectorFileInfo(fullPath);
     }
+
 refresh_the_screen:
     long long lasttime = 0;
     long long pbtime = 0;
@@ -500,14 +531,14 @@ refresh_the_screen:
     terminalModifier.printCentered(specificAlgName);
     cout << endl;
 
-    lasttime = dataMod.getLatestAlgTime(algType, specificAlgName);
+    lasttime = dataMod.getLatestAlgTime();
     TimeSpan lastSpan(lasttime); // this turns long long ms into a timespan .grabTime will return the time as a string
     formattedTime = lastSpan.grabTime();
 
     terminalModifier.printCentered(formattedTime);
     cout << endl << endl;
 
-    pbtime = dataMod.grabPB(algType, specificAlgName);
+    pbtime = dataMod.grabPB();
     TimeSpan pbSpan(pbtime);
     pbString += pbSpan.grabTime();
 
@@ -530,7 +561,7 @@ refresh_the_screen:
         if (c == 27) {
             return "F"; // escape to menu
         }  else if (c == 117) { // undo button
-            dataMod.undoTime(algType, specificAlgName);
+            dataMod.undoTime(fullPath);
             goto refresh_the_screen;
         } else if (c > 0) {
             return "T";
@@ -560,7 +591,7 @@ void algorithmPracticeScreens::drawMap() {
 
 // creates a timer instance based on algorithm chosen, saves it to that respective file
 // different baesd on isOll. Uses data vizualizer object code to show PB, Ao5, Ao12.
-void algorithmPracticeScreens::mainTimer(string specificAlgname) {
+void algorithmPracticeScreens::mainTimer(const string& specificAlgname) {
     string algType;
     Timer timer;
     DataManager mooski;

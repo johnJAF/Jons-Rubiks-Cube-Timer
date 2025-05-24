@@ -191,32 +191,14 @@ bool DataManager::saveAlgTime(const string& ollpll, const string& specificAlgNam
     return true;
 }
 
-long long DataManager::getLatestAlgTime(const string& ollpll, const string& whatAlgorithm) {
+long long DataManager::getLatestAlgTime() {
     fs::path fullPath;
     string algName;
     string algTime;
     string algDate;
     string holder;
 
-    vector<string> allTimes;
-
     long long time;
-
-    if (ollpll == "oll") {
-        fs::path basePath = fs::absolute("Data/Algorithms/OLL");
-        fs::path extension = ".txt";
-        fullPath = basePath / whatAlgorithm += extension;
-    } else if (ollpll == "pll") {
-        fs::path basePath = fs::absolute("Data/Algorithms/PLL");
-        fs::path extension = ".txt";
-        fullPath = basePath / whatAlgorithm += extension;
-    }
-
-    if (!fileInfoHolder.empty()) {
-        fileInfoHolder.clear();
-    }
-
-    vectorFileInfo(fullPath);
 
     if (fileInfoHolder.empty()) {
         return 0;
@@ -235,26 +217,13 @@ long long DataManager::getLatestAlgTime(const string& ollpll, const string& what
     return time;
 }
 
-void DataManager::undoTime(const string& ollpll, const string& whatAlgorithm) {
-    fs::path fullPath;
+void DataManager::undoTime(const fs::path& fullPath) {
     string algName;
     string algTime;
     string algDate;
-    string holder;
-
-    vector<string> allTimes;
 
     long long time;
 
-    if (ollpll == "oll") {
-        fs::path basePath = fs::absolute("Data/Algorithms/OLL");
-        fs::path extension = ".txt";
-        fullPath = basePath / whatAlgorithm += extension;
-    } else if (ollpll == "pll") {
-        fs::path basePath = fs::absolute("Data/Algorithms/PLL");
-        fs::path extension = ".txt";
-        fullPath = basePath / whatAlgorithm += extension;
-    }
 
     if (!fileInfoHolder.empty()) {
         fileInfoHolder.clear();
@@ -322,29 +291,13 @@ long long DataManager::grabAO12() {
 }
 
 // returns lowest time
-long long DataManager::grabPB(const string& ollpll, const string& whatAlgorithm) {
+long long DataManager::grabPB() {
     fs::path fullPath;
     string algName;
     string algTime;
     string algDate;
 
     long long time;
-
-    if (ollpll == "oll") {
-        fs::path basePath = fs::absolute("Data/Algorithms/OLL");
-        fs::path extension = ".txt";
-        fullPath = basePath / whatAlgorithm += extension;
-    } else if (ollpll == "pll") {
-        fs::path basePath = fs::absolute("Data/Algorithms/PLL");
-        fs::path extension = ".txt";
-        fullPath = basePath / whatAlgorithm += extension;
-    }
-
-    if (!fileInfoHolder.empty()) {
-        fileInfoHolder.clear();
-    }
-
-    vectorFileInfo(fullPath);
 
     if (fileInfoHolder.empty()) {
         return 0;
