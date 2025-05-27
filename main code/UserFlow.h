@@ -75,8 +75,12 @@ public:
 
 
 class timerScreen {
-    bool toggleOrientation;
-    bool toggleInspectionTime;
+    bool toggleOrientation = false;
+    bool toggleInspectionTime = false;
+
+    // orientation stuff
+    Scramble oriental;
+    string orientation;
 
 public:
     void mainScreen();
@@ -86,8 +90,9 @@ public:
     void sessionManager(); // displays all session files - probably using data visualizer   
         void edit();
         void del();
+    string splashScreen(const string& meow);
     
-    void mainTimer(string session);
+    void mainTimer(const string& session);
         void inspectionToggle();
         bool getInspectionToggle();
         void orientationToggle();

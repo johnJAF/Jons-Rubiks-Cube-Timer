@@ -311,6 +311,7 @@ string algorithmPracticeScreens::algNavigator(const string& algName) {
     char c = 0;
 
     vector<string> tempVec;
+    tempVec.reserve(5);
 
     terminalModifer.setNonBlockingInput();
 
@@ -521,11 +522,14 @@ string algorithmPracticeScreens::splashScreen(const string& specificAlgName) {
 refresh_the_screen:
     long long lasttime = 0;
     long long pbtime = 0;
+    long long avgTime = 0;
     string formattedTime;
     string pbString = "PB: ";
-    string ao5String;
-    string ao10String;
+    string ao5String = "Ao5: ";
+    string ao12String = "Ao12: ";
+    string ao100String = "Ao100: ";
 
+    // printing specific alg and last time
     terminalModifier.clearScreen();
     cout << endl << endl << endl << endl << endl << endl;
     terminalModifier.printCentered(specificAlgName);
@@ -538,13 +542,40 @@ refresh_the_screen:
     terminalModifier.printCentered(formattedTime);
     cout << endl << endl;
 
+    // logic for PB string
     pbtime = dataMod.grabPB();
     TimeSpan pbSpan(pbtime);
     pbString += pbSpan.grabTime();
 
-    // PLACEHOLDER FOR THE AVERAGES AND THINGS OF THAT NATURE
-    terminalModifier.printTwoColumns(pbString, "Ao5:");
-    terminalModifier.printTwoColumns("Ao10:", "Ao100:");
+    // logic for Ao5
+    avgTime = dataMod.grabAO5();
+    TimeSpan ao5Span(avgTime);
+    ao5String += ao5Span.grabTime();
+
+    //logic for Ao12
+    avgTime = dataMod.grabAO12();
+    TimeSpan ao12Span(avgTime);
+    ao12String += ao12Span.grabTime();
+
+    //logic for Ao100
+    avgTime = dataMod.grabAO100();
+    TimeSpan ao100Span(avgTime);
+    ao100String += ao100Span.grabTime();
+
+    if (dataMod.fileInfoHolder.size() < 3) {
+        // do nothing
+    } else if (dataMod.fileInfoHolder.size() < 5) {
+        terminalModifier.printCentered(pbString);
+    } else if (dataMod.fileInfoHolder.size() < 12) {
+        terminalModifier.printTwoColumns(pbString, ao5String);
+    } else if (dataMod.fileInfoHolder.size() < 100) {
+        terminalModifier.printTwoColumns(pbString, ao5String);
+        cout << endl;
+        terminalModifier.printCentered(ao12String);
+    } else  {
+        terminalModifier.printTwoColumns(pbString, ao5String);
+        terminalModifier.printTwoColumns(ao12String, ao100String);
+    }
 
     cout << endl << endl;
 
@@ -571,10 +602,6 @@ refresh_the_screen:
 
 }
 
-// just in case while you were solving you made some mistake and you want to remove the very last solve instance.
-void algorithmPracticeScreens::undoSolve() {
-
-}
 
 // own
 void algorithmPracticeScreens::algorithmName() {
@@ -616,6 +643,7 @@ void algorithmPracticeScreens::mainTimer(const string& specificAlgname) {
     mooski.saveAlgTime(algType, specificAlgname, finalTime, date);
 }
 
+
 ////////////////////////////////////////////////////////
 //////////////  MEOW dataVisualizer MEOW  //////////////
 ////////////////////////////////////////////////////////
@@ -649,14 +677,77 @@ void dataVisualizerScreen::displayData() {
 ////////////////////////////////////////////////////////
 
 void timerScreen::mainScreen() {
+top:
     Timer terminalModifier;
+    algorithmPracticeScreens algoPracticeSwitch;
+    char c = 0;
+    toggleInspectionTime = false;
+    toggleOrientation = false;
+    orientation = "";
+
     terminalModifier.clearScreen();
-    cout << endl << "this is the timer screen";
+
+        cout << endl << endl << endl << endl << endl << endl;
+    
+        terminalModifier.printCentered("Timer Screen");
+        terminalModifier.printCentered("(esc to return to main screen)");
+
+        cout << endl;
+        cout << endl;
+
+        terminalModifier.printTwoColumns("New Session (n)", "Old Session (o)");
+        terminalModifier.printCentered("Session Manager (s)");
+
+    terminalModifier.setNonBlockingInput();
+    // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
+    while (true) {
+        c = 0;
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        if (c == 'n') {
+            terminalModifier.restoreTerminal();
+            newSession();
+            terminalModifier.restoreTerminal();
+            goto top;
+        } else if (c == 'o') {
+            terminalModifier.restoreTerminal();
+            previousSession(); // calls the same function as oll but the truth value is what makes the difference
+            terminalModifier.restoreTerminal();
+            goto top;
+        } else if (c == 's') {
+            terminalModifier.restoreTerminal();
+            sessionManager();
+            terminalModifier.restoreTerminal();
+            goto top;
+        }  else if (c == 27) { // escape to exit
+            c = 0;
+            terminalModifier.restoreTerminal();
+            return;
+        }
+    }
+    terminalModifier.restoreTerminal();
 }
 
 // dynamically creates a session if the file isnt there
 void timerScreen::newSession() {
+    DataManager dataMan;
+    Timer timer;
+    Timer terminalModifier;
+    string sessionName;
+    string holder = "";
 
+    sessionName = dataMan.createSessionLoop();
+
+    while (true) {
+        holder = splashScreen(sessionName);
+
+        if (holder == "F") {
+            terminalModifier.restoreTerminal();
+            return;
+        }
+
+        mainTimer(sessionName);
+    }
 }
 
 // opens session up
@@ -675,8 +766,198 @@ void timerScreen::del() {
 
 }
 
-void timerScreen::mainTimer(string session) {
+string timerScreen::splashScreen(const string& session) {
+    Timer terminalModifier;
+    DataManager dataMod;
+    string algType;
+    
+    fs::path fullPath;
+    char c = 0;
 
+    if(!dataMod.fileInfoHolder.empty()){ // if the vector has something
+        dataMod.fileInfoHolder.clear();
+    }
+
+    fs::path basePath = fs::absolute("Data/Sessions");
+    fs::path extension = ".txt";
+    fullPath = basePath / session += extension;
+    dataMod.vectorFileInfo(fullPath);
+
+refresh_the_screen:
+    // stat variables
+    long long lasttime = 0;
+    long long pbtime = 0;
+    long long avgTime = 0;
+    string formattedTime;
+    string pbString = "PB: ";
+    string ao5String = "Ao5: ";
+    string ao12String = "Ao12: ";
+    string ao100String = "Ao100: ";
+
+    // printing specific alg and last time
+    terminalModifier.clearScreen();
+    cout << endl << endl << endl << endl << endl << endl;
+    terminalModifier.printCentered(session);
+    cout << endl;
+
+    lasttime = dataMod.getLatestAlgTime();
+    TimeSpan lastSpan(lasttime); // this turns long long ms into a timespan .grabTime will return the time as a string
+    formattedTime = lastSpan.grabTime();
+
+    terminalModifier.printCentered(formattedTime);
+    cout << endl << endl;
+
+    // logic for PB string
+    pbtime = dataMod.grabPB();
+    TimeSpan pbSpan(pbtime);
+    pbString += pbSpan.grabTime();
+
+    // logic for Ao5
+    avgTime = dataMod.grabAO5();
+    TimeSpan ao5Span(avgTime);
+    ao5String += ao5Span.grabTime();
+
+    //logic for Ao12
+    avgTime = dataMod.grabAO12();
+    TimeSpan ao12Span(avgTime);
+    ao12String += ao12Span.grabTime();
+
+    //logic for Ao100
+    avgTime = dataMod.grabAO100();
+    TimeSpan ao100Span(avgTime);
+    ao100String += ao100Span.grabTime();
+
+    if (dataMod.fileInfoHolder.size() < 3) {
+        // do nothing
+    } else if (dataMod.fileInfoHolder.size() < 5) {
+        terminalModifier.printCentered(pbString);
+    } else if (dataMod.fileInfoHolder.size() < 12) {
+        terminalModifier.printTwoColumns(pbString, ao5String);
+    } else if (dataMod.fileInfoHolder.size() < 100) {
+        terminalModifier.printTwoColumns(pbString, ao5String);
+        cout << endl;
+        terminalModifier.printCentered(ao12String);
+    } else  {
+        terminalModifier.printTwoColumns(pbString, ao5String);
+        terminalModifier.printTwoColumns(ao12String, ao100String);
+    }
+
+    cout << endl << endl;
+
+    terminalModifier.printCentered("Press any button to start the timer");
+    terminalModifier.printCentered("u to undo last solve");
+    terminalModifier.printCentered("Esc to go back");
+
+    cout << "Inspection Time (i): " << boolalpha << toggleInspectionTime << endl; // boolapha makes it print true/false
+    
+    if (orientation.length() != 0) {
+        cout << "Set Solve Orientation (s): " << "Front " << oriental.frontOrientation << " Top " << oriental.topOrientation  << endl;
+    } else {
+        cout << "Set Solve Orientation (s)" << endl;
+    }
+    
+
+    terminalModifier.setNonBlockingInput(); // sets raw mode
+
+    while (true) {
+        c = 0;
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        if (c == 27) {
+            terminalModifier.restoreTerminal();
+            return "F"; // escape to menu
+        }  else if (c == 117) { // undo button
+            dataMod.undoTime(fullPath);
+            goto refresh_the_screen;
+        }  else if (c == 'i') {
+            inspectionToggle();
+            goto refresh_the_screen;
+        } else if (c == 's') {
+            terminalModifier.restoreTerminal();
+
+            if (toggleOrientation == true) {
+                orientation.clear();
+            } else {
+                oriental.setOrientation();
+                orientation = oriental.getOrientation();
+                terminalModifier.clearScreen();
+            }
+
+            orientationToggle();
+            goto refresh_the_screen;
+        } else if (c > 0) {
+            terminalModifier.restoreTerminal(); // idk where this bug is
+            return "T";
+        }
+
+    }
+
+}
+
+void timerScreen::mainTimer(const string& session) {
+    string algType;
+    Timer timer;
+    Timer terminalModifier;
+    DataManager mooski;
+    Scramble scrambler_and_orientation;
+    time_t timestamp = time(NULL);
+    struct tm datetime = *localtime(&timestamp);
+    char date[50];
+    string orientation;
+    string scramble;
+
+    long long finalTime;
+
+    scrambler_and_orientation.newScramble();
+    scramble = scrambler_and_orientation.getScramble();
+
+    terminalModifier.clearScreen();
+
+    cout << endl << endl << endl << endl << endl << endl;
+
+    terminalModifier.printCentered("Here is your scramble: ");
+
+    if (toggleInspectionTime == true) {
+        terminalModifier.printCentered("Any button to proceed into inspection");
+    } else {
+        terminalModifier.printCentered("Any button to proceed into timer");
+    }
+    
+    cout << endl;
+    terminalModifier.printCentered(scramble);
+
+    char c = 0;
+    
+    terminalModifier.setNonBlockingInput();
+    while (true) {
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        
+        if (c > 0) {
+            c = 0;
+            break;
+        }
+    }
+    terminalModifier.restoreTerminal();
+
+    if (toggleInspectionTime == true) {
+        timer.inspectionTime();
+    }
+
+    if (timer.inspectionLimitReached == true) { // false by default
+        return;
+    }
+
+    timer.runTimer();
+
+    finalTime = timer.returnFinalTime();
+
+    strftime(date, 50, "%m/%d/%y", &datetime);
+
+    if (toggleOrientation) {
+        mooski.saveSolveOrientation(session, finalTime, scramble, orientation, date);
+    } else {
+        mooski.saveSolveNoOrientation(session, finalTime, scramble, date);
+    }
 }
 
 void timerScreen::inspectionToggle() {

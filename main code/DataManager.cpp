@@ -1,6 +1,7 @@
 #include "DataManager.h"
 namespace fs = std::filesystem;
 
+
 // file navigation 
 // creates a session or an algorithm
 // whatFolder can be Algorithms or TimerSessions 
@@ -36,7 +37,6 @@ bool DataManager::createFile(const string& whatFolder, const string& fileName) {
         algName = fileName;
     }
 
-    cout << endl << "[Success] File created: " << fullPath << endl;
     return true;
 }
 
@@ -47,17 +47,18 @@ bool DataManager::isValidFilename(const string& name) {
 }
 
 // only for the timerScren, user input for session name
-void DataManager::createSessionLoop() {
+string DataManager::createSessionLoop() {
     string file = "";
     bool didItWork = false;
 
     while (!didItWork) {
         cout << endl << "What do you want to name this session? ";
-        getline(cin, file);  // safer than `cin >> file` because it captures full line input
+        getline(cin, file); 
 
         didItWork = createFile("Sessions", file);
-        sessionName = file;
     }
+
+    return file;
 }
 
 // deletes a file or session
@@ -117,6 +118,8 @@ void DataManager::vectorFileInfo(const string& whatFolder, const string& whatFil
 
     ifstream meow(fullPath);
 
+    fileInfoHolder.reserve(50);
+
     while(getline(meow, line)) {
         fileInfoHolder.emplace_back(line);
     }
@@ -137,6 +140,8 @@ void DataManager::vectorFileInfo(const fs::path& fully) {
 
     ifstream meow(fully);
 
+    fileInfoHolder.reserve(50);
+
     if (!meow.is_open()) {
         return;
     }
@@ -149,7 +154,7 @@ void DataManager::vectorFileInfo(const fs::path& fully) {
 }
 
 // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
-void DataManager::saveSolveNoOrientation(const string& session, const long long milliseconds, const string& date) {
+void DataManager::saveSolveNoOrientation(const string& session, const long long milliseconds, const string& scramble, const string& date) {
     fs::path basePath = fs::absolute("Data/Sessions");
     fs::path extension = ".txt";
     fs::path fullPath = basePath / session += extension;
@@ -160,7 +165,7 @@ void DataManager::saveSolveNoOrientation(const string& session, const long long 
     }
 }
 
-void DataManager::saveSolveOrientation(const string& session, const long long milliseconds, const string& orientation, const string& date) {
+void DataManager::saveSolveOrientation(const string& session, const long long milliseconds, const string& scramble, const string& orientation, const string& date) {
 
 }
 
@@ -283,16 +288,107 @@ void DataManager::undoTime(const fs::path& fullPath) {
 // for averaging
 // returns miliseconds
 long long DataManager::grabAO5() {
+    vector<string> necessaryAlgs(5);
+    string algName;
+    string algTime;
+    string algDate;
 
+    long long avg = 0;
+    
+    if (fileInfoHolder.empty() || fileInfoHolder.size() < 5) {
+        return 0;
+    }
+
+    int counter = 0;
+    // grabs the last 5 of the vector using iterators
+    for (auto pointer = fileInfoHolder.end() - 5; pointer != fileInfoHolder.end(); ++pointer) {
+        necessaryAlgs[counter] = *pointer;
+        counter++;
+    }
+
+    for (string s : necessaryAlgs) {
+        stringstream ss(s);
+
+        getline(ss, algName, ':'); // "Aa Perm"
+        getline(ss, algTime, ':'); // "7042"
+        getline(ss, algDate); // "05/08/25"
+
+        avg += stoll(algTime); // 7042
+    }
+
+    return avg/5;
 }
 
 long long DataManager::grabAO12() {
+    vector<string> necessaryAlgs(12);
+    string algName;
+    string algTime;
+    string algDate;
 
+    long long avg = 0;
+    
+    if (fileInfoHolder.empty() || fileInfoHolder.size() < 12) {
+        return 0;
+    }
+
+    int counter = 0;
+    // grabs the last 12 of the vector using iterators
+    for (auto pointer = fileInfoHolder.end() - 12; pointer != fileInfoHolder.end(); ++pointer) {
+        necessaryAlgs[counter] = *pointer;
+        counter++;
+    }
+
+    for (string s : necessaryAlgs) {
+        stringstream ss(s);
+
+        getline(ss, algName, ':'); // "Aa Perm"
+        getline(ss, algTime, ':'); // "7042"
+        getline(ss, algDate); // "05/08/25"
+
+        avg += stoll(algTime); // 7042
+    }
+
+    return avg/12;
+}
+
+long long DataManager::grabAO100() {
+    vector<string> necessaryAlgs;
+
+    // reserve 100 elements ONLY if there is that much data (we dont want to use up all our memory for no reason)
+    if (fileInfoHolder.size() >= 100) {
+        necessaryAlgs.reserve(100);
+    }
+
+    string algName;
+    string algTime;
+    string algDate;
+
+    long long avg = 0;
+    
+    if (fileInfoHolder.empty() || fileInfoHolder.size() < 100) {
+        return 0;
+    }
+
+    // grabs the last 5 of the vector using iterators
+    for (auto pointer = fileInfoHolder.end() - 100; pointer != fileInfoHolder.end(); ++pointer) {
+        necessaryAlgs.emplace_back() = *pointer;
+    }
+
+    for (string s : necessaryAlgs) {
+        stringstream ss(s);
+
+        getline(ss, algName, ':'); // "Aa Perm"
+        getline(ss, algTime, ':'); // "7042"
+        getline(ss, algDate); // "05/08/25"
+
+        avg += stoll(algTime); // 7042
+    }
+
+    return avg/100;
 }
 
 // returns lowest time
 long long DataManager::grabPB() {
-    fs::path fullPath;
     string algName;
     string algTime;
     string algDate;

@@ -13,8 +13,6 @@ using namespace std;
 class Scramble {
     array<string, 20> scrambled; // 20 moves long - R2 or U2 type of moves counted as one move
     // b = blue, g = green, y = yellow, w = white, r = red, o = orange.
-    char frontOrientation;
-    char topOrientation;
     using Clock = std::chrono::steady_clock; // just to grab time right now for random
     unsigned seed;
 
@@ -28,6 +26,9 @@ class Scramble {
     static const array<std::array<std::string, 3>, 6> twoDeeList;
 
 public:
+    char frontOrientation;
+    char topOrientation;
+    
     void newScramble(); // random scramble using current time
     string getScramble();
 

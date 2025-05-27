@@ -246,9 +246,7 @@ void Timer::inspectionTime() {
 
         if (timeRightNow >= inspectionLimit) {
             break;
-        } else {
-            inspectionLimitReached = false;
-        }
+        } 
 
         TimeSpan meow(15000-duration_cast<milliseconds>((Clock::now() - inspectionStart)).count());
 
@@ -261,11 +259,9 @@ void Timer::inspectionTime() {
     clearScreen();
 
     if (timeRightNow >= inspectionLimit) {
-            cout << endl << "Coutdown is over";
-            inspectionLimitReached = true;
-        }
-    
-    
+        cout << endl << "Coutdown is over";
+        inspectionLimitReached = true;
+    }
     
     // this will restore all of the changes prevented when setNonBlockingInput was called
     restoreTerminal();

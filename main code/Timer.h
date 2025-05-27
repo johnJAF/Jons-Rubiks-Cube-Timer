@@ -27,9 +27,10 @@ class Timer {
     long long elapsedTimeForCurrent; // for printing on screen as timer runs
 
     bool inspectionOn = true;
-    bool inspectionLimitReached;
 
 public:
+    bool inspectionLimitReached = false;
+
     int originalFlags = fcntl(STDIN_FILENO, F_GETFL);
 
     // basic timer manipulation functions

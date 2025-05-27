@@ -24,7 +24,7 @@ public:
     vector<string> fileInfoHolder;
     // file navigation
     bool createFile(const string& whatFolder, const string& fileName); // creates a session or an algorithm
-    void createSessionLoop();
+    string createSessionLoop();
     bool isValidFilename(const string& name);
     bool deleteFile(const string& whatFolder, const string& whatFile); // deletes a file or session
     void displayFolder(const string& whatFolder); // prints the feature folder
@@ -32,8 +32,8 @@ public:
     void vectorFileInfo(const fs::path& pathy);
 
     // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
-    void saveSolveNoOrientation(const string& session, const long long milliseconds, const string& date);
-    void saveSolveOrientation(const string& session, const long long milliseconds, const string& orientation, const string& date);
+    void saveSolveNoOrientation(const string& session, const long long milliseconds, const string& scramble, const string& date);
+    void saveSolveOrientation(const string& session, const long long milliseconds, const string& scramble, const string& orientation, const string& date);
 
 //     // getters 
 //     string getSessionName(); // returns current session file name
@@ -49,9 +49,12 @@ public:
     bool saveAlgTime(const string& ollpll, const string& specificAlgName, const long long milliseconds, const char[50]);
     long long getLatestAlgTime();
     void undoTime(const fs::path& fullPath);
+    int createID();
 
     // for averaging
     long long grabAO5(); // returns miliseconds
     long long grabAO12();
+    long long grabAO100();
+
     long long grabPB(); // returns lowest time
 };

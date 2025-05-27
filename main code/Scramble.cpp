@@ -160,10 +160,10 @@ void Scramble::setOrientation() { // for top and front in that order
 
     // setting orientation by user choice
     while (true) {
-        cout << "What is the color orientation of the front side? " << endl << "b = blue, g = green, y = yellow, w = white, r = red, o = orange" << endl;
-        cin >> fronty;
+        cout << endl << "What is the color orientation of the front side? " << endl << "b = blue, g = green, y = yellow, w = white, r = red, o = orange" << endl;
+        getline(cin, fronty);
         cout << endl << "What is the color orientation of the top side? " << endl << "b = blue, g = green, y = yellow, w = white, r = red, o = orange" << endl;
-        cin >> topy;
+        getline(cin, topy);
         
         // if the user choices were not real chars that relate to orientations
         bool frontInvalid = (fronty != "g" && fronty != "b" && fronty != "y" &&
