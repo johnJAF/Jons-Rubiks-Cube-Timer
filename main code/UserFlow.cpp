@@ -203,7 +203,9 @@ algNavigator:
 
 
 void algorithmPracticeScreens::own() {
-    cout << endl << "OWN MEOW" << endl;
+    Timer terminalModifier;
+    terminalModifier.clearScreen();
+    cout << "This feature doesnt work homie";
 }
 
 void algorithmPracticeScreens::editAlgs() {
@@ -790,7 +792,9 @@ top:
 
 // displays all session files - probably using data visualizer
 void timerScreen::sessionManager() {
-
+    Timer terminalModifier;
+    terminalModifier.clearScreen();
+    cout << "This feature doesnt work homie";
 }
 void timerScreen::edit() {
 
@@ -1002,18 +1006,10 @@ void timerScreen::inspectionToggle() {
 
 }
 
-bool timerScreen::getInspectionToggle() {
-    return toggleInspectionTime;
-}
-
 void timerScreen::orientationToggle() {
     if (toggleOrientation == true) {
         toggleOrientation = false;
     } else {
         toggleOrientation = true;
     }
-}
-
-bool timerScreen::getOrientationToggle() {
-    return toggleOrientation;
 }

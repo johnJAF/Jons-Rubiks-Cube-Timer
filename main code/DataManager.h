@@ -4,7 +4,6 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <ctime>
 #include <vector>
 #include <filesystem>
 #include <regex>
@@ -36,13 +35,6 @@ public:
     bool saveSolveNoOrientation(const string& session, const long long milliseconds, const string& scramble, const string& date);
     bool saveSolveOrientation(const string& session, const long long milliseconds, const string& scramble, const string& orientation, const string& date);
 
-//     // getters 
-//     string getSessionName(); // returns current session file name
-//     string getSolveName(); // returns current algorithm file name
-//     string getSolve(int index); // returns all solve information
-//     string getAlgCategory(string ollOrPll, int index);
-//     string displayAlgPhoto(string ollOrPll, string algorithm);
-
 
 //     // for the algorithmPractice class
 //     void writeAlgorithm();
@@ -50,7 +42,7 @@ public:
     bool saveAlgTime(const string& ollpll, const string& specificAlgName, const long long milliseconds, const char[50]);
     long long getLatestAlgTime();
     void undoTime(const fs::path& fullPath);
-    int createID();
+    int createID(); // will be implemented in saveSolveOrentations and saveAlgTime soon
 
     // for averaging
     long long grabAO5(); // returns miliseconds

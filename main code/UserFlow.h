@@ -94,7 +94,5 @@ public:
     
     void mainTimer(const string& session);
         void inspectionToggle();
-        bool getInspectionToggle();
         void orientationToggle();
-        bool getOrientationToggle();
 };

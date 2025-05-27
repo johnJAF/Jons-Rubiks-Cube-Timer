@@ -4,8 +4,6 @@
 #include <filesystem>
 #include <iostream>
 
-// create file paths in case they dont exist
-
 int main() {
     // dont worry about this
     string stopProgram = "";
@@ -75,35 +73,6 @@ int main() {
         introSwitch.mainScreen(optionChosen);
     }
     
- 
-    
-    
-    // depending on the feature chosen, we're gonna run that feature.
-
-    // while (true) {
-    //     cout << "Enter q to quit, to enter the timer, enter anything on the keyboard: ";
-
-    //     getline(cin, stopProgram);
-
-    //     if (stopProgram == "q") {
-    //         break;
-    //     }
-
-    //     meow.runTimer();
-    // }
-
-    // algorithm.newScramble();
-    // algorithm.print();
-    // algorithm.newScramble();
-    // algorithm.print();
-    // algorithm.newScramble();
-    // algorithm.print();
-    
-    // algorithm.setScramble();
-
-    // algorithm.setOrientation();
-    // algorithm.print();
-    // cout << algorithm.getOrientation();
 
     return 0;
 }

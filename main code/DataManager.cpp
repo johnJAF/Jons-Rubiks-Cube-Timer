@@ -288,30 +288,6 @@ void DataManager::undoTime(const fs::path& fullPath) {
 }
 
 
-// // getters 
-// // returns current session file name
-// string DataManager::getSessionName() {
-
-// }
-
-// // returns current algorithm file name
-// string DataManager::getSolveName() {
-
-// }
-
-// // returns all solve information
-// string DataManager::getSolve(int index) {
-
-// }
-
-// string DataManager::getAlgCategory(string ollOrPll, int index) {
-
-// }
-
-// string DataManager::displayAlgPhoto(string ollOrPll, string algorithm) {
-
-// }
-
 
 // // for the algorithmPractice class
 // void DataManager::writeAlgorithm() {

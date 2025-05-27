@@ -95,12 +95,6 @@ void Timer::clearScreen() {
     #endif
 }
 
-void Timer::flushInputBuffer() {
-    char junk;
-    while (read(STDIN_FILENO, &junk, 1) > 0) {
-        // discard all buffered input
-    }
-}
 
 // while timer is running - used to grab the time now - start time.
 void Timer::elapsedCurrent() {

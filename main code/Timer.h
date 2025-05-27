@@ -5,7 +5,8 @@
 #include "Scramble.h"
 
 #include <iostream>
-#include <ctime>
+
+// terminal stuff
 #include <unistd.h>
 #include <termios.h>
 #include <sys/ioctl.h>
