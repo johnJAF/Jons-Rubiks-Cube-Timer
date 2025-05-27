@@ -46,6 +46,18 @@ bool DataManager::isValidFilename(const string& name) {
     return regex_match(name, regex("^[A-Za-z0-9_-]+$"));
 }
 
+bool DataManager::fileExists(const string& filename) {
+    fs::path basePath = fs::absolute("Data/Sessions");
+    fs::path extension = ".txt";
+    fs::path fullPath = basePath / filename += extension;
+
+    if (fs::exists(fullPath)) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 // only for the timerScren, user input for session name
 string DataManager::createSessionLoop() {
     string file = "";
@@ -154,19 +166,44 @@ void DataManager::vectorFileInfo(const fs::path& fully) {
 }
 
 // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
-void DataManager::saveSolveNoOrientation(const string& session, const long long milliseconds, const string& scramble, const string& date) {
+bool DataManager::saveSolveNoOrientation(const string& session, const long long milliseconds, const string& scramble, const string& date) {
     fs::path basePath = fs::absolute("Data/Sessions");
     fs::path extension = ".txt";
     fs::path fullPath = basePath / session += extension;
 
-    if (fs::exists(fullPath)) {
-        cout << endl << "[Notice] File already exists. Choose another name." << endl;
-        return;
+    ofstream meow(fullPath, ios_base::app);
+    
+    if (!meow) { // if the file isnt created for some reason then we will error out
+        cerr << endl << "[Error] Failed to create file: " << fullPath << endl;
+        return false;
     }
+    
+    // session will be ID soon
+    meow << session << ":" << milliseconds << ":" << scramble << ":" << date << endl;
+
+    meow.close();
+
+    return true;
 }
 
-void DataManager::saveSolveOrientation(const string& session, const long long milliseconds, const string& scramble, const string& orientation, const string& date) {
+bool DataManager::saveSolveOrientation(const string& session, const long long milliseconds, const string& scramble, const string& orientation, const string& date) {
+    fs::path basePath = fs::absolute("Data/Sessions");
+    fs::path extension = ".txt";
+    fs::path fullPath = basePath / session += extension;
 
+    ofstream meow(fullPath, ios_base::app);
+    
+    if (!meow) { // if the file isnt created for some reason then we will error out
+        cerr << endl << "[Error] Failed to create file: " << fullPath << endl;
+        return false;
+    }
+    
+    // session will be ID soon
+    meow << session << ":" << milliseconds << ":" << scramble << ":" << orientation << ":" << date << endl;
+
+    meow.close();
+
+    return true;
 }
 
 bool DataManager::saveAlgTime(const string& ollpll, const string& specificAlgName, const long long milliseconds, const char date[50]) {
@@ -189,6 +226,7 @@ bool DataManager::saveAlgTime(const string& ollpll, const string& specificAlgNam
         return false;
     }
     
+    // specific algName will be ID soon
     meow << specificAlgName << ":" << milliseconds << ":" << date << endl;;
 
     meow.close();

@@ -26,14 +26,15 @@ public:
     bool createFile(const string& whatFolder, const string& fileName); // creates a session or an algorithm
     string createSessionLoop();
     bool isValidFilename(const string& name);
+    bool fileExists(const string& session);
     bool deleteFile(const string& whatFolder, const string& whatFile); // deletes a file or session
     void displayFolder(const string& whatFolder); // prints the feature folder
     void vectorFileInfo(const string& whatFolder, const string& whatFile); // grabs all file info as a dynamic vector and stores it
     void vectorFileInfo(const fs::path& pathy);
 
     // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
-    void saveSolveNoOrientation(const string& session, const long long milliseconds, const string& scramble, const string& date);
-    void saveSolveOrientation(const string& session, const long long milliseconds, const string& scramble, const string& orientation, const string& date);
+    bool saveSolveNoOrientation(const string& session, const long long milliseconds, const string& scramble, const string& date);
+    bool saveSolveOrientation(const string& session, const long long milliseconds, const string& scramble, const string& orientation, const string& date);
 
 //     // getters 
 //     string getSessionName(); // returns current session file name

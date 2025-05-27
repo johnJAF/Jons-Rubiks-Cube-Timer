@@ -45,8 +45,8 @@ int main() {
         cout << endl;
         cout << endl;
 
-        meow.printTwoColumns("Scrambler (s)", "Data visualizer (d)");
-        meow.printTwoColumns("Algorithm Practice (a)", "Timer (t)");
+        meow.printTwoColumns("Scrambler (s)", "Timer (t)");
+        meow.printTwoColumns("Algorithm Practice (a)", "Data visualizer (d)");
 
         meow.setNonBlockingInput();
 

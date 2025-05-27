@@ -207,7 +207,7 @@ void Timer::inspectionTime() {
     Clock::time_point inspectionStart;
     Clock::time_point inspectionStop;
     long long timeRightNow;
-    long long inspectionLimit;
+    long long inspectionLimit = 15000;;
 
     if(!inspectionOn) {
         return;
@@ -215,7 +215,7 @@ void Timer::inspectionTime() {
 
     setNonBlockingInput();
 
-    cout << "Press any button to stop the timer\n";
+    printCentered("Press any button to stop inspection and start the timer");
 
     char c = 0;
     string mooski = "";
@@ -237,14 +237,13 @@ void Timer::inspectionTime() {
         clearScreen();
 
         cout << endl << endl << endl;
-        printCentered("Press any button to stop the timer");
+        printCentered("Press any button to stop inspection and start the timer");
         cout << endl;
 
         long long timeRightNow = duration_cast<milliseconds>((Clock::now() - inspectionStart)).count();
-        
-        long long inspectionLimit = 15000;
 
         if (timeRightNow >= inspectionLimit) {
+            inspectionLimitReached = true;
             break;
         } 
 
@@ -257,11 +256,6 @@ void Timer::inspectionTime() {
     }
 
     clearScreen();
-
-    if (timeRightNow >= inspectionLimit) {
-        cout << endl << "Coutdown is over";
-        inspectionLimitReached = true;
-    }
     
     // this will restore all of the changes prevented when setNonBlockingInput was called
     restoreTerminal();

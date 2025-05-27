@@ -752,7 +752,40 @@ void timerScreen::newSession() {
 
 // opens session up
 void timerScreen::previousSession() {
+top:
+    DataManager dataMan;
+    Timer timer;
+    Timer terminalModifier;
+    string sessionName = "";
+    string holder = "";
+    char c = 0;
 
+    terminalModifier.restoreTerminal();
+
+    terminalModifier.clearScreen();
+    cout << endl << endl << endl << endl << endl << endl;
+    terminalModifier.printCentered("What session would you like to re-join? (exclude .txt)");
+    dataMan.displayFolder("Sessions");
+
+    cout << endl << endl << endl;
+
+    getline(cin, sessionName);
+
+    if (!dataMan.isValidFilename(sessionName) || !dataMan.fileExists(sessionName)) {
+        goto top;
+    }
+
+
+    while (true) {
+        holder = splashScreen(sessionName);
+
+        if (holder == "F") {
+            terminalModifier.restoreTerminal();
+            return;
+        }
+
+        mainTimer(sessionName);
+    }
 }
 
 // displays all session files - probably using data visualizer
