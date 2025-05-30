@@ -32,7 +32,7 @@ bool DataManager::createFile(const string& whatFolder, const string& fileName) {
     }
 
     // creates the file at the given path, if something was wrong with the file creation itll throw an error.
-    ofstream meow(fileName);
+    ofstream meow(fullPath);
     if (!meow) {
         cerr << endl << "[Error] Failed to create file: " << fullPath << endl;
         return false;
@@ -299,7 +299,7 @@ int DataManager::createID() {
     mt19937 generator(seed); // seed based on time
     uniform_int_distribution<int> distribution(0, 999999); // random number for an ID
 
-    
+
 }
 
 // // for the algorithmPractice class
