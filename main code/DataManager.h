@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <random>
 #include <filesystem>
 #include <regex>
 #include <limits>
@@ -18,6 +19,8 @@ class DataManager {
     string algName;
     // if not editing mode we are in deleting mode
     bool editingMode; 
+    unsigned seed;
+    using Clock = std::chrono::steady_clock;
 
 public:
     vector<string> fileInfoHolder;

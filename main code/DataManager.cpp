@@ -26,8 +26,13 @@ bool DataManager::createFile(const string& whatFolder, const string& fileName) {
         return false;
     }
 
+    if (fileExists(fileName)) {
+        cerr << endl << "[Error] File already exists." << endl;
+        return false;
+    }
+
     // creates the file at the given path, if something was wrong with the file creation itll throw an error.
-    ofstream meow(fullPath);
+    ofstream meow(fileName);
     if (!meow) {
         cerr << endl << "[Error] Failed to create file: " << fullPath << endl;
         return false;
@@ -110,7 +115,9 @@ void DataManager::displayFolder(const string& whatFolder) {
             continue; // skip it
         }
 
-        cout << dir_entry.path().filename() << endl;
+        
+
+        cout << dir_entry.path().stem() << endl;
     }
 }
 
@@ -287,7 +294,13 @@ void DataManager::undoTime(const fs::path& fullPath) {
     of.close();
 }
 
+int DataManager::createID() {
+    seed = std::chrono::system_clock::now().time_since_epoch().count();
+    mt19937 generator(seed); // seed based on time
+    uniform_int_distribution<int> distribution(0, 999999); // random number for an ID
 
+    
+}
 
 // // for the algorithmPractice class
 // void DataManager::writeAlgorithm() {

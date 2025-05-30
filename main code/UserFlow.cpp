@@ -732,6 +732,7 @@ top:
 
 // dynamically creates a session if the file isnt there
 void timerScreen::newSession() {
+top:
     DataManager dataMan;
     Timer timer;
     Timer terminalModifier;
@@ -739,6 +740,10 @@ void timerScreen::newSession() {
     string holder = "";
 
     sessionName = dataMan.createSessionLoop();
+
+    if (sessionName == "") {
+        goto top;
+    }
 
     while (true) {
         holder = splashScreen(sessionName);
@@ -766,7 +771,7 @@ top:
 
     terminalModifier.clearScreen();
     cout << endl << endl << endl << endl << endl << endl;
-    terminalModifier.printCentered("What session would you like to re-join? (exclude .txt)");
+    terminalModifier.printCentered("What session would you like to re-join?");
     dataMan.displayFolder("Sessions");
 
     cout << endl << endl << endl;
@@ -796,6 +801,7 @@ void timerScreen::sessionManager() {
     terminalModifier.clearScreen();
     cout << "This feature doesnt work homie";
 }
+
 void timerScreen::edit() {
 
 }
@@ -940,7 +946,6 @@ void timerScreen::mainTimer(const string& session) {
     time_t timestamp = time(NULL);
     struct tm datetime = *localtime(&timestamp);
     char date[50];
-    string orientation;
     string scramble;
 
     long long finalTime;
