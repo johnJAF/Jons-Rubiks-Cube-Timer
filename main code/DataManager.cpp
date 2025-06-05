@@ -26,7 +26,7 @@ bool DataManager::createFile(const string& whatFolder, const string& fileName) {
         return false;
     }
 
-    if (fileExists(fileName)) {
+    if (fileExists(fileName) || fileName == "SessionKeys") {
         cerr << endl << "[Error] File already exists." << endl;
         return false;
     }
@@ -111,7 +111,7 @@ void DataManager::displayFolder(const string& whatFolder) {
     fs::path basePath = fs::absolute("Data/" + whatFolder);
 
     for (auto const& dir_entry : fs::directory_iterator{basePath}) {
-        if (dir_entry.path().filename() == ".gitkeep") {
+        if (dir_entry.path().filename() == ".gitkeep" || dir_entry.path().stem() == "SessionKeys") {
             continue; // skip it
         }
 
@@ -295,11 +295,30 @@ void DataManager::undoTime(const fs::path& fullPath) {
 }
 
 int DataManager::createID() {
+    fs::path fullPath = "Data/Sessions/SessionKeys.txt";
     seed = std::chrono::system_clock::now().time_since_epoch().count();
-    mt19937 generator(seed); // seed based on time
+    mt19937 generator(seed);
     uniform_int_distribution<int> distribution(0, 999999); // random number for an ID
+    int id = distribution(generator);  // this now gives you a number in that range 
+    string idSrting = to_string(id);
 
+    ifstream meow(fullPath); // open this mf file for reading because you dont need to change it
 
+    if (meow.fail()) {
+        return -1;
+    }
+    
+    string line = "";
+    bool matchFound = false;
+
+    // i want to go through every ID in the file and stop if the line is equal to the 
+    while (getline(meow, line)) {
+        if (line == idSrting) {
+            return createID();
+        }
+    }
+
+    return id;
 }
 
 // // for the algorithmPractice class

@@ -45,6 +45,9 @@ touch $OLL_DIR/.gitkeep
 touch $PLL_DIR/.gitkeep
 touch $SESSIONS_DIR/.gitkeep
 
+# created the sessionKeys file because lol
+touch $SESSIONS_DIR/SessionKeys.txt
+
 # Check if source files exist
 if ! ls main\ code/*.cpp 1> /dev/null 2>&1; then
     echo "Error: No source files found in 'main code' directory."
