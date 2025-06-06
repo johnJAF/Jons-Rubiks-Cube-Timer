@@ -186,7 +186,7 @@ bool DataManager::saveSolveNoOrientation(const string& session, const long long 
     }
     
     // session will be ID soon
-    meow << session << ":" << milliseconds << ":" << scramble << ":" << date << endl;
+    meow << createID() << ":" << milliseconds << ":" << scramble << ":" << date << endl;
 
     meow.close();
 
@@ -206,7 +206,7 @@ bool DataManager::saveSolveOrientation(const string& session, const long long mi
     }
     
     // session will be ID soon
-    meow << session << ":" << milliseconds << ":" << scramble << ":" << orientation << ":" << date << endl;
+    meow << createID() << ":" << milliseconds << ":" << scramble << ":" << orientation << ":" << date << endl;
 
     meow.close();
 
