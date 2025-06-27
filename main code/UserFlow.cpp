@@ -681,7 +681,6 @@ void dataVisualizerScreen::displayData() {
 void timerScreen::mainScreen() {
 top:
     Timer terminalModifier;
-    algorithmPracticeScreens algoPracticeSwitch;
     char c = 0;
     toggleInspectionTime = false;
     toggleOrientation = false;
@@ -761,6 +760,7 @@ top:
 void timerScreen::previousSession() {
 top:
     DataManager dataMan;
+    fs::path folderpath = "Data/Sessions";
     Timer timer;
     Timer terminalModifier;
     string sessionName = "";
@@ -770,6 +770,16 @@ top:
     terminalModifier.restoreTerminal();
 
     terminalModifier.clearScreen();
+
+    int counter = 0; // counter for how many files there are (if its only 1 (a gitkeep)) then it should return
+    for (const auto& session : fs::directory_iterator(folderpath)) { // for every session in the sessions folder
+        counter++;
+    }
+    if (counter <= 1) {
+        cerr << endl << "You cant open a previous session if there are no previous sessions." << endl;
+        return;
+    }
+
     cout << endl << endl << endl << endl << endl << endl;
     terminalModifier.printCentered("What session would you like to re-join?");
     dataMan.displayFolder("Sessions");
@@ -795,17 +805,301 @@ top:
     }
 }
 
-// displays all session files - probably using data visualizer
+// allows you to edit or delete sessions
 void timerScreen::sessionManager() {
+top:
     Timer terminalModifier;
+    char c = 0;
+    toggleInspectionTime = false;
+    toggleOrientation = false;
+    orientation = "";
+
     terminalModifier.clearScreen();
-    cout << "This feature doesnt work homie";
+
+        cout << endl << endl << endl << endl << endl << endl;
+    
+        terminalModifier.printCentered("Timer Screen");
+        terminalModifier.printCentered("(esc to return to main screen)");
+
+        cout << endl;
+        cout << endl;
+
+        terminalModifier.printTwoColumns("Delete a Session (d)", "Edit a Session (e)");
+
+    terminalModifier.setNonBlockingInput();
+    // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
+    while (true) {
+        c = 0;
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        if (c == 'd') {
+            terminalModifier.restoreTerminal();
+            del();
+            terminalModifier.restoreTerminal();
+            goto top;
+        } else if (c == 'e') {
+            terminalModifier.restoreTerminal();
+            edit(); // calls the same function as oll but the truth value is what makes the difference
+            terminalModifier.restoreTerminal();
+            goto top;
+        } else if (c == 27) { // escape to exit
+            c = 0;
+            terminalModifier.restoreTerminal();
+            return;
+        }
+    }
+
+    terminalModifier.restoreTerminal();
+}
+
+// displays all session files and allows you to pick one
+fs::path timerScreen::displayAndChoose() {
+top:
+    DataManager dataMan;
+    fs::path folderpath = "Data/Sessions/";
+    Timer timer;
+    Timer terminalModifier;
+    string sessionName = "";
+    string holder = "";
+    char c = 0;
+
+    terminalModifier.restoreTerminal();
+
+    terminalModifier.clearScreen();
+
+    int counter = 0; // counter for how many files there are (if its only 1 (a gitkeep)) then it should return
+    for (const auto& session : fs::directory_iterator(folderpath)) { // for every session in the sessions folder
+        counter++;
+    }
+    if (counter <= 1) {
+        cerr << endl << "You cant open a previous session if there are no previous sessions." << endl;
+        return "";
+    }
+
+    cout << endl << endl << endl << endl << endl << endl;
+    terminalModifier.printCentered("What session would you like to edit? (-1 to exit)");
+    dataMan.displayFolder("Sessions");
+
+    cout << endl << endl << endl;
+
+    getline(cin, sessionName);
+
+    if (sessionName == "-1") {
+        return "";
+    }
+
+    if (!dataMan.isValidFilename(sessionName) || !dataMan.fileExists(sessionName)) {
+        goto top;
+    }
+
+    folderpath += sessionName + ".txt";
+    
+    return folderpath;
+}
+
+// this returns the ID and the index of the ID IN THAT ORDER
+tuple<int, int> timerScreen::displayAndChooseSessionData(const fs::path& mainPath, const fs::path& keysPath) {
+    fs::path chosenPath = mainPath;
+    Timer terminalModifier;
+
+    DataManager dataMan;
+
+    terminalModifier.printCentered("Type in the session that you want to edit (-1 to exit)");
+    cout << endl << endl << endl;
+
+    dataMan.displaySessionFile(chosenPath);
+
+    cout << endl;
+
+    // here were gonna ask the user for an ID and basically strip for everything and then verify with the respective KEYS file
+    string IDread = "";
+    int intKeyChosen = 0;
+    int indexCounter = 0;
+    bool didItWork = true;
+    while (true) {
+        getline(cin, IDread);
+
+        didItWork = regex_match(IDread, regex("^-?[0-9]+$")); // check only for numerical inputs
+
+        if (IDread.length() > 7) {
+            IDread = "";
+            intKeyChosen = 0;
+            cerr << endl << "[Error] Invalid session ID. Inappropriate ID length" << endl;
+            continue;
+        }
+
+        if (!didItWork) {
+            IDread = "";
+            intKeyChosen = 0;
+            cerr << endl << "[Error] Invalid session ID. Only use numbers." << endl;
+            continue;
+        }
+
+        intKeyChosen = stoi(IDread);
+
+        if (intKeyChosen == -1) {
+            indexCounter = -1;
+            break;
+        }
+
+        // if the ID is validly typed, then we can check it with existing IDs (_keys.txt file)
+        dataMan.vectorFileInfo("Sessions", keysPath.string());
+
+        bool idExists = false;
+
+        for (string data : dataMan.fileInfoHolder) { // for every id in the keys file
+            indexCounter++;
+            int knownKey = stoi(data);
+
+            if (knownKey == intKeyChosen) { // if the ID we have matches with one of the IDS 
+                idExists = true;
+                break;
+            } 
+        }
+
+        if (!idExists) {
+            cerr << endl << "[Error] Invalid session ID. This ID doesnt exist" << endl;
+            continue;
+        }
+
+        break;
+    }
+
+    tuple<int, int> tuplington(intKeyChosen, indexCounter);
+
+    return tuplington;
 }
 
 void timerScreen::edit() {
+    DataManager dataMan;
+    fs::path chosenPath;
+    Timer terminalModifier;
+    char c = 0;
+    string line;
+    string version;
+    string id;
+    string time;
+    string scramble;
+    string orientation; // depends on the type of session option
+    string date;
+
+    chosenPath = displayAndChoose(); // should be returning a full path to a base .txt file
+
+    // grabbing the filename and then adding _KEYS.txt to it for access to keys
+    fs::path keysPath = chosenPath.stem();
+    keysPath += "_KEYS";
+
+    terminalModifier.clearScreen();
+
+    if(chosenPath == "") {
+        return;
+    }
+
+    // tuple that contains the ID wanted and the index where its at
+    tuple<int, int> idAndIndex(0, 0);
+    idAndIndex = displayAndChooseSessionData(chosenPath, keysPath);
+
+    if (get<1>(idAndIndex) == -1) {
+        edit();
+    }
+
+    // now that we have the exact key for what time we want to mess with, lets actually edit the time using the index we got from the chosen data
+    dataMan.vectorFileInfo(chosenPath);
+
+    string vectorLine = "";
+
+    vectorLine = dataMan.fileInfoHolder[get<1>(idAndIndex)]; // use the index we got from the IDS file to match with the actual file
+
+    // separating the data that we get form the fileInfoHoler
+    stringstream baka(vectorLine);
+
+    getline(baka, version, ':');
+    getline(baka, id, ':');
+    getline(baka, time, ':');
+    getline(baka, scramble, ':');
+
+    if (version == "V2") {
+        getline(baka, orientation, ':');
+    }
+
+    getline(baka, date, ':');
+
+    cout << "ID: " << id << endl;
+    cout << "\t- Time (ms): " << time << endl;
+    cout << "\t- Scramble: " << scramble << endl;
+    cout << "\t- Orientation: " << scramble << endl;
+    cout << "\t- Date: " << date << endl;
+
+reprint:
+    terminalModifier.clearScreen();
+
+    cout << endl << endl << endl << endl << endl << endl;
+
+    terminalModifier.printCentered("You are using this data. What would you like to change?");
+    cout << endl << endl;
+    terminalModifier.printTwoColumns("Time (t)", "Scramble (s)");
+    terminalModifier.printTwoColumns("Orientation (o)", "Date (d)");
+
+    terminalModifier.setNonBlockingInput();
+    while (true) {
+        c = 0;
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        if (c == 't') {
+            terminalModifier.restoreTerminal();
+            cout << "t works";
+        } else if (c == 's') {
+            terminalModifier.restoreTerminal();
+            cout << "s works";
+        } else if (c == 'o') {
+            terminalModifier.restoreTerminal();
+            cout << "o works";
+        } else if (c == 'd') {
+            terminalModifier.restoreTerminal();
+            cout << "d works";
+        } else if (c == 27) {
+            terminalModifier.restoreTerminal();
+            return;
+        }
+    }
+    
+
+    // while (getline(meow, line)) {
+    //     // grab and split up all file data
+    
+
+    // }
+
+    // meow.close();
 
 }
+
 void timerScreen::del() {
+    fs::path chosenPath;
+    Timer terminalModifier;
+    char c = 0;
+
+    chosenPath = displayAndChoose(); // should be returning a full path to a base .txt file
+
+    // grabbing the filename and then adding _KEYS.txt to it for access to keys
+    fs::path keysPath = chosenPath.stem();
+    keysPath += "_KEYS";
+
+    terminalModifier.clearScreen();
+
+    if(chosenPath == "") {
+        return;
+    }
+
+    terminalModifier.printCentered("Type in the session that you want to edit");
+    cout << endl << endl << endl;
+
+    // tuple that contains the ID wanted and the index where its at
+    tuple<int, int> idAndIndex(0, 0);
+
+    idAndIndex = displayAndChooseSessionData(chosenPath, keysPath);
+
+    // now that we have the exact key for what time we want to mess with, lets actually edit the key
 
 }
 
@@ -898,7 +1192,6 @@ refresh_the_screen:
     } else {
         cout << "Set Solve Orientation (s)" << endl;
     }
-    
 
     terminalModifier.setNonBlockingInput(); // sets raw mode
 
@@ -910,7 +1203,8 @@ refresh_the_screen:
             terminalModifier.restoreTerminal();
             return "F"; // escape to menu
         }  else if (c == 117) { // undo button
-            dataMod.undoTime(fullPath);
+            fs::path fullpathNoExtension = basePath / session;
+            dataMod.undoTime(fullpathNoExtension);
             goto refresh_the_screen;
         }  else if (c == 'i') {
             inspectionToggle();

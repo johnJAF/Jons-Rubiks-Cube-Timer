@@ -6,6 +6,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+#include <tuple>
 
 class introScreens {
 public:
@@ -88,6 +89,8 @@ public:
     void newSession(); // dynamically creates a session if the file isnt there
     void previousSession(); // opens session up
     void sessionManager(); // displays all session files - probably using data visualizer   
+        fs::path displayAndChoose();
+        tuple<int, int> displayAndChooseSessionData(const fs::path& mainPath, const fs::path& keysPath);
         void edit();
         void del();
     string splashScreen(const string& meow);

@@ -26,7 +26,7 @@ bool DataManager::createFile(const string& whatFolder, const string& fileName) {
         return false;
     }
 
-    if (fileExists(fileName) || fileName == "SessionKeys") {
+    if (fileExists(fileName)) {
         cerr << endl << "[Error] File already exists." << endl;
         return false;
     }
@@ -75,6 +75,8 @@ string DataManager::createSessionLoop() {
         didItWork = createFile("Sessions", file);
     }
 
+    createFile("Sessions", file + "_KEYS");
+
     return file;
 }
 
@@ -111,7 +113,10 @@ void DataManager::displayFolder(const string& whatFolder) {
     fs::path basePath = fs::absolute("Data/" + whatFolder);
 
     for (auto const& dir_entry : fs::directory_iterator{basePath}) {
-        if (dir_entry.path().filename() == ".gitkeep" || dir_entry.path().stem() == "SessionKeys") {
+        string fileName = dir_entry.path().stem().string();
+
+        // if the file is a .gitkeep or a _KEYS file do not display it
+        if (dir_entry.path().filename() == ".gitkeep" || fileName.find("_KEYS") != std::string::npos) {
             continue; // skip it
         }
 
@@ -143,8 +148,6 @@ void DataManager::vectorFileInfo(const string& whatFolder, const string& whatFil
         fileInfoHolder.emplace_back(line);
     }
 
-    fileInfoHolder.pop_back(); // removes white space
-
     meow.close();
 }
 
@@ -172,6 +175,54 @@ void DataManager::vectorFileInfo(const fs::path& fully) {
     meow.close();
 }
 
+void DataManager::displaySessionFile(const fs::path& whatFile) {
+    Scramble mooski;
+    if (!fs::exists(whatFile)) {
+        return;
+    }
+
+    ifstream meow(whatFile);
+
+    if (!meow.is_open()) {
+        return;
+    }
+
+    string line;
+    string version;
+    string id;
+    string time;
+    string scramble;
+    string orientation; // depends on the type of session option
+    string date;
+
+    while (getline(meow, line)) {
+        // grab and split up all file data
+        stringstream baka(line);
+
+        getline(baka, version, ':');
+        getline(baka, id, ':');
+        getline(baka, time, ':');
+        getline(baka, scramble, ':');
+
+        if (version == "V2") {
+            getline(baka, orientation, ':');
+        }
+
+        getline(baka, date, ':');
+
+        cout << "ID: " << id << endl;
+        cout << "\t- Time (ms): " << time << endl;
+        cout << "\t- Scramble: " << scramble << endl;
+        if (version == "V2") {
+            cout << "\t- Orientation: " << orientation << endl;
+        }
+        cout << "\t- Date: " << date << endl;
+
+    }
+
+    meow.close();
+}
+
 // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
 bool DataManager::saveSolveNoOrientation(const string& session, const long long milliseconds, const string& scramble, const string& date) {
     fs::path basePath = fs::absolute("Data/Sessions");
@@ -186,7 +237,7 @@ bool DataManager::saveSolveNoOrientation(const string& session, const long long 
     }
     
     // session will be ID soon
-    meow << createID() << ":" << milliseconds << ":" << scramble << ":" << date << endl;
+    meow << "V1" << ":" << createSessionID(session) << ":" << milliseconds << ":" << scramble << ":" << date << endl;
 
     meow.close();
 
@@ -206,7 +257,7 @@ bool DataManager::saveSolveOrientation(const string& session, const long long mi
     }
     
     // session will be ID soon
-    meow << createID() << ":" << milliseconds << ":" << scramble << ":" << orientation << ":" << date << endl;
+    meow << "V2" << ":"<< createSessionID(session) << ":" << milliseconds << ":" << scramble << ":" << orientation << ":" << date << endl;
 
     meow.close();
 
@@ -233,8 +284,8 @@ bool DataManager::saveAlgTime(const string& ollpll, const string& specificAlgNam
         return false;
     }
     
-    // specific algName will be ID soon
-    meow << specificAlgName << ":" << milliseconds << ":" << date << endl;;
+    // ap = alg practice (version) , id , time, date
+    meow << "AP" << ":" << createAlgID(ollpll, specificAlgName) << ":" << milliseconds << ":" << date << endl;;
 
     meow.close();
 
@@ -243,6 +294,7 @@ bool DataManager::saveAlgTime(const string& ollpll, const string& specificAlgNam
 
 long long DataManager::getLatestAlgTime() {
     fs::path fullPath;
+    string version;
     string algName;
     string algTime;
     string algDate;
@@ -258,6 +310,7 @@ long long DataManager::getLatestAlgTime() {
 
     stringstream ss(holder);
 
+    getline(ss, version, ':'); // "ID"
     getline(ss, algName, ':');
     getline(ss, algTime, ':'); // should hold the alg timer
     getline(ss, algDate);
@@ -268,18 +321,48 @@ long long DataManager::getLatestAlgTime() {
 }
 
 void DataManager::undoTime(const fs::path& fullPath) {
-    string algName;
+    // i have to allocate another vector just for undotime because I'm operating the main vector under the impression that im using it for averages first
+    vector<string> undoTimerHolder;
+    undoTimerHolder.reserve(50);
+
+    string algVersion;
+    string id;
     string algTime;
     string algDate;
+    fs::path why = fullPath;
+    fs::path whyTwo = fullPath;
+
+    fs::path straightPath = whyTwo += ".txt";
+    fs::path pathToKeys = why += "_KEYS.txt";
 
     long long time;
 
+    // accessing the keys for undo-ation
+    string vectorLine;
+    ifstream forVector(pathToKeys);
 
-    if (!fileInfoHolder.empty()) {
-        fileInfoHolder.clear();
+    while (getline(forVector, vectorLine)) {
+        undoTimerHolder.emplace_back(vectorLine);
     }
 
-    vectorFileInfo(fullPath);
+    forVector.close();
+
+    // If file is not empty
+    if (!undoTimerHolder.empty()) {
+        undoTimerHolder.pop_back();  // Remove the last line
+    }
+
+    // Write lines back to the same file (overwrite)
+    ofstream of(pathToKeys, ios::trunc);  // trunc clears the file
+    for (const string& s : undoTimerHolder) {
+        of << s << '\n';
+    }
+
+    of.close();
+
+    // accessing the id file for undo-ation
+    fileInfoHolder.clear();
+    vectorFileInfo(straightPath);
 
     // If file is not empty
     if (!fileInfoHolder.empty()) {
@@ -287,15 +370,16 @@ void DataManager::undoTime(const fs::path& fullPath) {
     }
 
     // Write lines back to the same file (overwrite)
-    ofstream of(fullPath, ios::trunc);  // trunc clears the file
+    ofstream whyDoIHaveToNameThisDifferently(straightPath, ios::trunc);  // trunc clears the file
     for (const string& s : fileInfoHolder) {
-        of << s << '\n';
+        whyDoIHaveToNameThisDifferently << s << '\n';
     }
-    of.close();
+
+    whyDoIHaveToNameThisDifferently.close();
 }
 
-int DataManager::createID() {
-    fs::path fullPath = "Data/Sessions/SessionKeys.txt";
+int DataManager::createSessionID(const string& session) {
+    fs::path fullPath = "Data/Sessions/" + session + "_KEYS.txt";
     seed = std::chrono::system_clock::now().time_since_epoch().count();
     mt19937 generator(seed);
     uniform_int_distribution<int> distribution(0, 999999); // random number for an ID
@@ -309,17 +393,77 @@ int DataManager::createID() {
     }
     
     string line = "";
-    bool matchFound = false;
 
-    // i want to go through every ID in the file and stop if the line is equal to the 
+    // i want to go through every ID in the file and stop if the line is equal to the ID we have rn
+    // if the ID we have rn is unique then well add it to the list of ID's
     while (getline(meow, line)) {
         if (line == idSrting) {
-            return createID();
+            return createSessionID(session);
         }
     }
 
+    meow.close();
+
+    ofstream mooskie(fullPath, ios_base::app);
+
+    mooskie << id << endl;
+
+    mooskie.close();
+
     return id;
 }
+
+
+int DataManager::createAlgID(const string& ollpll, const string& specificAlgName) {
+    fs::path fullPath;
+    seed = std::chrono::system_clock::now().time_since_epoch().count();
+    mt19937 generator(seed);
+    uniform_int_distribution<int> distribution(0, 999999); // random number for an ID
+    int id = distribution(generator);  // this now gives you a number in that range 
+    string idSrting = to_string(id);
+
+
+    if (ollpll == "oll") {
+        fs::path basePath = fs::absolute("Data/Algorithms/OLL");
+        fs::path extension = "_KEYS.txt";
+        fullPath = basePath / specificAlgName += extension;
+    } else if (ollpll == "pll") {
+        fs::path basePath = fs::absolute("Data/Algorithms/PLL");
+        fs::path extension = "_KEYS.txt";
+        fullPath = basePath / specificAlgName += extension;
+    }
+
+    ofstream key(fullPath, ios_base::app); // just create the file
+    key.close();
+
+    ifstream meow(fullPath); // open this mf file for reading because you dont need to change it
+
+    if (meow.fail()) {
+        return -1;
+    }
+    
+    string line = "";
+
+    // i want to go through every ID in the file and stop if the line is equal to the ID we have rn
+    // if the ID we have rn is unique then well add it to the list of ID's
+    while (getline(meow, line)) {
+        if (line == idSrting) {
+            return createAlgID(ollpll, specificAlgName);
+        }
+    }
+
+    meow.close();
+
+    ofstream mooskie(fullPath, ios_base::app);
+
+    mooskie << id << endl;
+
+    mooskie.close();
+
+    return id;
+
+}
+
 
 // // for the algorithmPractice class
 // void DataManager::writeAlgorithm() {
@@ -335,9 +479,12 @@ int DataManager::createID() {
 // returns miliseconds
 long long DataManager::grabAO5() {
     vector<string> necessaryAlgs(5);
-    string algName;
+    string version;
+    string ID;
     string algTime;
     string algDate;
+
+    fs::path meow;
 
     long long avg = 0;
     
@@ -355,11 +502,12 @@ long long DataManager::grabAO5() {
     for (string s : necessaryAlgs) {
         stringstream ss(s);
 
-        getline(ss, algName, ':'); // "Aa Perm"
-        getline(ss, algTime, ':'); // "7042"
-        getline(ss, algDate); // "05/08/25"
+        getline(ss, version, ':'); // "AG"
+        getline(ss, ID, ':'); // id
+        getline(ss, algTime, ':'); // time in ms
+        getline(ss, algDate); // date
 
-        avg += stoll(algTime); // 7042
+        avg += stoll(algTime); // average
     }
 
     return avg/5;
@@ -367,7 +515,8 @@ long long DataManager::grabAO5() {
 
 long long DataManager::grabAO12() {
     vector<string> necessaryAlgs(12);
-    string algName;
+    string version;
+    string id;
     string algTime;
     string algDate;
 
@@ -387,11 +536,12 @@ long long DataManager::grabAO12() {
     for (string s : necessaryAlgs) {
         stringstream ss(s);
 
-        getline(ss, algName, ':'); // "Aa Perm"
-        getline(ss, algTime, ':'); // "7042"
-        getline(ss, algDate); // "05/08/25"
+        getline(ss, version, ':');
+        getline(ss, id, ':'); 
+        getline(ss, algTime, ':'); 
+        getline(ss, algDate);
 
-        avg += stoll(algTime); // 7042
+        avg += stoll(algTime);
     }
 
     return avg/12;
@@ -405,7 +555,8 @@ long long DataManager::grabAO100() {
         necessaryAlgs.reserve(100);
     }
 
-    string algName;
+    string version;
+    string id;
     string algTime;
     string algDate;
 
@@ -423,7 +574,8 @@ long long DataManager::grabAO100() {
     for (string s : necessaryAlgs) {
         stringstream ss(s);
 
-        getline(ss, algName, ':'); // "Aa Perm"
+        getline(ss, version, ':'); // "ID"
+        getline(ss, id, ':'); // "Aa Perm"
         getline(ss, algTime, ':'); // "7042"
         getline(ss, algDate); // "05/08/25"
 
@@ -435,7 +587,8 @@ long long DataManager::grabAO100() {
 
 // returns lowest time
 long long DataManager::grabPB() {
-    string algName;
+    string version;
+    string id;
     string algTime;
     string algDate;
 
@@ -452,7 +605,8 @@ long long DataManager::grabPB() {
     for (string s : fileInfoHolder) {
         stringstream ss(s);
 
-        getline(ss, algName, ':'); // "Aa Perm"
+        getline(ss, version, ':'); // "ID"
+        getline(ss, id, ':'); // "Aa Perm"
         getline(ss, algTime, ':'); // "7042"
         getline(ss, algDate); // "05/08/25"
 
