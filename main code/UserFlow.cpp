@@ -853,7 +853,7 @@ top:
 }
 
 // displays all session files and allows you to pick one
-fs::path timerScreen::displayAndChoose() {
+fs::path timerScreen::displayAndChoose(bool areYouDeleting) {
 top:
     DataManager dataMan;
     fs::path folderpath = "Data/Sessions/";
@@ -877,7 +877,12 @@ top:
     }
 
     cout << endl << endl << endl << endl << endl << endl;
-    terminalModifier.printCentered("What session would you like to edit? (-1 to exit)");
+    if (areYouDeleting) {
+        terminalModifier.printCentered("What session would you like to delete? (-1 to exit)");
+        terminalModifier.printCentered("(Be careful as you cannot undo this)");
+    } else {
+        terminalModifier.printCentered("What session would you like to edit? (-1 to exit)");
+    }
     dataMan.displayFolder("Sessions");
 
     cout << endl << endl << endl;
@@ -987,7 +992,7 @@ void timerScreen::edit() {
     string orientation; // depends on the type of session option
     string date;
 
-    chosenPath = displayAndChoose(); // should be returning a full path to a base .txt file
+    chosenPath = displayAndChoose(false); // should be returning a full path to a base .txt file
 
     // grabbing the filename and then adding _KEYS.txt to it for access to keys
     fs::path keysPath = chosenPath.stem();
@@ -1047,7 +1052,10 @@ reprint:
 
     cout << endl << endl;
     terminalModifier.printTwoColumns("Time (t)", "Scramble (s)");
-    terminalModifier.printTwoColumns("Orientation (o)", "Date (d)");
+    if (version == "V2") {
+        terminalModifier.printTwoColumns("Orientation (o)", "Date (d)");
+    }
+    terminalModifier.printCentered("Date (d)");
     cout << endl;
     terminalModifier.printCentered("Delete time (-)");
 
@@ -1235,11 +1243,10 @@ void timerScreen::del() {
     Timer terminalModifier;
     char c = 0;
 
-    chosenPath = displayAndChoose(); // should be returning a full path to a base .txt file
+    chosenPath = displayAndChoose(true); // should be returning a full path to a base .txt file
 
     // grabbing the filename and then adding _KEYS.txt to it for access to keys
-    fs::path keysPath = chosenPath.stem();
-    keysPath += "_KEYS";
+    fs::path keysPath = "Data/Sessions" / chosenPath.stem() += "_KEYS.txt";
 
     terminalModifier.clearScreen();
 
@@ -1247,16 +1254,15 @@ void timerScreen::del() {
         return;
     }
 
-    terminalModifier.printCentered("Type in the session that you want to edit");
-    cout << endl << endl << endl;
-
-    // tuple that contains the ID wanted and the index where its at
-    tuple<int, int> idAndIndex(0, 0);
-
-    idAndIndex = displayAndChooseSessionData(chosenPath, keysPath);
-
-    // now that we have the exact key for what time we want to mess with, lets actually edit the key
-
+    // now that we have the exact session, lets dump it
+    if (fs::exists(chosenPath)) {
+        fs::remove(chosenPath); // deletes the file
+    }
+    
+    // and the keys file too
+    if (fs::exists(keysPath)) {
+        fs::remove(keysPath); // deletes the file
+    }
 }
 
 string timerScreen::splashScreen(const string& session) {
