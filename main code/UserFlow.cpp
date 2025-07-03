@@ -917,6 +917,9 @@ tuple<int, int> timerScreen::displayAndChooseSessionData(const fs::path& mainPat
     int indexCounter = 0;
     bool didItWork = true;
     while (true) {
+        indexCounter = 0;
+        string IDread = "";
+        int intKeyChosen = 0;
         getline(cin, IDread);
 
         didItWork = regex_match(IDread, regex("^-?[0-9]+$")); // check only for numerical inputs
@@ -942,6 +945,7 @@ tuple<int, int> timerScreen::displayAndChooseSessionData(const fs::path& mainPat
             break;
         }
 
+        dataMan.fileInfoHolder.clear();
         // if the ID is validly typed, then we can check it with existing IDs (_keys.txt file)
         dataMan.vectorFileInfo("Sessions", keysPath.string());
 
@@ -1008,7 +1012,7 @@ void timerScreen::edit() {
 
     string vectorLine = "";
 
-    vectorLine = dataMan.fileInfoHolder[get<1>(idAndIndex)]; // use the index we got from the IDS file to match with the actual file
+    vectorLine = dataMan.fileInfoHolder[get<1>(idAndIndex)-1]; // use the index we got from the IDS file to match with the actual file
 
     // separating the data that we get form the fileInfoHoler
     stringstream baka(vectorLine);
@@ -1024,54 +1028,206 @@ void timerScreen::edit() {
 
     getline(baka, date, ':');
 
-    cout << "ID: " << id << endl;
-    cout << "\t- Time (ms): " << time << endl;
-    cout << "\t- Scramble: " << scramble << endl;
-    cout << "\t- Orientation: " << scramble << endl;
-    cout << "\t- Date: " << date << endl;
-
 reprint:
     terminalModifier.clearScreen();
 
     cout << endl << endl << endl << endl << endl << endl;
 
-    terminalModifier.printCentered("You are using this data. What would you like to change?");
+    terminalModifier.printCentered("You are using this time data. What would you like to change?");
+    cout << endl << endl;
+    cout << "ID: " << id << endl;
+    cout << "\t- Time (ms): " << time << endl;
+    cout << "\t- Scramble: " << scramble << endl;
+
+    if (version == "V2") {
+        cout << "\t- Orientation: " << orientation << endl;
+    }
+
+    cout << "\t- Date: " << date << endl;
+
     cout << endl << endl;
     terminalModifier.printTwoColumns("Time (t)", "Scramble (s)");
     terminalModifier.printTwoColumns("Orientation (o)", "Date (d)");
+    cout << endl;
+    terminalModifier.printCentered("Delete time (-)");
 
     terminalModifier.setNonBlockingInput();
+    
+    string chosenString = ""; // this is for the stupid text display after this but it gets decided here
     while (true) {
         c = 0;
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
         if (c == 't') {
             terminalModifier.restoreTerminal();
-            cout << "t works";
+            chosenString = "Time";
+            break;
         } else if (c == 's') {
             terminalModifier.restoreTerminal();
-            cout << "s works";
+            chosenString = "Scramble";
+            break;
         } else if (c == 'o') {
             terminalModifier.restoreTerminal();
-            cout << "o works";
+            chosenString = "Orientation";
+            break;
         } else if (c == 'd') {
             terminalModifier.restoreTerminal();
-            cout << "d works";
-        } else if (c == 27) {
-            terminalModifier.restoreTerminal();
+            chosenString = "Date";
+            break;
+        } else if (c == '-') {
+            // we have vectored the file info at this point so we can just delete 
+
+            dataMan.fileInfoHolder.erase(dataMan.fileInfoHolder.begin() + get<1>(idAndIndex)-1);
+
+            // rewrite the vectored data into the actual file
+            ofstream of(chosenPath, ios::trunc);  // trunc clears the file
+            for (const string& s : dataMan.fileInfoHolder) {
+                of << s << '\n';
+            }
+
+            of.close();
+
+            // helper function because Im not trying to make this one 30 times larger (to get rid of the same ID in the _KEYS file)
+            dataMan.deleteID(keysPath, get<1>(idAndIndex)-1);
+
             return;
+        } else if (c == 27) {
+            c = 0;
+            return;
+        } 
+    }
+
+    terminalModifier.clearScreen();
+
+    cout << endl << endl << endl << endl << endl << endl;
+
+    // this is going to display the text in this format (e.g):
+    /**
+     * 
+     * (centered) Enter the new Time you'd like to use 
+     * 
+     *  id:
+     * 
+     *      - Time: Data(highlighted)
+     *      - Scramble
+     *      - Orientaiton
+     *      - Date
+     * 
+     *  Enter new Time
+     * 
+     **/
+
+while(true) {
+        terminalModifier.printCentered("Enter the " + chosenString + " you'd like to use");
+        cout << endl << endl;
+        cout << "ID: " << id << endl;
+
+        if (c == 't') {
+            cout << "\t\033[1;37;44m- Time (ms)\033[0m: " << time << endl;
+            cout << "\t- Scramble: " << scramble << endl;
+
+            if (version == "V2") {
+                cout << "\t- Orientation: " << orientation << endl;
+            }
+
+            cout << "\t- Date: " << date << endl;
+
+        } else if (c == 's') {
+            cout << "\t- Time (ms): " << time << endl;
+            cout << "\t\033[1;37;44m- Scramble\033[0m: " << scramble << endl;
+
+            if (version == "V2") {
+                cout << "\t- Orientation: " << orientation << endl;
+            }
+
+            cout << "\t- Date: " << date << endl;
+
+        } else if (c == 'o') {
+            cout << "\t- Time (ms): " << time << endl;
+            cout << "\t- Scramble: " << scramble << endl;
+
+            if (version == "V2") {
+                cout << "\t\033[1;37;44m- Orientation\033[0m: " << orientation << endl;
+            }
+
+            cout << "\t- Date: " << date << endl;
+        } else if (c == 'd') {
+            cout << "\t- Time (ms): " << time << endl;
+            cout << "\t- Scramble: " << scramble << endl;
+
+            if (version == "V2") {
+                cout << "\t- Orientation: " << orientation << endl;
+            }
+
+            cout << "\t\033[1;37;44m- Date\033[0m: " << date << endl;
+        }
+
+        cout << endl << endl;
+
+        string userInput = "";
+
+    // at this point we know that we still have the vector full of times from the actual file inside of dataman. SO, if we just apply the changes to 
+    // the string stream then we can just throw it back into the vector using the index we stored.
+        getline(cin, userInput);
+
+        if (userInput == "-1"){
+            return;
+        }
+
+        if (regex_match(userInput, regex("^[A-Za-z0-9/'/]+$"))) {
+            if (c == 't') {
+            time = userInput;
+            } else if (c == 's') {
+                scramble = userInput;
+            } else if (c == 'o') {
+                orientation = userInput;
+            } else if (c == 'd') {
+                date = userInput;
+            }
+            break;
+        } else {
+            cerr << endl << "Invalid Input" << endl;
+            continue;
         }
     }
     
+    // time to validate that you entered an actual time lol
+    long long longTime = 0;
+    int intID = 0;
+    try {
+        int longTime = stoi(time);
 
-    // while (getline(meow, line)) {
-    //     // grab and split up all file data
+        if (longTime < 1) {
+            throw invalid_argument("");
+        }
+    } catch (const invalid_argument& e) {
+        cerr << "Invalid input: not a number." << endl;
+        goto reprint;
+    } catch (const out_of_range& e) {
+        cerr << "Input is out of range for a long long." << endl;
+        goto reprint;
+    }
     
+    // rebuilding the stupid stirng
+    string meow = "";
+    if (version == "V2") {
+        meow += version + ":" + id + ":" + time + ":" + scramble + ":" + orientation + ":" + date;
+    } else if (version == "V1") {
+        meow += version + ":" + id + ":" + time + ":" + scramble + ":" + date;
+    }
+    
+    dataMan.fileInfoHolder[get<1>(idAndIndex)-1] = meow;
 
-    // }
+    // throwing the new data into the file
+    ofstream of(chosenPath, ios::trunc);  // trunc clears the file
+    for (const string& s : dataMan.fileInfoHolder) {
+        of << s << '\n';
+    }
 
-    // meow.close();
+    of.close();
 
+    // now that the edit is made ill send the user back to reprint so that they could see the chagnes they made
+    goto reprint;
 }
 
 void timerScreen::del() {

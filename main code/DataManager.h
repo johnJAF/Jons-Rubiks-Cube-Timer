@@ -32,6 +32,7 @@ public:
     bool isValidFilename(const string& name);
     bool fileExists(const string& session);
     bool deleteFile(const string& whatFolder, const string& whatFile); // deletes a file or session
+    bool deleteID(const fs::path& keysPath, int index);
     void displayFolder(const string& whatFolder); // prints the feature folder
     void displaySessionFile(const fs::path& whatFile);
     void vectorFileInfo(const string& whatFolder, const string& whatFile); // grabs all file info as a dynamic vector and stores it
@@ -40,7 +41,7 @@ public:
     // going to save time, in order of miliseconds, orientaiton, date. The session argument is just for where its supposed to go
     bool saveSolveNoOrientation(const string& session, const long long milliseconds, const string& scramble, const string& date);
     bool saveSolveOrientation(const string& session, const long long milliseconds, const string& scramble, const string& orientation, const string& date);
-
+    bool saveSolveWithAllData(const string& session, string& version, int id, const long long milliseconds, const string& scramble, const string& orientation, const string& date);
 
 //     // for the algorithmPractice class
 //     void writeAlgorithm();

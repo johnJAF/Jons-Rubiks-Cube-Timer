@@ -106,6 +106,43 @@ bool DataManager::deleteFile(const string& whatFolder, const string& whatFile) {
 
 }
 
+bool DataManager::deleteID(const fs::path& keysPath, int index) {
+    vector<string> tempVec;
+
+    fs::path newKeysPath = "Data/Sessions" / keysPath += ".txt";
+
+    string line;
+
+    if (!fs::exists(newKeysPath)) {
+        return false;
+    }
+
+    ifstream meow(newKeysPath);
+
+    tempVec.reserve(50);
+
+    if (!meow.is_open()) {
+        return false;
+    }
+
+    while (getline(meow, line)) {
+        tempVec.emplace_back(line);
+    }
+
+    meow.close();
+
+    tempVec.erase(tempVec.begin() + index);
+
+    ofstream of(newKeysPath, ios::trunc);  // trunc clears the file
+    for (const string& s : tempVec) {
+        of << s << '\n';
+    }
+
+    of.close();
+
+    return true;
+}
+
 // prints the feature folder
 // folder can only be algorithms -> OLL, PLL -> (alg names depending on o/pll)
 // or the folder can be sessions -> (all session names)
@@ -259,6 +296,32 @@ bool DataManager::saveSolveOrientation(const string& session, const long long mi
     // session will be ID soon
     meow << "V2" << ":"<< createSessionID(session) << ":" << milliseconds << ":" << scramble << ":" << orientation << ":" << date << endl;
 
+    meow.close();
+
+    return true;
+}
+
+bool DataManager::saveSolveWithAllData(const string& session, string& version, int id, const long long milliseconds, const string& scramble, const string& orientation, const string& date) {
+    fs::path basePath = fs::absolute("Data/Sessions");
+    fs::path extension = ".txt";
+    fs::path fullPath = basePath / session += extension;
+
+    ofstream meow(fullPath, ios_base::app);
+    
+    if (!meow) { // if the file isnt created for some reason then we will error out
+        cerr << endl << "[Error] Failed to create file: " << fullPath << endl;
+        return false;
+    }
+    
+    if (version == "V2") {
+        meow << version << ":" << id << ":" << milliseconds << ":" << scramble << ":" << orientation << ":" << date << endl;
+    } else if (version == "V1") {
+        meow << version << ":" << id << ":" << milliseconds << ":" << scramble << ":" << date << endl;
+    } else {
+        meow.close();
+        return false;
+    }
+    
     meow.close();
 
     return true;
