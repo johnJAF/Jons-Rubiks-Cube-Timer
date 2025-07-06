@@ -48,6 +48,9 @@ public:
     // just in case while you were solving you made some mistake and you want to remove the very last solve instance.
     void undoSolve();
 
+    void editPLL();
+    void editOLL();
+
     // own
     void algorithmName();
     void typeInAlgMoves();

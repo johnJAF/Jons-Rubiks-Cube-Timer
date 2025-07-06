@@ -210,8 +210,39 @@ void algorithmPracticeScreens::own() {
 
 void algorithmPracticeScreens::editAlgs() {
     Timer terminalModifier;
+    char c;
     terminalModifier.clearScreen();
-    cout << "This feature doesnt work homie";
+
+    cout << endl << endl << endl << endl << endl << endl;
+
+    terminalModifier.printCentered("What would you like to edit?");
+    terminalModifier.printTwoColumns("Edit OLL (o)", "Edit PLL (p)");
+
+    terminalModifier.setNonBlockingInput();
+    // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
+    while (true) {
+        c = 0;
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        if (c == 'o') {
+            terminalModifier.restoreTerminal();
+
+        } else if (c == 'p') {
+            terminalModifier.restoreTerminal();
+
+        } else if (c == 27) {
+            c = 0;
+            return;
+        }
+    }
+}
+
+void algorithmPracticeScreens::editPLL() {
+
+}
+
+void algorithmPracticeScreens::editOLL() {
+    
 }
 
 // navigator goes through oll/pll algorithms by seeing if the user chose oll/pll, then pulling that speific file data
@@ -267,7 +298,7 @@ reprint_w_new_values:
             navCounter++;
             c = 0;
 
-            if(navCounter > moo.fileInfoHolder.size()) {
+            if(navCounter > moo.fileInfoHolder.size()-1) {
                 navCounter = 0;
             }
 
@@ -280,7 +311,7 @@ reprint_w_new_values:
             c = 0;
 
             if (navCounter < 0) {
-                navCounter = moo.fileInfoHolder.size();
+                navCounter = moo.fileInfoHolder.size()-1;
             }
 
             goto reprint_w_new_values;
