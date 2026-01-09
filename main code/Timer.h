@@ -5,14 +5,25 @@
 #include "Scramble.h"
 
 #include <iostream>
+#include <thread>     // for sleep
+#include <chrono>     // for milliseconds
 
 // terminal stuff
+#ifdef _WIN32
+#include <windows.h>
+#include <conio.h>
+#else
 #include <unistd.h>
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
-#include <thread>     // for sleep
-#include <chrono>     // for milliseconds
+#endif
+
+#ifdef _WIN32
+DWORD originalConsoleMode;
+#else
+int originalFlags;
+#endif
 
 using namespace std;
 
@@ -31,7 +42,7 @@ class Timer {
 
 public:
     bool inspectionLimitReached = false;
-
+    struct termios originalTermios;
     int originalFlags = fcntl(STDIN_FILENO, F_GETFL);
 
     // basic timer manipulation functions

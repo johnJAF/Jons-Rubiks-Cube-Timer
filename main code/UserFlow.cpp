@@ -21,7 +21,6 @@ void introScreens::startScreen() {
 // second screen user sees, shows all four options between scrambler, timer, datavisualizer, alogirthmpractice
 void introScreens::mainScreen(const char moo) {
     // all objects to take care of screen switching when an option is chosen.
-    Timer terminalModifier;
     scrambleScreen scrambleSwitch;
     algorithmPracticeScreens algoPracticeSwitch;
     dataVisualizerScreen dataVisSwitch;
@@ -101,10 +100,10 @@ void scrambleScreen::mainScreen() {
 
 void algorithmPracticeScreens::mainScreen() {
 top:
-    Timer terminalModifier;
     algorithmPracticeScreens algoPracticeSwitch;
     navCounter = 0;
     algNavCounter = 0;
+    areEditing = false;
     char c = 0;
 
     terminalModifier.clearScreen();
@@ -118,7 +117,7 @@ top:
         cout << endl;
 
         terminalModifier.printTwoColumns("OLL (o)", "PLL (p)");
-        terminalModifier.printTwoColumns("Create Algorithm (c)", "Edit Algorithms (e)");
+        terminalModifier.printTwoColumns("Delete Time Data (d)", "Edit Time Data (e)");
 
     terminalModifier.setNonBlockingInput();
     // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
@@ -129,19 +128,21 @@ top:
         if (c == 'o') {
             isOll = true;
             opll();
-            terminalModifier.restoreTerminal();
             goto top;
         } else if (c == 'p') {
             isOll = false;
             opll(); // calls the same function as oll but the truth value is what makes the difference
             terminalModifier.restoreTerminal();
             goto top;
-        } else if (c == 'c') {
-            own();
+        } else if (c == 'd') {
+            areEditing = false;
+            editDeleteAlgs();
             terminalModifier.restoreTerminal();
             goto top;
         } else if (c == 'e') {
-            editAlgs();
+            areEditing = true;
+            terminalModifier.restoreTerminal();
+            editDeleteAlgs();
             terminalModifier.restoreTerminal();
             goto top;
         } else if (c == 27) { // escape to exit
@@ -158,7 +159,6 @@ top:
 // anyways this method calls navigator where the user chooses the algorithm category, algNavigator where the user chooses the specific sub-algorithm
 // then fromSolved where the user gets to see how to get to the algorithm ascii from a solved state, then main timer so the user can set a time, save it, and see their data later
 void algorithmPracticeScreens::opll() {
-    Timer terminalModifier;
     string algName;
     string specificAlgName;
     char c = 0;
@@ -202,21 +202,33 @@ algNavigator:
 }
 
 
-void algorithmPracticeScreens::own() {
-    Timer terminalModifier;
-    terminalModifier.clearScreen();
-    cout << "This feature doesnt work homie";
-}
+// void algorithmPracticeScreens::own() {
+//     terminalModifier.clearScreen();
+//     cout << "This feature doesnt work homie";
+// }
 
-void algorithmPracticeScreens::editAlgs() {
-    Timer terminalModifier;
+void algorithmPracticeScreens::editDeleteAlgs() {
+    // removed local terminal modifier and added a class one to decrease function transferrence issues
     char c;
     terminalModifier.clearScreen();
+    editingClass editor;
 
     cout << endl << endl << endl << endl << endl << endl;
 
-    terminalModifier.printCentered("What would you like to edit?");
-    terminalModifier.printTwoColumns("Edit OLL (o)", "Edit PLL (p)");
+    if (areEditing) {
+        terminalModifier.printCentered("What would you like to edit?");
+    } else {
+        terminalModifier.printCentered("What would you like to delete?");
+    }
+    
+    cout << endl << endl;
+    
+    if (areEditing) {
+        terminalModifier.printTwoColumns("Edit OLL (o)", "Edit PLL (p)");
+    } else {
+        terminalModifier.printTwoColumns("Delete from OLL (o)", "Delete from PLL (p)");
+    }
+    
 
     terminalModifier.setNonBlockingInput();
     // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
@@ -224,12 +236,24 @@ void algorithmPracticeScreens::editAlgs() {
         c = 0;
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
-        if (c == 'o') {
+        if (c == 'o') { 
             terminalModifier.restoreTerminal();
-
+            isOll = true;
+            if (areEditing) {
+                editOPLL();
+            } else {
+                editor.del("OLL");
+            }
+            break;
         } else if (c == 'p') {
             terminalModifier.restoreTerminal();
-
+            isOll = false;
+            if (areEditing) {
+                editOPLL();
+            } else {
+                editor.del("PLL");
+            }
+            break;
         } else if (c == 27) {
             c = 0;
             return;
@@ -237,20 +261,226 @@ void algorithmPracticeScreens::editAlgs() {
     }
 }
 
-void algorithmPracticeScreens::editPLL() {
+void algorithmPracticeScreens::editOPLL() {
+    DataManager dataMan;
+    fs::path chosenPath;
+    editingClass editor;
+    char c = 0;
+    string line;
+    string version;
+    string id;
+    string time;
+    string scramble;
+    string orientation; // depends on the type of session option
+    string date;
 
-}
+    string stupidOllPllString = "";
 
-void algorithmPracticeScreens::editOLL() {
+    if (isOll) {
+        stupidOllPllString = "OLL";
+    } else {
+        stupidOllPllString = "PLL";
+    }
+
+    chosenPath = editor.displayAndChoose(false, stupidOllPllString); // should be returning a full path to a base .txt file
+
+    // grabbing the filename and then adding _KEYS.txt to it for access to keys
+    fs::path keysPath = chosenPath.stem(); 
+    keysPath += "_KEYS";
+
+    terminalModifier.clearScreen();
+
+    if(chosenPath == "") {
+        return;
+    }
+
+    // tuple that contains the ID wanted and the index where its at
+    tuple<int, int> idAndIndex(0, 0);
+    idAndIndex = editor.displayAndChooseSessionData(chosenPath, keysPath, stupidOllPllString);
+
+    if (get<1>(idAndIndex) == -1) {
+        return;
+    }
+
+    // now that we have the exact key for what time we want to mess with, lets actually edit the time using the index we got from the chosen data
+    dataMan.vectorFileInfo(chosenPath);
+
+    string vectorLine = "";
+
+    vectorLine = dataMan.fileInfoHolder[get<1>(idAndIndex)-1]; // use the index we got from the IDS file to match with the actual file
+
+    // separating the data that we get form the fileInfoHoler
+    stringstream baka(vectorLine);
+
+    getline(baka, version, ':');
+    getline(baka, id, ':');
+    getline(baka, time, ':');
+    getline(baka, date, ':');
+
+reprint:
+    terminalModifier.clearScreen();
+
+    cout << endl << endl << endl << endl << endl << endl;
+
+    terminalModifier.printCentered("You are using this time data. What would you like to change?");
+    cout << endl << endl;
+    cout << "ID: " << id << endl;
+    cout << "\t- Time (ms): " << time << endl;
+    cout << "\t- Date: " << date << endl;
+
+    cout << endl << endl;
+    terminalModifier.printCentered("Time (t)");
+    terminalModifier.printCentered("Date (d)");
+    cout << endl;
+    terminalModifier.printCentered("Delete time (-)");
+
+    terminalModifier.setNonBlockingInput();
     
+    string chosenString = ""; // this is for the stupid text display after this but it gets decided here
+    while (true) {
+        c = 0;
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        if (c == 't') {
+            terminalModifier.restoreTerminal();
+            chosenString = "Time";
+            break;
+        } else if (c == 'd') {
+            terminalModifier.restoreTerminal();
+            chosenString = "Date";
+            break;
+        } else if (c == '-') {
+            // we have vectored the file info at this point so we can just delete 
+
+            dataMan.fileInfoHolder.erase(dataMan.fileInfoHolder.begin() + get<1>(idAndIndex)-1);
+
+            // rewrite the vectored data into the actual file
+            ofstream of(chosenPath, ios::trunc);  // trunc clears the file
+            for (const string& s : dataMan.fileInfoHolder) {
+                of << s << '\n';
+            }
+
+            of.close();
+
+            // helper function because Im not trying to make this one 30 times larger (to get rid of the same ID in the _KEYS file)
+            dataMan.deleteID(keysPath, get<1>(idAndIndex)-1, stupidOllPllString);
+
+            return;
+        } else if (c == 27) {
+            c = 0;
+            return;
+        } 
+    }
+
+    terminalModifier.clearScreen();
+
+    cout << endl << endl << endl << endl << endl << endl;
+
+    // this is going to display the text in this format (e.g):
+    /**
+     * 
+     * (centered) Enter the new Time you'd like to use 
+     * 
+     *  id:
+     * 
+     *      - Time: Data(highlighted)
+     *      - Date
+     * 
+     *  Enter new Time
+     * 
+     **/
+
+while(true) {
+        terminalModifier.printCentered("Enter the " + chosenString + " you'd like to use");
+        cout << endl << endl;
+        cout << "ID: " << id << endl;
+
+        if (c == 't') {
+            cout << "\t\033[1;37;44m- Time (ms)\033[0m: " << time << endl;
+
+            cout << "\t- Date: " << date << endl;
+
+        } else if (c == 'd') {
+            cout << "\t- Time (ms): " << time << endl;
+
+            cout << "\t\033[1;37;44m- Date\033[0m: " << date << endl;
+        } else {
+            return;
+        }
+
+        cout << endl << endl;
+
+        string userInput = "";
+
+    // at this point we know that we still have the vector full of times from the actual file inside of dataman. SO, if we just apply the changes to 
+    // the string stream then we can just throw it back into the vector using the index we stored.
+        getline(cin, userInput);
+
+        if (userInput == "-1"){
+            return;
+        }
+
+        if (regex_match(userInput, regex("^[0-9/'/]+$"))) {
+            if (c == 't') {
+            time = userInput;
+            } else if (c == 's') {
+                scramble = userInput;
+            } else if (c == 'o') {
+                orientation = userInput;
+            } else if (c == 'd') {
+                date = userInput;
+            }
+            break;
+        } else {
+            cerr << endl << "Invalid Input" << endl;
+            continue;
+        }
+    }
+    
+    // time to validate that you entered an actual time lol
+    long long longTime = 0;
+    try {
+        int longTime = stoi(time);
+
+        if (longTime < 1) {
+            throw invalid_argument("");
+        }
+    } catch (const invalid_argument& e) {
+        cerr << "Invalid input: not a number." << endl;
+        goto reprint;
+    } catch (const out_of_range& e) {
+        cerr << "Input is out of range for a long long." << endl;
+        goto reprint;
+    }
+    
+    // rebuilding the stupid stirng
+    string meow = "";
+    if (version == "V2") {
+        meow += version + ":" + id + ":" + time + ":" + scramble + ":" + orientation + ":" + date;
+    } else if (version == "V1") {
+        meow += version + ":" + id + ":" + time + ":" + scramble + ":" + date;
+    }
+    
+    dataMan.fileInfoHolder[get<1>(idAndIndex)-1] = meow;
+
+    // throwing the new data into the file
+    ofstream of(chosenPath, ios::trunc);  // trunc clears the file
+    for (const string& s : dataMan.fileInfoHolder) {
+        of << s << '\n';
+    }
+
+    of.close();
+
+    // now that the edit is made ill send the user back to reprint so that they could see the chagnes they made
+    goto reprint;
 }
+
 
 // navigator goes through oll/pll algorithms by seeing if the user chose oll/pll, then pulling that speific file data
 // the navigator displays the algorithm  categoryon screen, if the user hits enter then that is the users choice, if not
 // then the user can hit space to continue searching
 string algorithmPracticeScreens::navigator() {
     DataManager moo;
-    Timer terminalModifer;
     char c = 0;
     string algName;
 
@@ -264,24 +494,24 @@ string algorithmPracticeScreens::navigator() {
         moo.vectorFileInfo("Algorithms", "pllAlgs"); // send all of the information form the pllAlgs file to the moo vector
     }
 
-    terminalModifer.setNonBlockingInput();
+    terminalModifier.setNonBlockingInput();
 reprint_w_new_values:
     // for printing
-    terminalModifer.clearScreen();
+    terminalModifier.clearScreen();
 
     cout << endl << endl << endl << endl << endl << endl;
 
     // casual prints
-    terminalModifer.printCentered("Algorithm Navigator");
+    terminalModifier.printCentered("Algorithm Navigator");
     cout << endl;
-    terminalModifer.printCentered("Choose what Algorithm category you want");
-    terminalModifer.printCentered("Enter to proceed, Esc to exit");
-    terminalModifer.printTwoColumns("<- F", "J ->");
+    terminalModifier.printCentered("Choose what Algorithm category you want");
+    terminalModifier.printCentered("Enter to proceed, Esc to exit");
+    terminalModifier.printTwoColumns("<- F", "J ->");
         
     cout << endl << endl << endl;
 
     // prints alg category
-    terminalModifer.printCentered(moo.fileInfoHolder[navCounter]);
+    terminalModifier.printCentered(moo.fileInfoHolder[navCounter]);
     algName = moo.fileInfoHolder[navCounter];
 
 
@@ -324,13 +554,13 @@ reprint_w_new_values:
 
         // if enter
         if (c == 10) {
-            terminalModifer.restoreTerminal();
+            terminalModifier.restoreTerminal();
             c = 0;
             return algName;
         }
     }
 
-    terminalModifer.restoreTerminal();
+    terminalModifier.restoreTerminal();
     return algName;
 }
 
@@ -339,14 +569,13 @@ reprint_w_new_values:
 // the determining is done the same way navigaor determines
 string algorithmPracticeScreens::algNavigator(const string& algName) {
     DataManager moo;
-    Timer terminalModifer;
     string specificAlgName, alg, algAscii;
     char c = 0;
 
     vector<string> tempVec;
     tempVec.reserve(5);
 
-    terminalModifer.setNonBlockingInput();
+    terminalModifier.setNonBlockingInput();
 
     if(!moo.fileInfoHolder.empty()) { // if the vector has something
         moo.fileInfoHolder.clear();
@@ -378,20 +607,20 @@ string algorithmPracticeScreens::algNavigator(const string& algName) {
 
 reprint_w_new_values:
 
-    terminalModifer.clearScreen();
+    terminalModifier.clearScreen();
 
     cout << endl << endl << endl << endl << endl << endl;
 
     if(tempVec.size() == 1) { // only if the alg category has one specific algorithm (that is just your choice)
-        terminalModifer.printCentered("Algorithm Navigator");
+        terminalModifier.printCentered("Algorithm Navigator");
         cout << endl;
-        terminalModifer.printCentered("Press enter to view timer screen");
+        terminalModifier.printCentered("Press enter to view timer screen");
     } else {
-        terminalModifer.printCentered("Algorithm Navigator");
+        terminalModifier.printCentered("Algorithm Navigator");
         cout << endl;
-        terminalModifer.printCentered("What Algorithm do you want to practice?");
-        terminalModifer.printCentered("Enter to proceed, Esc to exit");
-        terminalModifer.printTwoColumns("<- F", "J ->");
+        terminalModifier.printCentered("What Algorithm do you want to practice?");
+        terminalModifier.printCentered("Enter to proceed, Esc to exit");
+        terminalModifier.printTwoColumns("<- F", "J ->");
     }
 
     // create a string stream out of every data string thats pulled in, this will get split into specific name, algorithm, and ascii
@@ -409,8 +638,8 @@ reprint_w_new_values:
 
     // casual print
     cout << endl << endl << endl;
-    terminalModifer.printCentered(specificAlgName);
-    terminalModifer.printCentered(alg);
+    terminalModifier.printCentered(specificAlgName);
+    terminalModifier.printCentered(alg);
     actualAlgorithm = alg;
 
     cout << endl << algAscii;
@@ -452,11 +681,11 @@ reprint_w_new_values:
 
         if (c == 10) { // enter to choose
             tempVec.clear();
-            terminalModifer.restoreTerminal();
+            terminalModifier.restoreTerminal();
             break;
         }
     }
-    terminalModifer.restoreTerminal();
+    terminalModifier.restoreTerminal();
     return specificAlgName;
 }
 
@@ -464,7 +693,6 @@ reprint_w_new_values:
 // with the algorithms in the respective algphotos txt and will find the correct data to get to an algorithm from a solved state
 string algorithmPracticeScreens::fromSolved(const string& algName) {
     DataManager moo;
-    Timer terminalModifer;
     char c = 0;
 
     string temp; // holds alg from file
@@ -488,15 +716,15 @@ string algorithmPracticeScreens::fromSolved(const string& algName) {
         }
     }
 
-    terminalModifer.clearScreen();
+    terminalModifier.clearScreen();
 
     cout << endl << endl << endl << endl << endl << endl;
 
-    terminalModifer.printCentered("From Solved");
+    terminalModifier.printCentered("From Solved");
     cout << endl;
-    terminalModifer.printCentered("This is how you get to the algorithm");
-    terminalModifer.printCentered("from a solved position");
-    terminalModifer.printCentered("Enter to start timer");
+    terminalModifier.printCentered("This is how you get to the algorithm");
+    terminalModifier.printCentered("from a solved position");
+    terminalModifier.printCentered("Enter to start timer");
 
     stringstream ss(temp);
 
@@ -504,11 +732,11 @@ string algorithmPracticeScreens::fromSolved(const string& algName) {
     getline(ss, fromAlg);
 
     cout << endl << endl << endl;
-    terminalModifer.printCentered(specName);
+    terminalModifier.printCentered(specName);
     cout << endl;
-    terminalModifer.printCentered(fromAlg);
+    terminalModifier.printCentered(fromAlg);
 
-    terminalModifer.setNonBlockingInput();
+    terminalModifier.setNonBlockingInput();
     // user interaciton loop
     while (true) {
         c = 0;
@@ -520,17 +748,16 @@ string algorithmPracticeScreens::fromSolved(const string& algName) {
         }
 
         if (c == 27) {
-            terminalModifer.restoreTerminal();
+            terminalModifier.restoreTerminal();
             return "";
         }
 
     }
-    terminalModifer.restoreTerminal();
+    terminalModifier.restoreTerminal();
     return "meow";
 }
 
 string algorithmPracticeScreens::splashScreen(const string& specificAlgName) {
-    Timer terminalModifier;
     DataManager dataMod;
     string algType;
     fs::path fullPath;
@@ -636,18 +863,18 @@ refresh_the_screen:
 }
 
 
-// own
-void algorithmPracticeScreens::algorithmName() {
+// // own
+// void algorithmPracticeScreens::algorithmName() {
 
-}
+// }
 
-void algorithmPracticeScreens::typeInAlgMoves() {
+// void algorithmPracticeScreens::typeInAlgMoves() {
 
-}
+// }
 
-void algorithmPracticeScreens::drawMap() {
+// void algorithmPracticeScreens::drawMap() {
 
-}
+// }
 
 // creates a timer instance based on algorithm chosen, saves it to that respective file
 // different baesd on isOll. Uses data vizualizer object code to show PB, Ao5, Ao12.
@@ -683,194 +910,38 @@ void algorithmPracticeScreens::mainTimer(const string& specificAlgname) {
 
 
 void dataVisualizerScreen::mainScreen() {
-    Timer terminalModifier;
-    terminalModifier.clearScreen();
-    cout << endl << "this is the data visualizer screen";
-}
-
-void dataVisualizerScreen::fileDisplay() {
-
-}
-
-void dataVisualizerScreen::fileSearch() {
-
-}
-
-void dataVisualizerScreen::fileCheck() {
-
-}
-
-// this might have to run some python scripts that can display all of the file data chosen.
-void dataVisualizerScreen::displayData() {
-
-}
-
-////////////////////////////////////////////////////////
-//////////////  MEOW timer screen MEOW  ////////////////
-////////////////////////////////////////////////////////
-
-void timerScreen::mainScreen() {
 top:
     Timer terminalModifier;
     char c = 0;
-    toggleInspectionTime = false;
-    toggleOrientation = false;
-    orientation = "";
 
     terminalModifier.clearScreen();
 
         cout << endl << endl << endl << endl << endl << endl;
     
-        terminalModifier.printCentered("Timer Screen");
+        terminalModifier.printCentered("Data Visualizer");
         terminalModifier.printCentered("(esc to return to main screen)");
 
         cout << endl;
         cout << endl;
 
-        terminalModifier.printTwoColumns("New Session (n)", "Old Session (o)");
-        terminalModifier.printCentered("Session Manager (s)");
+        terminalModifier.printTwoColumns("Visualize a Session (s)", "Visualize an Alg Session (a)");
 
     terminalModifier.setNonBlockingInput();
-    // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
-    while (true) {
-        c = 0;
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-        if (c == 'n') {
-            terminalModifier.restoreTerminal();
-            newSession();
-            terminalModifier.restoreTerminal();
-            goto top;
-        } else if (c == 'o') {
-            terminalModifier.restoreTerminal();
-            previousSession(); // calls the same function as oll but the truth value is what makes the difference
-            terminalModifier.restoreTerminal();
-            goto top;
-        } else if (c == 's') {
-            terminalModifier.restoreTerminal();
-            sessionManager();
-            terminalModifier.restoreTerminal();
-            goto top;
-        }  else if (c == 27) { // escape to exit
-            c = 0;
-            terminalModifier.restoreTerminal();
-            return;
-        }
-    }
-    terminalModifier.restoreTerminal();
-}
-
-// dynamically creates a session if the file isnt there
-void timerScreen::newSession() {
-top:
-    DataManager dataMan;
-    Timer timer;
-    Timer terminalModifier;
-    string sessionName;
-    string holder = "";
-
-    sessionName = dataMan.createSessionLoop();
-
-    if (sessionName == "") {
-        goto top;
-    }
-
-    while (true) {
-        holder = splashScreen(sessionName);
-
-        if (holder == "F") {
-            terminalModifier.restoreTerminal();
-            return;
-        }
-
-        mainTimer(sessionName);
-    }
-}
-
-// opens session up
-void timerScreen::previousSession() {
-top:
-    DataManager dataMan;
-    fs::path folderpath = "Data/Sessions";
-    Timer timer;
-    Timer terminalModifier;
-    string sessionName = "";
-    string holder = "";
-    char c = 0;
-
-    terminalModifier.restoreTerminal();
-
-    terminalModifier.clearScreen();
-
-    int counter = 0; // counter for how many files there are (if its only 1 (a gitkeep)) then it should return
-    for (const auto& session : fs::directory_iterator(folderpath)) { // for every session in the sessions folder
-        counter++;
-    }
-    if (counter <= 1) {
-        cerr << endl << "You cant open a previous session if there are no previous sessions." << endl;
-        return;
-    }
-
-    cout << endl << endl << endl << endl << endl << endl;
-    terminalModifier.printCentered("What session would you like to re-join?");
-    dataMan.displayFolder("Sessions");
-
-    cout << endl << endl << endl;
-
-    getline(cin, sessionName);
-
-    if (!dataMan.isValidFilename(sessionName) || !dataMan.fileExists(sessionName)) {
-        goto top;
-    }
-
-
-    while (true) {
-        holder = splashScreen(sessionName);
-
-        if (holder == "F") {
-            terminalModifier.restoreTerminal();
-            return;
-        }
-
-        mainTimer(sessionName);
-    }
-}
-
-// allows you to edit or delete sessions
-void timerScreen::sessionManager() {
-top:
-    Timer terminalModifier;
-    char c = 0;
-    toggleInspectionTime = false;
-    toggleOrientation = false;
-    orientation = "";
-
-    terminalModifier.clearScreen();
-
-        cout << endl << endl << endl << endl << endl << endl;
     
-        terminalModifier.printCentered("Timer Screen");
-        terminalModifier.printCentered("(esc to return to main screen)");
-
-        cout << endl;
-        cout << endl;
-
-        terminalModifier.printTwoColumns("Delete a Session (d)", "Edit a Session (e)");
-
-    terminalModifier.setNonBlockingInput();
-    // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
     while (true) {
         c = 0;
         ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
 
-        if (c == 'd') {
+        if (c == 's') {
+            // session displayer
             terminalModifier.restoreTerminal();
-            del();
+            displaySessionData();
             terminalModifier.restoreTerminal();
             goto top;
-        } else if (c == 'e') {
+        } else if (c == 'a') {
+            // alg displayer
             terminalModifier.restoreTerminal();
-            edit(); // calls the same function as oll but the truth value is what makes the difference
+            displayAlgData();
             terminalModifier.restoreTerminal();
             goto top;
         } else if (c == 27) { // escape to exit
@@ -879,22 +950,50 @@ top:
             return;
         }
     }
-
     terminalModifier.restoreTerminal();
 }
 
+
+// this might have to run some python scripts that can display all of the file data chosen.
+void dataVisualizerScreen::displaySessionData() {
+    system("python3 visualizeSessions.py");
+}
+
+// same for this
+void dataVisualizerScreen::displayAlgData() {
+    system("python3 visualizeAlgs.py");
+}
+
+// i want this to be like a data validator, so if for some reason the data is not displaying it runs this validator to run defaults on data?
+void dataVisualizerScreen::fileCheck() {
+
+}
+
+
+////////////////////////////////////////////////////////
+//////////////  MEOW Editing class MEOW  ////////////////
+////////////////////////////////////////////////////////
+
 // displays all session files and allows you to pick one
-fs::path timerScreen::displayAndChoose(bool areYouDeleting) {
+fs::path editingClass::displayAndChoose(bool areYouDeleting, const string& ollpll) {
+    fs::path folderpath;
 top:
     DataManager dataMan;
-    fs::path folderpath = "Data/Sessions/";
-    Timer timer;
+    if (ollpll.length() > 2) { // if ollpll is literally anything at all (not "");
+        if (ollpll == "PLL") {
+            folderpath = "Data/Algorithms/PLL/";
+        } else {
+            folderpath = "Data/Algorithms/OLL/";
+        }
+    } else {
+        folderpath = "Data/Sessions/";
+    }
+    
     Timer terminalModifier;
     string sessionName = "";
     string holder = "";
     char c = 0;
 
-    terminalModifier.restoreTerminal();
 
     terminalModifier.clearScreen();
 
@@ -902,8 +1001,13 @@ top:
     for (const auto& session : fs::directory_iterator(folderpath)) { // for every session in the sessions folder
         counter++;
     }
+
     if (counter <= 1) {
-        cerr << endl << "You cant open a previous session if there are no previous sessions." << endl;
+        if (ollpll.length() > 2) {
+            cerr << endl << "You cant open an algorihtms data if there is no data." << endl;
+        } else {
+            cerr << endl << "You cant open a previous session if there are no previous sessions." << endl;
+        }
         return "";
     }
 
@@ -914,9 +1018,20 @@ top:
     } else {
         terminalModifier.printCentered("What session would you like to edit? (-1 to exit)");
     }
-    dataMan.displayFolder("Sessions");
 
+    if (ollpll.length() > 2) {
+        if (ollpll == "OLL") {
+            dataMan.displayFolder("Algorithms/OLL");
+        } else {
+            dataMan.displayFolder("Algorithms/PLL");
+        }
+    } else {
+        dataMan.displayFolder("Sessions");
+    }
+    
     cout << endl << endl << endl;
+
+    terminalModifier.restoreTerminal();
 
     getline(cin, sessionName);
 
@@ -924,7 +1039,9 @@ top:
         return "";
     }
 
-    if (!dataMan.isValidFilename(sessionName) || !dataMan.fileExists(sessionName)) {
+    // right now program is failing because regex doesnt allow spaces :(
+    // !dataMan.isValidFilename(sessionName) || is removed until further notice
+    if (!dataMan.fileExists(sessionName, ollpll)) {
         goto top;
     }
 
@@ -934,16 +1051,21 @@ top:
 }
 
 // this returns the ID and the index of the ID IN THAT ORDER
-tuple<int, int> timerScreen::displayAndChooseSessionData(const fs::path& mainPath, const fs::path& keysPath) {
+tuple<int, int> editingClass::displayAndChooseSessionData(const fs::path& mainPath, const fs::path& keysPath, const string& ollpll) {
     fs::path chosenPath = mainPath;
     Timer terminalModifier;
 
     DataManager dataMan;
 
-    terminalModifier.printCentered("Type in the session that you want to edit (-1 to exit)");
+    terminalModifier.printCentered("Type in the data that you want to edit (-1 to exit)");
+    
     cout << endl << endl << endl;
 
-    dataMan.displaySessionFile(chosenPath);
+    if (ollpll.size() > 2) {
+        dataMan.displayAlgorithmFile(chosenPath);
+    } else {
+        dataMan.displaySessionFile(chosenPath);
+    }
 
     cout << endl;
 
@@ -963,14 +1085,14 @@ tuple<int, int> timerScreen::displayAndChooseSessionData(const fs::path& mainPat
         if (IDread.length() > 7) {
             IDread = "";
             intKeyChosen = 0;
-            cerr << endl << "[Error] Invalid session ID. Inappropriate ID length" << endl;
+            cerr << endl << "[Error] Invalid ID. Inappropriate ID length" << endl;
             continue;
         }
 
         if (!didItWork) {
             IDread = "";
             intKeyChosen = 0;
-            cerr << endl << "[Error] Invalid session ID. Only use numbers." << endl;
+            cerr << endl << "[Error] Invalid ID. Only use numbers." << endl;
             continue;
         }
 
@@ -982,8 +1104,18 @@ tuple<int, int> timerScreen::displayAndChooseSessionData(const fs::path& mainPat
         }
 
         dataMan.fileInfoHolder.clear();
-        // if the ID is validly typed, then we can check it with existing IDs (_keys.txt file)
-        dataMan.vectorFileInfo("Sessions", keysPath.string());
+
+        if (ollpll.length() > 2 ) {
+            fs::path fullKeysPath = "Data/Algorithms/";
+            fullKeysPath += ollpll / keysPath += ".txt";
+            // if the ID is validly typed, then we can check it with existing IDs (_keys.txt file)
+
+            dataMan.vectorFileInfo(fullKeysPath);
+        } else {
+            // if the ID is validly typed, then we can check it with existing IDs (_keys.txt file)
+            dataMan.vectorFileInfo("Sessions", keysPath.string());
+        }
+        
 
         bool idExists = false;
 
@@ -998,7 +1130,7 @@ tuple<int, int> timerScreen::displayAndChooseSessionData(const fs::path& mainPat
         }
 
         if (!idExists) {
-            cerr << endl << "[Error] Invalid session ID. This ID doesnt exist" << endl;
+            cerr << endl << "[Error] Invalid ID. This ID doesnt exist" << endl;
             continue;
         }
 
@@ -1010,7 +1142,7 @@ tuple<int, int> timerScreen::displayAndChooseSessionData(const fs::path& mainPat
     return tuplington;
 }
 
-void timerScreen::edit() {
+void editingClass::edit() {
     DataManager dataMan;
     fs::path chosenPath;
     Timer terminalModifier;
@@ -1023,7 +1155,7 @@ void timerScreen::edit() {
     string orientation; // depends on the type of session option
     string date;
 
-    chosenPath = displayAndChoose(false); // should be returning a full path to a base .txt file
+    chosenPath = displayAndChoose(false, ""); // should be returning a full path to a base .txt file
 
     // grabbing the filename and then adding _KEYS.txt to it for access to keys
     fs::path keysPath = chosenPath.stem();
@@ -1037,10 +1169,10 @@ void timerScreen::edit() {
 
     // tuple that contains the ID wanted and the index where its at
     tuple<int, int> idAndIndex(0, 0);
-    idAndIndex = displayAndChooseSessionData(chosenPath, keysPath);
+    idAndIndex = displayAndChooseSessionData(chosenPath, keysPath, "");
 
     if (get<1>(idAndIndex) == -1) {
-        edit();
+        return;
     }
 
     // now that we have the exact key for what time we want to mess with, lets actually edit the time using the index we got from the chosen data
@@ -1127,7 +1259,7 @@ reprint:
             of.close();
 
             // helper function because Im not trying to make this one 30 times larger (to get rid of the same ID in the _KEYS file)
-            dataMan.deleteID(keysPath, get<1>(idAndIndex)-1);
+            dataMan.deleteID(keysPath, get<1>(idAndIndex)-1, "");
 
             return;
         } else if (c == 27) {
@@ -1269,13 +1401,18 @@ while(true) {
     goto reprint;
 }
 
-void timerScreen::del() {
+void editingClass::del(const string& ollpll) {
     fs::path chosenPath;
+    editingClass editor;
     Timer terminalModifier;
     char c = 0;
 
-    chosenPath = displayAndChoose(true); // should be returning a full path to a base .txt file
-
+    if (ollpll.length() > 2) {
+        chosenPath = editor.displayAndChoose(true, ollpll);
+    } else {
+        chosenPath = editor.displayAndChoose(true, ""); // should be returning a full path to a base .txt file
+    }
+    
     // grabbing the filename and then adding _KEYS.txt to it for access to keys
     fs::path keysPath = "Data/Sessions" / chosenPath.stem() += "_KEYS.txt";
 
@@ -1294,6 +1431,185 @@ void timerScreen::del() {
     if (fs::exists(keysPath)) {
         fs::remove(keysPath); // deletes the file
     }
+}
+
+////////////////////////////////////////////////////////
+//////////////  MEOW timer screen MEOW  ////////////////
+////////////////////////////////////////////////////////
+
+void timerScreen::mainScreen() {
+top:
+    Timer terminalModifier;
+    char c = 0;
+    toggleInspectionTime = false;
+    toggleOrientation = false;
+    orientation = "";
+
+    terminalModifier.clearScreen();
+
+        cout << endl << endl << endl << endl << endl << endl;
+    
+        terminalModifier.printCentered("Timer Screen");
+        terminalModifier.printCentered("(esc to return to main screen)");
+
+        cout << endl;
+        cout << endl;
+
+        terminalModifier.printTwoColumns("New Session (n)", "Old Session (o)");
+        terminalModifier.printCentered("Session Manager (s)");
+
+    terminalModifier.setNonBlockingInput();
+    // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
+    while (true) {
+        c = 0;
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        if (c == 'n') {
+            terminalModifier.restoreTerminal();
+            newSession();
+            terminalModifier.restoreTerminal();
+            goto top;
+        } else if (c == 'o') {
+            terminalModifier.restoreTerminal();
+            previousSession(); // calls the same function as oll but the truth value is what makes the difference
+            terminalModifier.restoreTerminal();
+            goto top;
+        } else if (c == 's') {
+            terminalModifier.restoreTerminal();
+            sessionManager();
+            terminalModifier.restoreTerminal();
+            goto top;
+        }  else if (c == 27) { // escape to exit
+            c = 0;
+            terminalModifier.restoreTerminal();
+            return;
+        }
+    }
+    terminalModifier.restoreTerminal();
+}
+
+// dynamically creates a session if the file isnt there
+void timerScreen::newSession() {
+top:
+    DataManager dataMan;
+    Timer timer;
+    Timer terminalModifier;
+    string sessionName;
+    string holder = "";
+
+    sessionName = dataMan.createSessionLoop();
+
+    if (sessionName == "") {
+        goto top;
+    }
+
+    while (true) {
+        holder = splashScreen(sessionName);
+
+        if (holder == "F") {
+            terminalModifier.restoreTerminal();
+            return;
+        }
+
+        mainTimer(sessionName);
+    }
+}
+
+// opens session up
+void timerScreen::previousSession() {
+top:
+    DataManager dataMan;
+    fs::path folderpath = "Data/Sessions";
+    Timer timer;
+    Timer terminalModifier;
+    string sessionName = "";
+    string holder = "";
+    char c = 0;
+
+    terminalModifier.restoreTerminal();
+
+    terminalModifier.clearScreen();
+
+    int counter = 0; // counter for how many files there are (if its only 1 (a gitkeep)) then it should return
+    for (const auto& session : fs::directory_iterator(folderpath)) { // for every session in the sessions folder
+        counter++;
+    }
+    if (counter <= 1) {
+        cerr << endl << "You cant open a previous session if there are no previous sessions." << endl;
+        return;
+    }
+
+    cout << endl << endl << endl << endl << endl << endl;
+    terminalModifier.printCentered("What session would you like to re-join?");
+    dataMan.displayFolder("Sessions");
+
+    cout << endl << endl << endl;
+
+    getline(cin, sessionName);
+
+    if (!dataMan.isValidFilename(sessionName) || !dataMan.fileExists(sessionName, "")) {
+        goto top;
+    }
+
+
+    while (true) {
+        holder = splashScreen(sessionName);
+
+        if (holder == "F") {
+            terminalModifier.restoreTerminal();
+            return;
+        }
+
+        mainTimer(sessionName);
+    }
+}
+
+// allows you to edit or delete sessions
+void timerScreen::sessionManager() {
+top:
+    Timer terminalModifier;
+    editingClass editor;
+    char c = 0;
+    toggleInspectionTime = false;
+    toggleOrientation = false;
+    orientation = "";
+
+    terminalModifier.clearScreen();
+
+        cout << endl << endl << endl << endl << endl << endl;
+    
+        terminalModifier.printCentered("Timer Screen");
+        terminalModifier.printCentered("(esc to return to main screen)");
+
+        cout << endl;
+        cout << endl;
+
+        terminalModifier.printTwoColumns("Delete a Session (d)", "Edit a Session (e)");
+
+    terminalModifier.setNonBlockingInput();
+    // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
+    while (true) {
+        c = 0;
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+
+        if (c == 'd') {
+            terminalModifier.restoreTerminal();
+            editor.del("");
+            terminalModifier.restoreTerminal();
+            goto top;
+        } else if (c == 'e') {
+            terminalModifier.restoreTerminal();
+            editor.edit(); // calls the same function as oll but the truth value is what makes the difference
+            terminalModifier.restoreTerminal();
+            goto top;
+        } else if (c == 27) { // escape to exit
+            c = 0;
+            terminalModifier.restoreTerminal();
+            return;
+        }
+    }
+
+    terminalModifier.restoreTerminal();
 }
 
 string timerScreen::splashScreen(const string& session) {

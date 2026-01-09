@@ -26,7 +26,7 @@ bool DataManager::createFile(const string& whatFolder, const string& fileName) {
         return false;
     }
 
-    if (fileExists(fileName)) {
+    if (fileExists(fileName, "")) {
         cerr << endl << "[Error] File already exists." << endl;
         return false;
     }
@@ -51,8 +51,15 @@ bool DataManager::isValidFilename(const string& name) {
     return regex_match(name, regex("^[A-Za-z0-9_-]+$"));
 }
 
-bool DataManager::fileExists(const string& filename) {
-    fs::path basePath = fs::absolute("Data/Sessions");
+bool DataManager::fileExists(const string& filename, const string& ollpll) {
+    fs::path basePath = "";
+
+    if (ollpll.length() > 2) {
+        basePath += fs::absolute("Data/Algorithms/" + ollpll);
+    } else {
+        basePath += fs::absolute("Data/Sessions");
+    }
+     
     fs::path extension = ".txt";
     fs::path fullPath = basePath / filename += extension;
 
@@ -81,35 +88,16 @@ string DataManager::createSessionLoop() {
 }
 
 // deletes a file or session
-bool DataManager::deleteFile(const string& whatFolder, const string& whatFile) {
-    fs::path basePath = fs::absolute("Data/" + whatFolder);
-    fs::path extension = ".txt";
-    fs::path fullPath = basePath / whatFile += extension;
-
-    if (!isValidFilename(whatFile)) {
-        cerr << endl << "[Error] Invalid file name. Use only letters, numbers, -, _." << endl;
-        return false; // program escape to say name wasnt good
-    }
-
-    if (fs::exists(fullPath)) { // if the file path exists
-        if (fs::remove(fullPath)) { // delete that exact file
-            cout << "Deleted: " << fullPath << endl;
-            return true;
-        } else {
-            cerr << "Failed to delete: " << fullPath << endl;
-            return false;
-        }
-    } else { // only if file doesnt exist
-        cerr << "File does not exist: " << fullPath << endl;
-        return false;
-    }
-
-}
-
-bool DataManager::deleteID(const fs::path& keysPath, int index) {
+bool DataManager::deleteID(const fs::path& keysPath, int index, const string& ollpll) {
     vector<string> tempVec;
-
-    fs::path newKeysPath = "Data/Sessions" / keysPath += ".txt";
+    fs::path newKeysPath = "";
+    if (ollpll.length() > 2) {
+        newKeysPath += "Data/Algorithms/";
+        newKeysPath += ollpll / keysPath += ".txt";
+    } else {
+        newKeysPath += "Data/Sessions" / keysPath += ".txt";
+    }
+    
 
     string line;
 
@@ -157,9 +145,7 @@ void DataManager::displayFolder(const string& whatFolder) {
             continue; // skip it
         }
 
-        
-
-        cout << dir_entry.path().stem() << endl;
+        cout << endl << dir_entry.path().stem() << endl;
     }
 }
 
@@ -213,7 +199,6 @@ void DataManager::vectorFileInfo(const fs::path& fully) {
 }
 
 void DataManager::displaySessionFile(const fs::path& whatFile) {
-    Scramble mooski;
     if (!fs::exists(whatFile)) {
         return;
     }
@@ -253,6 +238,41 @@ void DataManager::displaySessionFile(const fs::path& whatFile) {
         if (version == "V2") {
             cout << "\t- Orientation: " << orientation << endl;
         }
+        cout << "\t- Date: " << date << endl;
+
+    }
+
+    meow.close();
+}
+
+void DataManager::displayAlgorithmFile(const fs::path& whatFile) {
+    if (!fs::exists(whatFile)) {
+        return;
+    }
+
+    ifstream meow(whatFile);
+
+    if (!meow.is_open()) {
+        return;
+    }
+
+    string line;
+    string version;
+    string id;
+    string time;
+    string date;
+
+    while (getline(meow, line)) {
+        // grab and split up all file data
+        stringstream baka(line);
+
+        getline(baka, version, ':');
+        getline(baka, id, ':');
+        getline(baka, time, ':');
+        getline(baka, date, ':');
+
+        cout << "ID: " << id << endl;
+        cout << "\t- Time (ms): " << time << endl;
         cout << "\t- Date: " << date << endl;
 
     }

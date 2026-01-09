@@ -22,17 +22,40 @@ public:
     void mainScreen(); // one and only screen
 };
 
+class dataVisualizerScreen {
+public:
+    void mainScreen();
+
+    // this might have to run some python scripts that can display all of the file data chosen.
+    void displaySessionData();
+
+    void displayAlgData();
+
+    void fileCheck();
+};
+
+class editingClass {
+    
+    public:
+        fs::path displayAndChoose(bool areYouDeleting, const string& ollpll);
+        tuple<int, int> displayAndChooseSessionData(const fs::path& mainPath, const fs::path& keysPath, const string& ollpll);
+        void edit();
+        void del(const string& ollpll);
+};
+
 class algorithmPracticeScreens {
-    bool isOll;
-    string actualAlgorithm;
+    bool isOll = false;
+    string actualAlgorithm = "";
     int navCounter = 0;
     int algNavCounter = 0;
+    Timer terminalModifier;
+    bool areEditing = false;
 
 public:
     void mainScreen();
         void opll();
         void own();
-        void editAlgs(); // probably has an object that extends datavisualizer which allows for display, and editation
+        void editDeleteAlgs(); // probably has an object that extends datavisualizer which allows for display, and editation
 
     // this navigator screen will be used 4 times in choosing what name of algorithm/photo of algorithm for OLL/PLL
     // uses isOLL
@@ -45,11 +68,7 @@ public:
 
     string splashScreen(const string& justInCase);
 
-    // just in case while you were solving you made some mistake and you want to remove the very last solve instance.
-    void undoSolve();
-
-    void editPLL();
-    void editOLL();
+    void editOPLL();
 
     // own
     void algorithmName();
@@ -61,22 +80,6 @@ public:
     void mainTimer(const string& file); 
 
 };
-
-class dataVisualizerScreen {
-public:
-    void mainScreen();
-
-    void fileDisplay();
-
-    void fileSearch();
-
-    void fileCheck();
-
-    // this might have to run some python scripts that can display all of the file data chosen.
-    void displayData();
-
-};
-
 
 class timerScreen {
     bool toggleOrientation = false;
@@ -92,10 +95,6 @@ public:
     void newSession(); // dynamically creates a session if the file isnt there
     void previousSession(); // opens session up
     void sessionManager(); // displays all session files - probably using data visualizer   
-        fs::path displayAndChoose(bool areYouDeleting);
-        tuple<int, int> displayAndChooseSessionData(const fs::path& mainPath, const fs::path& keysPath);
-        void edit();
-        void del();
     string splashScreen(const string& meow);
     
     void mainTimer(const string& session);

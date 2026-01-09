@@ -30,11 +30,11 @@ public:
     bool createFile(const string& whatFolder, const string& fileName); // creates a session or an algorithm
     string createSessionLoop();
     bool isValidFilename(const string& name);
-    bool fileExists(const string& session);
-    bool deleteFile(const string& whatFolder, const string& whatFile); // deletes a file or session
-    bool deleteID(const fs::path& keysPath, int index);
+    bool fileExists(const string& session, const string& ollpll);
+    bool deleteID(const fs::path& keysPath, int index, const string& ollpll);
     void displayFolder(const string& whatFolder); // prints the feature folder
     void displaySessionFile(const fs::path& whatFile);
+    void displayAlgorithmFile(const fs::path& whatFile);
     void vectorFileInfo(const string& whatFolder, const string& whatFile); // grabs all file info as a dynamic vector and stores it
     void vectorFileInfo(const fs::path& pathy);
 
