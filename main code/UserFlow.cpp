@@ -70,7 +70,7 @@ void scrambleScreen::mainScreen() {
 
     while (true) {
         // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
         string holder;
 
         if (c > 0) {
@@ -123,7 +123,7 @@ top:
     // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
     while (true) {
         c = 0;
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         if (c == 'o') {
             isOll = true;
@@ -234,7 +234,7 @@ void algorithmPracticeScreens::editDeleteAlgs() {
     // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
     while (true) {
         c = 0;
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         if (c == 'o') { 
             terminalModifier.restoreTerminal();
@@ -339,7 +339,7 @@ reprint:
     string chosenString = ""; // this is for the stupid text display after this but it gets decided here
     while (true) {
         c = 0;
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         if (c == 't') {
             terminalModifier.restoreTerminal();
@@ -519,7 +519,7 @@ reprint_w_new_values:
         c = 0; // for std input
 
         // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         // conditional control for loops/ending
 
@@ -624,7 +624,7 @@ reprint_w_new_values:
     }
 
     // create a string stream out of every data string thats pulled in, this will get split into specific name, algorithm, and ascii
-    stringstream ss(tempVec[algNavCounter]);
+    stringstream ss(tempVec.at(algNavCounter));
 
     getline(ss, specificAlgName, ':');
     getline(ss, alg, ':');
@@ -646,7 +646,7 @@ reprint_w_new_values:
 
     while (true) {
         c = 0;        
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         // conditional control for loops/ending
 
@@ -741,7 +741,7 @@ string algorithmPracticeScreens::fromSolved(const string& algName) {
     while (true) {
         c = 0;
 
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         if (c == 10) {
             break;
@@ -847,7 +847,7 @@ refresh_the_screen:
 
     while (true) {
         c = 0;
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         if (c == 27) {
             return "F"; // escape to menu
@@ -930,7 +930,7 @@ top:
     
     while (true) {
         c = 0;
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         if (c == 's') {
             // session displayer
@@ -1227,7 +1227,7 @@ reprint:
     string chosenString = ""; // this is for the stupid text display after this but it gets decided here
     while (true) {
         c = 0;
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         if (c == 't') {
             terminalModifier.restoreTerminal();
@@ -1462,7 +1462,7 @@ top:
     // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
     while (true) {
         c = 0;
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         if (c == 'n') {
             terminalModifier.restoreTerminal();
@@ -1590,7 +1590,7 @@ top:
     // while loop to decide between OLL/PLL practice, edit algorithm or create algorithm (last two not working rn)
     while (true) {
         c = 0;
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         if (c == 'd') {
             terminalModifier.restoreTerminal();
@@ -1706,7 +1706,7 @@ refresh_the_screen:
 
     while (true) {
         c = 0;
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
 
         if (c == 27) {
             terminalModifier.restoreTerminal();
@@ -1775,7 +1775,7 @@ void timerScreen::mainTimer(const string& session) {
     
     terminalModifier.setNonBlockingInput();
     while (true) {
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (!terminalModifier.keyPressed(c)) continue;
         
         if (c > 0) {
             c = 0;

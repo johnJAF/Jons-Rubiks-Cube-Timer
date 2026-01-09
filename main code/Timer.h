@@ -21,8 +21,6 @@
 
 #ifdef _WIN32
 DWORD originalConsoleMode;
-#else
-int originalFlags;
 #endif
 
 using namespace std;
@@ -87,5 +85,7 @@ public:
     void runTimer(const string& algorithm);
 
     void inspectionTime();
+
+    bool keyPressed(char &c);
 
 };

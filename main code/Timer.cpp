@@ -15,6 +15,14 @@ void Timer::stop() {
 
 // Set terminal to ignore rules mode
 void Timer::setNonBlockingInput() {
+    #ifdef _WIN32
+    HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);
+    GetConsoleMode(hIn, &originalConsoleMode);
+
+    DWORD mode = originalConsoleMode;
+    mode &= ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT);
+    SetConsoleMode(hIn, mode);
+    #else
     // terminos is a struct that holds terminal settings
     termios ttystate;
     // terminal current get attribute (gets all terminal settings, and input then throws them into ttystate)
@@ -31,10 +39,15 @@ void Timer::setNonBlockingInput() {
     flags |= O_NONBLOCK;
     // sets current flags to flags
     fcntl(STDIN_FILENO, F_SETFL, flags);
+    #endif
 }
 
 // Restore terminal settings to normal
 void Timer::restoreTerminal() {
+    #ifdef _WIN32
+    HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);
+    SetConsoleMode(hIn, originalConsoleMode);
+    #else   
     // get current settings
     termios ttystate;
     tcgetattr(STDIN_FILENO, &ttystate);
@@ -45,13 +58,20 @@ void Timer::restoreTerminal() {
 
     // restore original file flags
     fcntl(STDIN_FILENO, F_SETFL, originalFlags);
+    #endif
 }
 
 // get the width of the terminal in order to print centered text
 int Timer::getTerminalWidth() {
+#ifdef _WIN32
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    return csbi.srWindow.Right - csbi.srWindow.Left + 1;
+#else
     struct winsize w;
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     return w.ws_col;
+#endif
 }
 
 // prints centered text in terminal
@@ -138,11 +158,16 @@ void Timer::runTimer() {
         c = 0;
 
         // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-        // if any byte gets read from the terminal input then its gonna stop the program.
-        if (bytesRead > 0) {
+        #ifdef _WIN32
+        if (_kbhit()) {
+            _getch();
             break;
         }
+        #else
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (bytesRead > 0) break;
+        #endif
+        // if any byte gets read from the terminal input then its gonna stop the program.
 
         // if the program didnt need to break will constantly print the running timer.
         clearScreen();
@@ -172,12 +197,15 @@ void Timer::runTimer(const string& algorithm) {
     while (true) {
         c = 0;
 
-        // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-        // if any byte gets read from the terminal input then its gonna stop the program.
-        if (bytesRead > 0) {
+        #ifdef _WIN32
+        if (_kbhit()) {
+            _getch();
             break;
         }
+        #else
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (bytesRead > 0) break;
+        #endif
 
         // if the program didnt need to break will constantly print the running timer.
         clearScreen();
@@ -221,11 +249,15 @@ void Timer::inspectionTime() {
         c = 0;
 
         // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-        // if any byte gets read from the terminal input then its gonna stop the program.
-        if (bytesRead > 0) {
+        #ifdef _WIN32
+        if (_kbhit()) {
+            _getch();
             break;
         }
+        #else
+        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+        if (bytesRead > 0) break;
+        #endif
 
         // if the program didnt need to break it will print the current time
         clearScreen();
@@ -253,4 +285,18 @@ void Timer::inspectionTime() {
     
     // this will restore all of the changes prevented when setNonBlockingInput was called
     restoreTerminal();
+}
+
+// this would be the only way to fix windwos/mac input issue
+bool Timer::keyPressed(char &c) {
+#ifdef _WIN32
+    if (_kbhit()) {
+        c = _getch();
+        return true;
+    }
+    return false;
+#else
+    ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+    return bytesRead > 0;
+#endif
 }

@@ -19,12 +19,11 @@ int main() {
     introSwitch.startScreen();
     while (true) {
         // reads one byte from the "standard input" which is the keyboard, &c is where the input character is stored, bytes read should be 1
-        ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
-
-        // if any byte gets read from keyboard, it will move into the actual program loop
-        if (bytesRead > 0) {
+        if (!meow.keyPressed(c)) continue;
+        if (c > 0) {
             break;
         }
+
     }
     meow.restoreTerminal();
 
@@ -50,7 +49,7 @@ int main() {
 
         // while loop to decide what feature to choose from
         while (true) {
-            ssize_t bytesRead = read(STDIN_FILENO, &c, 1);
+            if (!meow.keyPressed(c)) continue;
 
             // choices choices
             if (c == 's') {
