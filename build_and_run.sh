@@ -2,6 +2,7 @@
 
 echo "Starting build process..."
 
+
 # Detect OS
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "Detected macOS"
@@ -53,7 +54,8 @@ if ! ls main\ code/*.cpp 1> /dev/null 2>&1; then
 fi
 
 echo "Compiling..."
-$COMPILER $FLAGS -o $EXECUTABLE main\ code/*.cpp
+SRC_DIR="main code"
+"$COMPILER" $FLAGS "$SRC_DIR"/*.cpp -o "$EXECUTABLE"
 
 # Check if compilation succeeded
 if [ $? -eq 0 ]; then
